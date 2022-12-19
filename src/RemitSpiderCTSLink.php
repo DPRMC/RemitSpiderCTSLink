@@ -2,8 +2,7 @@
 
 namespace DPRMC\RemitSpiderCTSLink;
 
-
-use DPRMC\RemitSpiderUSBank\Collectors\CTSLinkBrowser;
+use DPRMC\RemitSpiderCTSLink\Helpers\CTSLinkBrowser;
 use HeadlessChromium\Cookies\CookiesCollection;
 use HeadlessChromium\Page;
 
@@ -23,7 +22,7 @@ class RemitSpiderCTSLink {
      */
     public CTSLinkBrowser               $CTSLinkBrowser;
 //    public Debug                       $Debug;
-//    public Login                       $Login;
+    public Login                       $Login;
 //    public Portfolios                  $Portfolios;
 //    public Deals                       $Deals;
 //    public HistoryLinks                $HistoryLinks;

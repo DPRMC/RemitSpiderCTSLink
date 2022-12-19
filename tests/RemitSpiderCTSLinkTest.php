@@ -26,8 +26,8 @@ class RemitSpiderCTSLinkTest extends TestCase {
 
     private function _getSpider(): RemitSpiderCTSLink {
         return new RemitSpiderCTSLink( $_ENV[ 'CHROME_PATH' ],
-                                                              $_ENV[ 'USBANK_USER' ],
-                                                              $_ENV[ 'USBANK_PASS' ],
+                                                              $_ENV[ 'CTS_USER' ],
+                                                              $_ENV[ 'CTS_PASS' ],
                                                               self::$debug,
                                                               '',
                                                               '',

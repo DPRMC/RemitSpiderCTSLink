@@ -1,6 +1,6 @@
 <?php
 
-namespace DPRMC\RemitSpiderUSBank\Collectors;
+namespace DPRMC\RemitSpiderCTSLink\Helpers;
 
 use HeadlessChromium\Browser\ProcessAwareBrowser;
 use HeadlessChromium\BrowserFactory;
