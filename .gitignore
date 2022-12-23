@@ -24,4 +24,4 @@ Homestead.json
 phpunit.xml
 .idea
 
-tests/test_input/
+tests/test_input/cusips.csv
