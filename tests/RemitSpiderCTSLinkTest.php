@@ -16,6 +16,8 @@ class RemitSpiderCTSLinkTest extends TestCase {
     const TIMEZONE = 'America/New_York';
 
 
+
+
     private function _getNewSpider(){
 //        $this->spider = new USBankSpider\( $this->debug,
 //                                          $storagePath,
@@ -63,6 +65,9 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $spider->Login->login();
 
         //$html = $spider->FilesByCUSIP->getFilePathsByCUSIP($_ENV['CMBS_CUSIP']);
+
+        $html = $spider->FilesByCUSIP->getFilePathsByCUSIP($_ENV['CUSIP_NOT_FOUND']);
+
 
         $spider->Login->logout();
     }

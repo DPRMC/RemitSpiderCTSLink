@@ -77,7 +77,10 @@ class Login {
 
         // DEBUG
         $this->Debug->_screenshot( 'filled_in_user_pass' );
-        $this->Debug->_screenshot( 'where_i_clicked_to_login', new Clip( 0, 0, self::LOGIN_BUTTON_X, self::LOGIN_BUTTON_Y ) );
+        $this->Debug->_screenshot( 'where_i_clicked_to_login', new Clip( 0,
+                                                                         0,
+                                                                         self::LOGIN_BUTTON_X,
+                                                                         self::LOGIN_BUTTON_Y ) );
 
 
         // Click the login button, and wait for the page to reload.
@@ -97,7 +100,9 @@ class Login {
                 throw new NeedToResetPasswordException();
             endif;
 
-            throw new LoginTimedOutException( $exception->getMessage(), $exception->getCode(), $exception );
+            throw new LoginTimedOutException( $exception->getMessage(),
+                                              $exception->getCode(),
+                                              $exception );
         }
 
 
@@ -149,7 +154,8 @@ class Login {
             throw new WrongNumberOfTitleElementsException( $elements->count() . " were found. Should only see 1.",
                                                            0,
                                                            NULL,
-                                                           $elements );
+                                                           $elements,
+                                                           $html );
         endif;
 
 
