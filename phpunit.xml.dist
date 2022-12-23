@@ -21,6 +21,9 @@
     <php>
         <env name="CTS_USER" value="user"/>
         <env name="CTS_PASS" value="pass"/>
+        <env name="PATH_TO_DEBUG_SCREENSHOTS" value="/Users/foobar/PhpstormProjects/RemitSpiderCTSLink/tests/screenshots/"/>
+        <env name="PATH_TO_FILE_DOWNLOADS" value="/Users/foobar/PhpstormProjects/RemitSpiderCTSLink/tests/downloads/"/>
+
         <env name="PATH_TO_IDS" value="/path/to/ids"/>
         <env name="CHROME_PATH" value="/path/to/chromium"/>
         <env name="PORTFOLIO_ID" value="1"/>

@@ -29,12 +29,8 @@ class RemitSpiderCTSLinkTest extends TestCase {
                                                               $_ENV[ 'CTS_USER' ],
                                                               $_ENV[ 'CTS_PASS' ],
                                                               self::$debug,
-                                                              '',
-                                                              '',
-                                                              '',
-                                                              '',
-                                                              '',
-                                                              '/Users/michaeldrennen/Desktop/files',
+                                                              $_ENV['PATH_TO_DEBUG_SCREENSHOTS'],
+                                                              $_ENV['PATH_TO_FILE_DOWNLOADS'],
                                                               self::TIMEZONE );
     }
 
@@ -56,6 +52,23 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $this->assertInstanceOf( RemitSpiderCTSLink::class,
                                  $spider );
     }
+
+
+    /**
+     * @test
+     * @group login
+     */
+    public function testLogin() {
+        $spider = $this->_getSpider();
+        $spider->Login->login();
+
+        //$html = $spider->FilesByCUSIP->getFilePathsByCUSIP($_ENV['CMBS_CUSIP']);
+
+        $spider->Login->logout();
+    }
+
+
+
 
 
     /**

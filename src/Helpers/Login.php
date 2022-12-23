@@ -2,8 +2,13 @@
 
 namespace DPRMC\RemitSpiderCTSLink\Helpers;
 
+use DPRMC\RemitSpiderCTSLink\Exceptions\LoginTimedOutException;
+use DPRMC\RemitSpiderCTSLink\Exceptions\NeedToResetPasswordException;
+use DPRMC\RemitSpiderCTSLink\Exceptions\WrongNumberOfTitleElementsException;
+use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
 use HeadlessChromium\Clip;
 use HeadlessChromium\Cookies\CookiesCollection;
+use HeadlessChromium\Exception\OperationTimedOut;
 use HeadlessChromium\Page;
 
 /**
@@ -11,12 +16,19 @@ use HeadlessChromium\Page;
  */
 class Login {
 
-    const URL_LOGIN  = 'https://www.ctslink.com/';
-    const URL_LOGOUT = RemitSpiderUSBank::BASE_URL . '/TIR/logout';
+    const URL_LOGIN = 'https://www.ctslink.com/';
 
-    const LOGIN_BUTTON_X = 80;
-    const LOGIN_BUTTON_Y = 260;
-    const URL_INTERFACE  = RemitSpiderUSBank::BASE_URL . '/TIR/portfolios';
+    //https://wca.www.ctslink.com/wcaapi/login/auth/logout?appId=appcts&brandId=CTSLink&isWidget=true&sId=0e85f55c-1276-4aba-abe3-6e60578e7059
+    const URL_LOGOUT = 'https://wca.www.ctslink.com/wcaapi/login/auth/logout?appId=appcts&brandId=CTSLink&isWidget=true&sId=';
+
+    const LOGIN_BUTTON_X = 50;
+    const LOGIN_BUTTON_Y = 350;
+
+    const LOGOUT_BUTTON_X = 570;
+    const LOGOUT_BUTTON_Y = 25;
+
+
+    //const URL_INTERFACE  = RemitSpiderUSBank::BASE_URL . '/TIR/portfolios';
 
     protected Page   $Page;
     protected Debug  $Debug;
@@ -28,17 +40,11 @@ class Login {
     public CookiesCollection $cookies;
 
 
-    /**
-     * @param \HeadlessChromium\Page                 $Page
-     * @param \DPRMC\RemitSpiderUSBank\Helpers\Debug $Debug
-     * @param string                                 $user
-     * @param string                                 $pass
-     */
     public function __construct( Page   &$Page,
                                  Debug  &$Debug,
                                  string $user,
                                  string $pass,
-                                 string $timezone = RemitSpiderUSBank::DEFAULT_TIMEZONE ) {
+                                 string $timezone = RemitSpiderCTSLink::DEFAULT_TIMEZONE ) {
         $this->Page     = $Page;
         $this->Debug    = $Debug;
         $this->user     = $user;
@@ -66,8 +72,8 @@ class Login {
 
         $this->Debug->_screenshot( 'first_page' );
         $this->Debug->_debug( "Filling out user and pass." );
-        $this->Page->evaluate( "document.querySelector('#uname').value = '" . $this->user . "';" );
-        $this->Page->evaluate( "document.querySelector('#pword').value = '" . $this->pass . "';" );
+        $this->Page->evaluate( "document.querySelector('#user_id').value = '" . $this->user . "';" );
+        $this->Page->evaluate( "document.querySelector('#password').value = '" . $this->pass . "';" );
 
         // DEBUG
         $this->Debug->_screenshot( 'filled_in_user_pass' );
@@ -76,46 +82,84 @@ class Login {
 
         // Click the login button, and wait for the page to reload.
         $this->Debug->_debug( "Clicking the login button." );
-        $this->Page->mouse()
-                   ->move( self::LOGIN_BUTTON_X, self::LOGIN_BUTTON_Y )
-                   ->click();
-        $this->Page->waitForReload();
+
+        try {
+            $this->Page->mouse()
+                       ->move( self::LOGIN_BUTTON_X, self::LOGIN_BUTTON_Y )
+                       ->click();
+            $this->Page->waitForReload();
+        } catch ( OperationTimedOut $exception ) {
+            $this->Debug->_screenshot( 'i_am_not_logged_in' );
+            $this->Debug->_html( 'i_am_not_logged_in' );
+
+            $html = $this->Page->getHtml();
+            if ( $this->_needToResetPassword( $html ) ):
+                throw new NeedToResetPasswordException();
+            endif;
+
+            throw new LoginTimedOutException( $exception->getMessage(), $exception->getCode(), $exception );
+        }
+
 
         $this->Debug->_screenshot( 'am_i_logged_in' );
 
-        $this->Page->navigate( self::URL_INTERFACE )->waitForNavigation( Page::NETWORK_IDLE, 5000 );
-        $this->Debug->_screenshot( 'should_be_the_main_interface' );
         $this->cookies = $this->Page->getAllCookies();
         $postLoginHTML = $this->Page->getHtml();
 
-        if ( USBankBrowser::isForbidden( $postLoginHTML ) ):
-            throw new \Exception( "US Bank returned Forbidden: Access is denied", 403 );
-        endif;
-
-
-        $this->csrf = $this->getCSRF( $postLoginHTML );
         $this->Debug->_html( "post_login" );
-        $this->Debug->_debug( "CSRF saved to Login object." );
+
         return $postLoginHTML;
     }
 
 
-    /**
-     * @return bool
-     * @throws \HeadlessChromium\Exception\CommunicationException
-     * @throws \HeadlessChromium\Exception\CommunicationException\CannotReadResponse
-     * @throws \HeadlessChromium\Exception\CommunicationException\InvalidResponse
-     * @throws \HeadlessChromium\Exception\CommunicationException\ResponseHasError
-     * @throws \HeadlessChromium\Exception\FilesystemException
-     * @throws \HeadlessChromium\Exception\NavigationExpired
-     * @throws \HeadlessChromium\Exception\NoResponseAvailable
-     * @throws \HeadlessChromium\Exception\OperationTimedOut
-     * @throws \HeadlessChromium\Exception\ScreenshotFailed
-     */
     public function logout(): bool {
+
         $this->Page->navigate( self::URL_LOGOUT )->waitForNavigation();
         $this->Debug->_screenshot( 'loggedout' );
         return TRUE;
+
+        $this->Debug->_screenshot( 'about_to_logout' );
+        $this->Debug->_screenshot( 'where_i_click_to_logout', new Clip( 0, 0, self::LOGOUT_BUTTON_X, self::LOGOUT_BUTTON_Y ) );
+        $this->Debug->_debug( "Clicking the sign out button." );
+        $this->Page->mouse()
+                   ->move( self::LOGOUT_BUTTON_X, self::LOGOUT_BUTTON_Y )
+                   ->click();
+        //$this->Page->waitForReload();
+        sleep( 3 );
+        $this->Debug->_screenshot( 'am_i_logged_out' );
+        return TRUE;
+    }
+
+
+    /**
+     * @param string $html
+     * @return bool
+     * @throws WrongNumberOfTitleElementsException
+     */
+    protected function _needToResetPassword( string $html ): bool {
+        $dom = new \DOMDocument();
+        @$dom->loadHTML( $html );
+
+        /**
+         * @var \DOMNodeList $elements
+         */
+        $elements = $dom->getElementsByTagName( 'title' );
+
+        if ( 1 != $elements->count() ):
+            throw new WrongNumberOfTitleElementsException( $elements->count() . " were found. Should only see 1.",
+                                                           0,
+                                                           NULL,
+                                                           $elements );
+        endif;
+
+
+        $titleText = trim( $elements->item( 0 )->textContent );
+
+        if ( 'Reset Password' == $titleText ):
+            return TRUE;
+        endif;
+
+        return FALSE;
     }
 
 
