@@ -196,15 +196,16 @@ class CMBSDistributionFiles {
      * @return array
      */
     private function __getDistributionDateStatementRowData( \DOMElement $tr ): array {
-        $data = [];
-        $tds  = $tr->getElementsByTagName( 'td' );
-
+        $data  = [];
+        $tds   = $tr->getElementsByTagName( 'td' );
         $links = $tr->getElementsByTagName( 'a' );
 
         $data[ self::access ]         = $this->__weHaveAccessToDistributionFile( $tds->item( 1 )->textContent );
-        $data[ self::current_cycle ]  = trim( $tds->item( 2 )->textContent );
+        $data[ self::current_cycle ]  = $this->__getCurrentCycleDate( $tds->item( 2 )->textContent );
         $data[ self::next_cycle ]     = trim( $tds->item( 3 )->textContent );
         $data[ self::next_available ] = trim( $tds->item( 4 )->textContent );
+
+
         if ( $data[ self::access ] ):
             $data[ self::link_to_doc ]                = self::BASE_URL . $links->item( 0 )->getAttribute( 'href' );
             $data[ self::link_to_additional_history ] = self::BASE_URL . $links->item( 1 )->getAttribute( 'href' );
@@ -213,11 +214,19 @@ class CMBSDistributionFiles {
             $data[ self::link_to_additional_history ] = '';
         endif;
 
-
         $data[ self::revised_date ] = $this->__getRevisedDate( $tds->item( 2 )->textContent );
 
         return $data;
     }
+
+
+
+    private function __getCurrentCycleDate(string $textContent): string {
+        $parts = explode( ' ', trim( $textContent ) );
+        return trim($parts[0]);
+    }
+
+
 
     private function __getRevisedDate( string $textContent ): string {
         $pattern = '/REVISED/';
@@ -225,7 +234,7 @@ class CMBSDistributionFiles {
         if ( 1 !== $found ):
             return '';
         endif;
-        $parts = explode( ' ', $textContent );
+        $parts = explode( 'REVISED', trim( $textContent ) );
         return trim( $parts[ count( $parts ) - 1 ] );
     }
 
