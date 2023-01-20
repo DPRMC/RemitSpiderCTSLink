@@ -200,34 +200,33 @@ class CMBSDistributionFiles {
         $tds  = $tr->getElementsByTagName( 'td' );
 
         $links = $tr->getElementsByTagName( 'a' );
-        echo '---------------';
 
-        foreach($links as $i => $a):
-            var_dump($i);
-            print_r($a->getAttribute('href'));
-        endforeach;
-        echo '---------------';
+        $data[ self::access ]         = $this->__weHaveAccessToDistributionFile( $tds->item( 1 )->textContent );
+        $data[ self::current_cycle ]  = trim( $tds->item( 2 )->textContent );
+        $data[ self::next_cycle ]     = trim( $tds->item( 3 )->textContent );
+        $data[ self::next_available ] = trim( $tds->item( 4 )->textContent );
+        if ( $data[ self::access ] ):
+            $data[ self::link_to_doc ]                = self::BASE_URL . $links->item( 0 )->getAttribute( 'href' );
+            $data[ self::link_to_additional_history ] = self::BASE_URL . $links->item( 1 )->getAttribute( 'href' );
+        else:
+            $data[ self::link_to_doc ]                = '';
+            $data[ self::link_to_additional_history ] = '';
+        endif;
 
-        $data[ self::access ]                     = $this->__weHaveAccessToDistributionFile( $tds->item( 1 )->textContent );
-        $data[ self::current_cycle ]              = trim( $tds->item( 2 )->textContent );
-        $data[ self::next_cycle ]                 = trim( $tds->item( 3 )->textContent );
-        $data[ self::next_available ]             = trim( $tds->item( 4 )->textContent );
-        $data[ self::link_to_doc ]                = $tds->item( 1 )->getAttribute( 'href' );
-        $data[ self::link_to_additional_history ] = $tds->item( 5 )->getAttribute( 'href' );
 
-        $data[self::revised_date] = $this->__getRevisedDate($tds->item( 2 )->textContent);
+        $data[ self::revised_date ] = $this->__getRevisedDate( $tds->item( 2 )->textContent );
 
         return $data;
     }
 
-    private function __getRevisedDate(string $textContent): string {
+    private function __getRevisedDate( string $textContent ): string {
         $pattern = '/REVISED/';
         $found   = preg_match( $pattern, $textContent, $matches );
         if ( 1 !== $found ):
             return '';
         endif;
-        $parts = explode(' ', $textContent);
-        return trim($parts[count($parts)-1]);
+        $parts = explode( ' ', $textContent );
+        return trim( $parts[ count( $parts ) - 1 ] );
     }
 
 
