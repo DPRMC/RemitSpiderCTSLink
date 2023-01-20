@@ -2,6 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
+
 /**
  * To run tests call:
  * php ./vendor/phpunit/phpunit/phpunit --group=first
@@ -16,24 +17,21 @@ class RemitSpiderCTSLinkTest extends TestCase {
     const TIMEZONE = 'America/New_York';
 
 
-
-
-    private function _getNewSpider(){
+    private function _getNewSpider() {
 //        $this->spider = new USBankSpider\( $this->debug,
 //                                          $storagePath,
 //                                          $this->timezone );
     }
 
 
-
     private function _getSpider(): RemitSpiderCTSLink {
         return new RemitSpiderCTSLink( $_ENV[ 'CHROME_PATH' ],
-                                                              $_ENV[ 'CTS_USER' ],
-                                                              $_ENV[ 'CTS_PASS' ],
-                                                              self::$debug,
-                                                              $_ENV['PATH_TO_DEBUG_SCREENSHOTS'],
-                                                              $_ENV['PATH_TO_FILE_DOWNLOADS'],
-                                                              self::TIMEZONE );
+                                       $_ENV[ 'CTS_USER' ],
+                                       $_ENV[ 'CTS_PASS' ],
+                                       self::$debug,
+                                       $_ENV[ 'PATH_TO_DEBUG_SCREENSHOTS' ],
+                                       $_ENV[ 'PATH_TO_FILE_DOWNLOADS' ],
+                                       self::TIMEZONE );
     }
 
     public static function setUpBeforeClass(): void {
@@ -43,6 +41,10 @@ class RemitSpiderCTSLinkTest extends TestCase {
 
     public static function tearDownAfterClass(): void {
 
+    }
+
+    protected function _getCUSIPList(): array {
+        return file( getcwd() . '/tests/test_input/cusips.csv' );
     }
 
 
@@ -66,17 +68,74 @@ class RemitSpiderCTSLinkTest extends TestCase {
 
         //$html = $spider->FilesByCUSIP->getFilePathsByCUSIP($_ENV['CMBS_CUSIP']);
 
-        $html = $spider->FilesByCUSIP->getFilePathsByCUSIP($_ENV['CUSIP_NOT_FOUND']);
+        $numFound = 0;
+        $numMissing = 0;
+
+        $cusips = $this->_getCUSIPList();
+        foreach ( $cusips as $cusip ):
+            try {
+                $html = $spider->FilesByCUSIP->getFilePathsByCUSIP( $cusip );
+                $numFound++;
+            } catch ( \DPRMC\RemitSpiderCTSLink\Exceptions\CUSIPNotFoundException $exception ) {
+                echo $exception->cusip;
+                $numMissing++;
+            }
+        endforeach;
+        //
+
+        echo "\nNum found: " . $numFound;
+        echo "\nNum missing: " . $numMissing;
 
 
         $spider->Login->logout();
     }
 
 
+    /**
+     * @test
+     * @group pdf
+     */
+    public function testParsePDF() {
+        ini_set('memory_limit', -1);
+        $filePath = getcwd() . '/tests/test_input/BAMLC_2018BNK12_DDST.pdf';
+        $fileContents = file_get_contents($filePath);
 
+        $parser      = new \Smalot\PdfParser\Parser();
+        $pdf         = $parser->parseContent( $fileContents );
+
+        $pages        = $pdf->getPages();
+
+        echo "\nThere are " . count($pages) . " pages.";
+
+        /**
+         * @var \Smalot\PdfParser\Page $page
+         */
+        $page = $pages[0];
+        print_r($page->getTextArray($page));
+
+        $page = $pages[1];
+        print_r($page->getTextArray($page));
+
+
+
+    }
 
 
     /**
+     * @test
+     * @group cmbs
+     */
+    public function testGetCMBSDistributionFiles(){
+        $link = 'https://www.ctslink.com/a/shelflist.html?shelfType=CMBS';
+        $spider = $this->_getSpider();
+        $spider->Login->login();
+        $allRecentCMBSDistributionFiles = $spider->CMBSDistributionFiles->getAllRecentCMBSDistributionFiles();
+        $this->assertNotEmpty($allRecentCMBSDistributionFiles);
+    }
+
+
+
+        /**
      * @test
      * @group all
      */

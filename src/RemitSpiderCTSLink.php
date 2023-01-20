@@ -6,6 +6,7 @@ use DPRMC\RemitSpiderCTSLink\Helpers\CTSLinkBrowser;
 use DPRMC\RemitSpiderCTSLink\Helpers\Debug;
 use DPRMC\RemitSpiderCTSLink\Helpers\FilesByCUSIP;
 use DPRMC\RemitSpiderCTSLink\Helpers\Login;
+use DPRMC\RemitSpiderCTSLink\Helpers\CMBSDistributionFiles;
 use HeadlessChromium\Cookies\CookiesCollection;
 use HeadlessChromium\Page;
 
@@ -23,10 +24,11 @@ class RemitSpiderCTSLink {
     /**
      * @var CTSLinkBrowser
      */
-    public CTSLinkBrowser $CTSLinkBrowser;
-    public Debug          $Debug;
-    public Login          $Login;
-    public FilesByCUSIP   $FilesByCUSIP;
+    public CTSLinkBrowser        $CTSLinkBrowser;
+    public Debug                 $Debug;
+    public Login                 $Login;
+    public FilesByCUSIP          $FilesByCUSIP;
+    public CMBSDistributionFiles $CMBSDistributionFiles;
 //    public Portfolios                  $Portfolios;
 //    public Deals                       $Deals;
 //    public HistoryLinks                $HistoryLinks;
@@ -98,6 +100,10 @@ class RemitSpiderCTSLink {
         $this->FilesByCUSIP = new FilesByCUSIP( $this->CTSLinkBrowser->page,
                                                 $this->Debug,
                                                 $this->timezone );
+
+        $this->CMBSDistributionFiles = new CMBSDistributionFiles( $this->CTSLinkBrowser->page,
+                                                                  $this->Debug,
+                                                                  $this->timezone );
 
 //        $this->Portfolios = new Portfolios( $this->USBankBrowser->page,
 //                                            $this->Debug,
