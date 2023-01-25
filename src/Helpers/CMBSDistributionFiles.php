@@ -46,7 +46,6 @@ class CMBSDistributionFiles {
     const revised_date               = 'revised_date';
 
 
-    const MAX_TIMES_TO_CHECK_FOR_DOWNLOAD_BEFORE_GIVING_UP = 10;
 
 
     /**
@@ -265,54 +264,7 @@ class CMBSDistributionFiles {
 
 
     protected function _getDistributionFile( string $href, string $tempPathToStoreDownloadedFiles, string $finalDownloadPath = '/' ) {
-        $this->Page->setDownloadPath( $tempPathToStoreDownloadedFiles );
 
-
-        // Since there is no *easy* way for Headless Chromium to let us know the name of the downloaded file...
-        // My solution is to create a temporary unique directory to set as the download path for Headless Chromium.
-        // After the download, there should be only one file in there.
-        // Get the name of that file, and munge it as I see fit.
-        $md5OfHREF                   = md5( $href );                                                          // This should always be unique.
-        $absolutePathToStoreTempFile = $tempPathToStoreDownloadedFiles . DIRECTORY_SEPARATOR . $md5OfHREF;    // This DIR will end up having one file.
-
-        $this->Page->navigate( $href );
-
-        $checkCount = 0;
-        do {
-            $checkCount++;
-
-            $locale            = 'en_US';
-            $nf                = new \NumberFormatter( $locale, \NumberFormatter::ORDINAL );
-            $ordinalCheckCount = $nf->format( $checkCount );
-
-            $this->Debug->_debug( "  Checking for the " . $ordinalCheckCount . " time." );
-            sleep( 1 );
-            $files = scandir( $absolutePathToStoreTempFile );
-
-            if ( $checkCount >= self::MAX_TIMES_TO_CHECK_FOR_DOWNLOAD_BEFORE_GIVING_UP ):
-                $this->Debug->_debug( "  I have already checked " . $checkCount . " times. Enough is enough. Skipping it." );
-                break;
-            endif;
-        } while ( ! $this->_downloadComplete( $files ) );
-
-
-        $fileName = $this->_getFilenameFromFiles( $files );
-        $this->Debug->_debug( "  Done checking. I found the file: " . $fileName );
-
-        $contents = file_get_contents( $absolutePathToStoreTempFile . DIRECTORY_SEPARATOR . $fileName );
-
-        $absolutePathToStoreFinalFile = $finalDownloadPath . DIRECTORY_SEPARATOR . $finalReportName;
-        $bytesWritten                 = file_put_contents( $absolutePathToStoreFinalFile, $contents );
-
-
-        if ( FALSE === $bytesWritten ):
-            throw new \Exception( "  Unable to write file to " . $absolutePathToStoreFinalFile );
-        else:
-            $this->Debug->_debug( "  " . $bytesWritten . " bytes written into " . $absolutePathToStoreFinalFile );
-        endif;
-
-        $this->Debug->_debug( "  Attempting to delete the TEMP directory and file at: " . $absolutePathToStoreTempFile );
-        $this->_deleteTempDirectoryAndFile( $absolutePathToStoreTempFile );
     }
 
 
