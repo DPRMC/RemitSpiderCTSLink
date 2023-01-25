@@ -68,7 +68,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
 
         //$html = $spider->FilesByCUSIP->getFilePathsByCUSIP($_ENV['CMBS_CUSIP']);
 
-        $numFound = 0;
+        $numFound   = 0;
         $numMissing = 0;
 
         $cusips = $this->_getCUSIPList();
@@ -96,26 +96,25 @@ class RemitSpiderCTSLinkTest extends TestCase {
      * @group pdf
      */
     public function testParsePDF() {
-        ini_set('memory_limit', -1);
-        $filePath = getcwd() . '/tests/test_input/BAMLC_2018BNK12_DDST.pdf';
-        $fileContents = file_get_contents($filePath);
+        ini_set( 'memory_limit', -1 );
+        $filePath     = getcwd() . '/tests/test_input/BAMLC_2018BNK12_DDST.pdf';
+        $fileContents = file_get_contents( $filePath );
 
-        $parser      = new \Smalot\PdfParser\Parser();
-        $pdf         = $parser->parseContent( $fileContents );
+        $parser = new \Smalot\PdfParser\Parser();
+        $pdf    = $parser->parseContent( $fileContents );
 
-        $pages        = $pdf->getPages();
+        $pages = $pdf->getPages();
 
-        echo "\nThere are " . count($pages) . " pages.";
+        echo "\nThere are " . count( $pages ) . " pages.";
 
         /**
          * @var \Smalot\PdfParser\Page $page
          */
-        $page = $pages[0];
-        print_r($page->getTextArray($page));
+        $page = $pages[ 0 ];
+        print_r( $page->getTextArray( $page ) );
 
-        $page = $pages[1];
-        print_r($page->getTextArray($page));
-
+        $page = $pages[ 1 ];
+        print_r( $page->getTextArray( $page ) );
 
 
     }
@@ -125,17 +124,50 @@ class RemitSpiderCTSLinkTest extends TestCase {
      * @test
      * @group cmbs
      */
-    public function testGetCMBSDistributionFiles(){
-        $link = 'https://www.ctslink.com/a/shelflist.html?shelfType=CMBS';
+//    public function testGetCMBSDistributionFiles(){
+//        $link = 'https://www.ctslink.com/a/shelflist.html?shelfType=CMBS';
+//        $spider = $this->_getSpider();
+//        $spider->Login->login();
+//        $allRecentCMBSDistributionFiles = $spider->CMBSDistributionFiles->getAllRecentCMBSDistributionFiles();
+//        $this->assertNotEmpty($allRecentCMBSDistributionFiles);
+//    }
+
+
+    /**
+     * @test
+     * @group cmbs-shelf-links
+     */
+    public function testGetShelfLinks() {
         $spider = $this->_getSpider();
+        $spider->disableDebug();
         $spider->Login->login();
-        $allRecentCMBSDistributionFiles = $spider->CMBSDistributionFiles->getAllRecentCMBSDistributionFiles();
-        $this->assertNotEmpty($allRecentCMBSDistributionFiles);
+        $shelfLinks = $spider->CMBSDistributionFiles->getShelfLinks();
+        $this->assertNotEmpty( $shelfLinks );
+    }
+
+
+    /**
+     * @test
+     * @group cmbs-dist-data
+     */
+    public function testGetCMBSDistributionFiles() {
+        $spider = $this->_getSpider();
+        $spider->disableDebug();
+        $spider->Login->login();
+        $shelfLinks = $spider->CMBSDistributionFiles->getShelfLinks();
+
+        $subsetOfShelfLinks = array_slice( $shelfLinks, 0, 10 );
+        foreach($subsetOfShelfLinks as $href):
+            $data = $spider->CMBSDistributionFiles->getDistributionDateStatementDataFromLink($href);
+            echo "\n\n\n" . $href . "\n";
+            print_r($data);
+            $this->assertNotEmpty($data);
+        endforeach;
     }
 
 
 
-        /**
+    /**
      * @test
      * @group all
      */

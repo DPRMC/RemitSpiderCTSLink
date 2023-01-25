@@ -151,5 +151,15 @@ class RemitSpiderCTSLink {
 //        endif;
 //    }
 
+    public function enableDebug(): void {
+        $this->debug = TRUE;
+        $this->Debug->enableDebug();
+    }
+
+    public function disableDebug(): void {
+        $this->debug = FALSE;
+        $this->Debug->disableDebug();
+    }
+
 
 }

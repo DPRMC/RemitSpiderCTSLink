@@ -8,6 +8,13 @@ use DPRMC\RemitSpiderCTSLink\Exceptions\WrongNumberOfTitleElementsException;
 use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
 use HeadlessChromium\Clip;
 use HeadlessChromium\Cookies\CookiesCollection;
+use HeadlessChromium\Exception\CommunicationException;
+use HeadlessChromium\Exception\CommunicationException\CannotReadResponse;
+use HeadlessChromium\Exception\CommunicationException\InvalidResponse;
+use HeadlessChromium\Exception\CommunicationException\ResponseHasError;
+use HeadlessChromium\Exception\NavigationExpired;
+use HeadlessChromium\Exception\NoResponseAvailable;
+use HeadlessChromium\Exception\OperationTimedOut;
 use HeadlessChromium\Page;
 
 /**
@@ -39,6 +46,7 @@ class CMBSDistributionFiles {
     const revised_date               = 'revised_date';
 
 
+    const MAX_TIMES_TO_CHECK_FOR_DOWNLOAD_BEFORE_GIVING_UP = 10;
 
 
     /**
@@ -58,73 +66,131 @@ class CMBSDistributionFiles {
         $this->timezone = $timezone;
     }
 
-    public function getLinksWeWereUnableToPull(): array {
-        return $this->linksWeWereUnableToPull;
-    }
 
-
-
-    public function getAllRecentCMBSDistributionFileData(): array {
-        $distributionFileData = [];
-
+    /**
+     * Step one in the process.
+     * We should already be logged in by the Spider at this point.
+     * If there is ONLY one SERIES under a SHELF then this "shelf link" could
+     * indeed be a link to a SERIES page. No way to know until you navigate to it.
+     * @return array Ex: https://www.ctslink.com/a/serieslist.html?shelfId=ZHD
+     * @throws \HeadlessChromium\Exception\CommunicationException
+     * @throws \HeadlessChromium\Exception\CommunicationException\CannotReadResponse
+     * @throws \HeadlessChromium\Exception\CommunicationException\InvalidResponse
+     * @throws \HeadlessChromium\Exception\CommunicationException\ResponseHasError
+     * @throws \HeadlessChromium\Exception\NavigationExpired
+     * @throws \HeadlessChromium\Exception\NoResponseAvailable
+     * @throws \HeadlessChromium\Exception\OperationTimedOut
+     */
+    public function getShelfLinks(): array {
         $this->Page->navigate( self::CMBS_MAIN_PAGE )->waitForNavigation();
+        $cmbsHTML   = $this->Page->getHtml();
+        $shelfLinks = [];
 
-        $cmbsHTML = $this->Page->getHtml();
+        $dom = new \DOMDocument();
+        @$dom->loadHTML( $cmbsHTML );
 
-        $shelfLinks = $this->getShelfLinksFromHTML( $cmbsHTML );
+        /**
+         * @var \DOMNodeList $elements
+         */
+        $elements = $dom->getElementsByTagName( 'a' );
 
-        foreach ( $shelfLinks as $i => $link ):
-            $this->Debug->_debug( " " . $i . " of " . count($shelfLinks) . " " . $link );
-            try {
-                $this->Debug->_debug( " SHELF LINK: " . $link );
-
-                $this->Page->navigate( $link )->waitForNavigation();
-                $html = $this->Page->getHtml();
-
-                // If this link leads to a SERIES page, then we can start looking for
-                // a link to a recent Distribution File page.
-                if ( $this->_isSeriesPage( $html ) ):
-                    $distributionFileData[] = $this->_getDistributionDateStatementData( $html, $link );
-                else:
-                    $seriesLinks = $this->_getSeriesLinksFromShelfPageHtml( $html );
-                    foreach ( $seriesLinks as $seriesLink ):
-                        $this->Page->navigate( $seriesLink )->waitForNavigation();
-                        $html = $this->Page->getHtml();
-                        if ( $this->_isSeriesPage( $html ) ):
-                            $distributionFileData[] = $this->_getDistributionDateStatementData( $html, $seriesLink );
-                        else:
-                            $this->Debug->_debug( "WTF is: " . $seriesLink );
-                        endif;
-                    endforeach;
-                endif;
-            } catch (\HeadlessChromium\Exception\OperationTimedOut $exception) {
-                $this->Debug->_debug($exception->getMessage());
-                $this->Debug->_debug($link);
-                $this->linksWeWereUnableToPull[] = $link;
-            } catch (\Exception $exception) {
-                $this->Debug->_debug($exception->getMessage());
-            }
-        endforeach;
-
-
-        $filesWeHaveAccessTo = [];
-        foreach($distributionFileData as $fileData):
-            if($fileData[self::access]):
-                $filesWeHaveAccessTo[] = $fileData;
+        foreach ( $elements as $element ):
+            $href = $element->getAttribute( 'href' );
+            if ( $this->_isShelfLinkOnCMBSPage( $href ) ):
+                $this->Debug->_debug( $href );
+                $shelfLinks[] = self::BASE_URL . $href;
             endif;
         endforeach;
 
-        return $filesWeHaveAccessTo;
+        return $shelfLinks;
     }
 
 
-    public function getAllRecentCMBSDistributionFiles(): array {
-        $distributionFiles = [];
-        $filesWeHaveAccessTo = $this->getAllRecentCMBSDistributionFileData();
+    /**
+     * Step two in the process.
+     * Given a SHELF href (or potentially SERIES href if there is only 1 SERIES under that SHELF)
+     * This method will return all the Distribution Date Statement Data.
+     * Given all of that data, the calling script can determine which PDFs it downloads.
+     * @param string $href
+     * @return array
+     * @throws CannotReadResponse
+     * @throws CommunicationException
+     * @throws InvalidResponse
+     * @throws NavigationExpired
+     * @throws NoResponseAvailable
+     * @throws OperationTimedOut
+     * @throws ResponseHasError
+     */
+    public function getDistributionDateStatementDataFromLink( string $href ): array {
+        $distributionFileData = [];
+        $this->Page->navigate( $href )->waitForNavigation();
+        $html = $this->Page->getHtml();
 
-        // TODO add code to download PDFs.
+        if ( $this->_isSeriesPage( $html ) ):
+            $seriesData = $this->_getSecurityNamePartsFromHtmlOnSeriesPage( $html, $href );
 
-        return $distributionFiles;
+            $newDistributionFileData = $this->_getDistributionDateStatementDataFromHtml( $html, $seriesData, $href );
+            if ( $newDistributionFileData ):
+                $distributionFileData = array_merge( $distributionFileData, $newDistributionFileData );
+            endif;
+        else:
+            $seriesLinks = $this->_getSeriesLinksFromShelfPageHtml( $html );
+            foreach ( $seriesLinks as $seriesLink ):
+                $this->Page->navigate( $seriesLink )->waitForNavigation();
+                $html = $this->Page->getHtml();
+                if ( $this->_isSeriesPage( $html ) ):
+                    $seriesData = $this->_getSecurityNamePartsFromHtmlOnSeriesPage( $html, $seriesLink );
+
+                    $newDistributionFileData = $this->_getDistributionDateStatementDataFromHtml( $html, $seriesData, $seriesLink );
+                    if ( $newDistributionFileData ):
+                        $distributionFileData = array_merge( $distributionFileData, $newDistributionFileData );
+                    endif;
+                else:
+                    $this->Debug->_debug( "WTF is: " . $seriesLink );
+                endif;
+            endforeach;
+
+        endif;
+
+        return $distributionFileData;
+    }
+
+
+    /**
+     * @param string $html
+     * @param array $seriesData
+     * @param string $href
+     * @return array
+     */
+    protected function _getDistributionDateStatementDataFromHtml( string $html, array $seriesData, string $href ): array {
+        $data = [];
+        $dom  = new \DOMDocument();
+        @$dom->loadHTML( $html );
+
+        /**
+         * @var \DOMNodeList $trs
+         */
+        $trs = $dom->getElementsByTagName( 'tr' );
+        //$this->Debug->_debug( "TR - found this many: " . $trs->count() );
+
+        /**
+         * @var \DOMElement $tr
+         */
+        foreach ( $trs as $tr ):
+            if ( $this->_rowContainsDistributionFile( $tr ) ):
+                $rowData                 = $this->__getDistributionDateStatementRowData( $tr, $href );
+                $rowData[ self::type ]   = $seriesData[ self::type ];
+                $rowData[ self::shelf ]  = $seriesData[ self::shelf ];
+                $rowData[ self::series ] = $seriesData[ self::series ];
+                $data[]                  = $rowData;
+            endif;
+        endforeach;
+        return $data;
+    }
+
+
+    public function getLinksWeWereUnableToPull(): array {
+        return $this->linksWeWereUnableToPull;
     }
 
 
@@ -166,6 +232,9 @@ class CMBSDistributionFiles {
     /**
      * If this page is a series page, then the string "Restricted Report"
      * will be in an H2 element towards the top of the page.
+     * The SERIES page will have the links to the PDFs.
+     * The alternative is a SHELF page, that will have a bunch of links to
+     * SERIES pages.
      * @param string $html
      * @return bool
      */
@@ -176,33 +245,6 @@ class CMBSDistributionFiles {
             return FALSE;
         endif;
         return TRUE;
-    }
-
-
-    /**
-     * @param string $html
-     * @return array Ex: https://www.ctslink.com/a/serieslist.html?shelfId=ZHD
-     */
-    public function getShelfLinksFromHTML( string $html ): array {
-        $shelfLinks = [];
-
-        $dom = new \DOMDocument();
-        @$dom->loadHTML( $html );
-
-        /**
-         * @var \DOMNodeList $elements
-         */
-        $elements = $dom->getElementsByTagName( 'a' );
-
-        foreach ( $elements as $element ):
-            $href = $element->getAttribute( 'href' );
-            if ( $this->_isShelfLinkOnCMBSPage( $href ) ):
-                $this->Debug->_debug( $href );
-                $shelfLinks[] = self::BASE_URL . $href;
-            endif;
-        endforeach;
-
-        return $shelfLinks;
     }
 
 
@@ -222,68 +264,110 @@ class CMBSDistributionFiles {
     }
 
 
-    protected function _getDistributionFile( string $html, string $href ) {
-        $distributionFile = '';
-        //$this->Debug->_debug( "Getting shelf links from a SERIES PAGE." );
-
-        //$distributionFileData = $this->_getDistributionDateStatementData( $html, $href );
-
-        //print_r( $distributionFileData );
+    protected function _getDistributionFile( string $href, string $tempPathToStoreDownloadedFiles, string $finalDownloadPath = '/' ) {
+        $this->Page->setDownloadPath( $tempPathToStoreDownloadedFiles );
 
 
-////            var_dump(get_class($row));
-////        die();
-//            $href = $row->get( 'href' );
-//            //if ( $this->_isSeriesLink( $href ) ):
-//            $this->Debug->_debug( $href );
+        // Since there is no *easy* way for Headless Chromium to let us know the name of the downloaded file...
+        // My solution is to create a temporary unique directory to set as the download path for Headless Chromium.
+        // After the download, there should be only one file in there.
+        // Get the name of that file, and munge it as I see fit.
+        $md5OfHREF                   = md5( $href );                                                          // This should always be unique.
+        $absolutePathToStoreTempFile = $tempPathToStoreDownloadedFiles . DIRECTORY_SEPARATOR . $md5OfHREF;    // This DIR will end up having one file.
 
-        //endif;
-//        endforeach;
+        $this->Page->navigate( $href );
 
-        return $distributionFile;
-    }
+        $checkCount = 0;
+        do {
+            $checkCount++;
 
+            $locale            = 'en_US';
+            $nf                = new \NumberFormatter( $locale, \NumberFormatter::ORDINAL );
+            $ordinalCheckCount = $nf->format( $checkCount );
 
-    private function _getDistributionDateStatementData( string $html, string $href ): array {
-//        $this->Debug->_html( md5( $html ) );
-//        $this->Debug->_screenshot( md5( $html ) );
-        $seriesData = $this->_getSecurityNamePartsFromHtml( $html, $href );
+            $this->Debug->_debug( "  Checking for the " . $ordinalCheckCount . " time." );
+            sleep( 1 );
+            $files = scandir( $absolutePathToStoreTempFile );
 
-        $data = [];
-        $dom  = new \DOMDocument();
-        @$dom->loadHTML( $html );
-
-        /**
-         * @var \DOMNodeList $trs
-         */
-        $trs = $dom->getElementsByTagName( 'tr' );
-        //$this->Debug->_debug( "TR - found this many: " . $trs->count() );
-
-        /**
-         * @var \DOMElement $tr
-         */
-        foreach ( $trs as $tr ):
-            if ( $this->_rowContainsDistributionFile( $tr ) ):
-                $rowData                 = $this->__getDistributionDateStatementRowData( $tr, $href );
-                $rowData[ self::type ]   = $seriesData[ self::type ];
-                $rowData[ self::shelf ]  = $seriesData[ self::shelf ];
-                $rowData[ self::series ] = $seriesData[ self::series ];
-                $data[] = $rowData;
+            if ( $checkCount >= self::MAX_TIMES_TO_CHECK_FOR_DOWNLOAD_BEFORE_GIVING_UP ):
+                $this->Debug->_debug( "  I have already checked " . $checkCount . " times. Enough is enough. Skipping it." );
+                break;
             endif;
-        endforeach;
+        } while ( ! $this->_downloadComplete( $files ) );
 
-        return $data;
+
+        $fileName = $this->_getFilenameFromFiles( $files );
+        $this->Debug->_debug( "  Done checking. I found the file: " . $fileName );
+
+        $contents = file_get_contents( $absolutePathToStoreTempFile . DIRECTORY_SEPARATOR . $fileName );
+
+        $absolutePathToStoreFinalFile = $finalDownloadPath . DIRECTORY_SEPARATOR . $finalReportName;
+        $bytesWritten                 = file_put_contents( $absolutePathToStoreFinalFile, $contents );
+
+
+        if ( FALSE === $bytesWritten ):
+            throw new \Exception( "  Unable to write file to " . $absolutePathToStoreFinalFile );
+        else:
+            $this->Debug->_debug( "  " . $bytesWritten . " bytes written into " . $absolutePathToStoreFinalFile );
+        endif;
+
+        $this->Debug->_debug( "  Attempting to delete the TEMP directory and file at: " . $absolutePathToStoreTempFile );
+        $this->_deleteTempDirectoryAndFile( $absolutePathToStoreTempFile );
     }
 
 
     /**
+     * Headless Chromium creates a temp file ending with '.crdownload' that it streams the data into.
+     * Don't count that file.
+     * If the download is not complete, then set the $files var to an empty array to force
+     * the code to stay in the DoWhile loop.
+     *
+     * @param array $files
+     *
+     * @return bool
+     */
+    private function _downloadComplete( array $files ): bool {
+        array_shift( $files ); // Remove .
+        array_shift( $files ); // Remove ..
+
+        if ( ! isset( $files[ 0 ] ) ):
+            return FALSE;
+        endif;
+        $fileName = $files[ 0 ];
+
+        $needle = '.crdownload';
+        if ( str_ends_with( $fileName, $needle ) ):
+            return FALSE;
+        endif;
+        return TRUE;
+    }
+
+    /**
+     * @param array $files An array of files from the scandir() call above.
+     *
+     * @return string The filename of the downloaded file from US Bank.
+     * @throws \Exception This should never happen because of error checking above where this method is called.
+     */
+    protected function _getFilenameFromFiles( array $files ): string {
+        array_shift( $files ); // Remove .
+        array_shift( $files ); // Remove ..
+        if ( ! isset( $files[ 0 ] ) ):
+            throw new \Exception( "Unable to find the downloaded file in the files array." );
+        endif;
+
+        return $files[ 0 ];
+    }
+
+
+    /**
+     * This method assumes that $href refers to a SERIES page.
      * @param string $html
-     * @param string $href
+     * @param string $href A link to a SERIES page.
      * @return array
      * @throws \Exception
      */
-    private function _getSecurityNamePartsFromHtml( string $html, string $href ): array {
-        $dom  = new \DOMDocument();
+    private function _getSecurityNamePartsFromHtmlOnSeriesPage( string $html, string $href ): array {
+        $dom = new \DOMDocument();
         @$dom->loadHTML( $html );
         $xpath     = new \DOMXPath( $dom );
         $classname = 'c67';
