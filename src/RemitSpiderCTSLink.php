@@ -4,6 +4,7 @@ namespace DPRMC\RemitSpiderCTSLink;
 
 use DPRMC\RemitSpiderCTSLink\Helpers\CTSLinkBrowser;
 use DPRMC\RemitSpiderCTSLink\Helpers\Debug;
+use DPRMC\RemitSpiderCTSLink\Helpers\FileDownloader;
 use DPRMC\RemitSpiderCTSLink\Helpers\FilesByCUSIP;
 use DPRMC\RemitSpiderCTSLink\Helpers\Login;
 use DPRMC\RemitSpiderCTSLink\Helpers\CMBSDistributionFiles;
@@ -27,6 +28,7 @@ class RemitSpiderCTSLink {
     public CTSLinkBrowser        $CTSLinkBrowser;
     public Debug                 $Debug;
     public Login                 $Login;
+    public FileDownloader        $FileDownloader;
     public FilesByCUSIP          $FilesByCUSIP;
     public CMBSDistributionFiles $CMBSDistributionFiles;
 //    public Portfolios                  $Portfolios;
@@ -68,7 +70,6 @@ class RemitSpiderCTSLink {
     protected int $maxTimesToCheckForDownloadBeforeGivingUp = 10;
 
 
-
     public function __construct( string $chromePath,
                                  string $user,
                                  string $pass,
@@ -100,6 +101,10 @@ class RemitSpiderCTSLink {
                                   $user,
                                   $pass,
                                   $this->timezone );
+
+        $this->FileDownloader = new FileDownloader( $this->CTSLinkBrowser->page,
+                                                    $this->Debug,
+                                                    $this->timezone );
 
         $this->FilesByCUSIP = new FilesByCUSIP( $this->CTSLinkBrowser->page,
                                                 $this->Debug,
@@ -137,7 +142,7 @@ class RemitSpiderCTSLink {
 //                                                                         $this->timezone );
     }
 
-    public function setMaxTimesToCheckForDownloadBeforeGivingUp(int $value): void {
+    public function setMaxTimesToCheckForDownloadBeforeGivingUp( int $value ): void {
         $this->maxTimesToCheckForDownloadBeforeGivingUp = $value;
     }
 
@@ -169,140 +174,6 @@ class RemitSpiderCTSLink {
         $this->Debug->disableDebug();
     }
 
-    public function downloadFile(string $hrefOfFileToDownload, string $tempDownloadPath, string $finalDownloadPath, string $newFileName = ''): string {
-        $this->CTSLinkBrowser->page->setDownloadPath( $tempDownloadPath );
 
-
-
-        // Since there is no *easy* way for Headless Chromium to let us know the name of the downloaded file...
-        // My solution is to create a temporary unique directory to set as the download path for Headless Chromium.
-        // After the download, there should be only one file in there.
-        // Get the name of that file, and munge it as I see fit.
-        $md5OfHREF                   = md5( $hrefOfFileToDownload ); // This should always be unique.
-        $absolutePathToStoreTempFile = $tempDownloadPath . DIRECTORY_SEPARATOR . $md5OfHREF;    // This DIR will end up having one file.
-
-        $this->_createTempDirectoryForDownloadedFile( $absolutePathToStoreTempFile );
-
-        $this->CTSLinkBrowser->page->navigate( $hrefOfFileToDownload );
-
-        $checkCount = 0;
-        do {
-            $checkCount++;
-
-            $locale            = 'en_US';
-            $nf                = new \NumberFormatter( $locale, \NumberFormatter::ORDINAL );
-            $ordinalCheckCount = $nf->format( $checkCount );
-
-            $this->Debug->_debug( "  Checking for the " . $ordinalCheckCount . " time." );
-            sleep( 1 );
-            $files = scandir( $absolutePathToStoreTempFile );
-
-            if ( $checkCount >= $this->maxTimesToCheckForDownloadBeforeGivingUp ):
-                $this->Debug->_debug( "  I have already checked " . $checkCount . " times. Enough is enough. Skipping it." );
-                break;
-            endif;
-        } while ( ! $this->_downloadComplete( $files ) );
-
-
-        $fileName = $this->_getFilenameFromFiles( $files );
-        $this->Debug->_debug( "  Done checking. I found the file: " . $fileName );
-
-        $contents = file_get_contents( $absolutePathToStoreTempFile . DIRECTORY_SEPARATOR . $fileName );
-
-
-        if( $newFileName ):
-            $finalReportName = $newFileName;
-        else:
-            $finalReportName = $fileName;
-        endif;
-        $absolutePathToStoreFinalFile = $finalDownloadPath . DIRECTORY_SEPARATOR . $finalReportName;
-        $bytesWritten                 = file_put_contents( $absolutePathToStoreFinalFile, $contents );
-
-        if ( FALSE === $bytesWritten ):
-            throw new \Exception( "  Unable to write file to " . $absolutePathToStoreFinalFile );
-        else:
-            $this->Debug->_debug( "  " . $bytesWritten . " bytes written into " . $absolutePathToStoreFinalFile );
-        endif;
-
-        $this->Debug->_debug( "  Attempting to delete the TEMP directory and file at: " . $absolutePathToStoreTempFile );
-        $this->_deleteTempDirectoryAndFile( $absolutePathToStoreTempFile );
-    }
-
-
-    /**
-     * Headless Chromium creates a temp file ending with '.crdownload' that it streams the data into.
-     * Don't count that file.
-     * If the download is not complete, then set the $files var to an empty array to force
-     * the code to stay in the DoWhile loop.
-     *
-     * @param array $files
-     *
-     * @return bool
-     */
-    private function _downloadComplete( array $files ): bool {
-        array_shift( $files ); // Remove .
-        array_shift( $files ); // Remove ..
-
-        if ( ! isset( $files[ 0 ] ) ):
-            return FALSE;
-        endif;
-        $fileName = $files[ 0 ];
-
-        $needle = '.crdownload';
-        if ( str_ends_with( $fileName, $needle ) ):
-            return FALSE;
-        endif;
-        return TRUE;
-    }
-
-    /**
-     * @param array $files An array of files from the scandir() call above.
-     *
-     * @return string The filename of the downloaded file from US Bank.
-     * @throws \Exception This should never happen because of error checking above where this method is called.
-     */
-    protected function _getFilenameFromFiles( array $files ): string {
-        array_shift( $files ); // Remove .
-        array_shift( $files ); // Remove ..
-        if ( ! isset( $files[ 0 ] ) ):
-            throw new \Exception( "Unable to find the downloaded file in the files array." );
-        endif;
-
-        return $files[ 0 ];
-    }
-
-
-    protected function _deleteTempDirectoryAndFile( string $absolutePathToStoreTempFile ): void {
-        if ( ! file_exists( $absolutePathToStoreTempFile ) ):
-            return;
-        endif;
-
-        $filesInTempDir = scandir( $absolutePathToStoreTempFile );
-        array_shift( $filesInTempDir ); // Remove .
-        array_shift( $filesInTempDir ); // Remove ..
-        foreach ( $filesInTempDir as $filename ):
-            unlink( $absolutePathToStoreTempFile . DIRECTORY_SEPARATOR . $filename );
-        endforeach;
-
-        rmdir( $absolutePathToStoreTempFile );
-    }
-
-    /**
-     * @param string $absolutePathToStoreTempFile
-     *
-     * @return void
-     * @throws \Exception
-     */
-    protected function _createTempDirectoryForDownloadedFile( string $absolutePathToStoreTempFile ): void {
-
-        if ( file_exists( $absolutePathToStoreTempFile ) ):
-            $this->_deleteTempDirectoryAndFile( $absolutePathToStoreTempFile );
-        endif;
-
-
-        mkdir( $absolutePathToStoreTempFile,
-               0777,
-               TRUE );
-    }
 
 }

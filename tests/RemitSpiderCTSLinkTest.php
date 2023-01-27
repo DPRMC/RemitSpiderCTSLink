@@ -36,6 +36,8 @@ class RemitSpiderCTSLinkTest extends TestCase {
 
     public static function setUpBeforeClass(): void {
 
+
+
     }
 
 
@@ -119,6 +121,27 @@ class RemitSpiderCTSLinkTest extends TestCase {
 
     }
 
+
+    /**
+     * @test
+     * @group dl
+     */
+    public function testDownload(){
+        $spider = $this->_getSpider();
+        //$spider->disableDebug();
+        $spider->Login->login();
+
+        //$href = 'https://fims2.deerparkrd.com/images/nav-bar/fims-nav-bar-logo.png';
+        //$href = 'https://i.imgur.com/PmhVTiH.jpeg';
+        //$href = 'https://google.com';
+        $href = 'https://www.ctslink.com/a/document.html?key=5900425';
+        $temp = 'tests/temp';
+        $final = 'tests/final';
+        $name = 'test.pdf';
+        //$finalFilePath = $spider->FileDownloader->downloadFile($href, $temp, $final, $name);
+
+       $spider->FileDownloader->fileGetContents($href, $final, $name);
+    }
 
     /**
      * @test
