@@ -7,9 +7,8 @@ use DPRMC\RemitSpiderCTSLink\Helpers\Debug;
 use DPRMC\RemitSpiderCTSLink\Helpers\FileDownloader;
 use DPRMC\RemitSpiderCTSLink\Helpers\FilesByCUSIP;
 use DPRMC\RemitSpiderCTSLink\Helpers\Login;
-use DPRMC\RemitSpiderCTSLink\Helpers\CMBSDistributionFiles;
+use DPRMC\RemitSpiderCTSLink\Helpers\CMBSDistributionFilesHelper;
 use HeadlessChromium\Cookies\CookiesCollection;
-use HeadlessChromium\Page;
 
 
 /**
@@ -25,50 +24,22 @@ class RemitSpiderCTSLink {
     /**
      * @var CTSLinkBrowser
      */
-    public CTSLinkBrowser        $CTSLinkBrowser;
-    public Debug                 $Debug;
-    public Login                 $Login;
-    public FileDownloader        $FileDownloader;
-    public FilesByCUSIP          $FilesByCUSIP;
-    public CMBSDistributionFiles $CMBSDistributionFiles;
-//    public Portfolios                  $Portfolios;
-//    public Deals                       $Deals;
-//    public HistoryLinks                $HistoryLinks;
-//    public FileIndex                   $FileIndex;
-//    public PrincipalAndInterestFactors $PrincipalAndInterestFactors;
-//    public PeriodicReportsSecured      $PeriodicReportsSecured;
-
-
-//    protected string $pathToPortfolioIds;
-//    protected string $pathToDealLinkSuffixes;
-//    protected string $pathToHistoryLinks;
-//    protected string $pathToFileIndex;
-//    protected string $timezone;
-//
-//    protected array $portfolioIds;
-//    protected array $dealIds;
-//
-//    protected Page $page;
-
+    public CTSLinkBrowser              $CTSLinkBrowser;
+    public Debug                       $Debug;
+    public Login                       $Login;
+    public FileDownloader              $FileDownloader;
+    public FilesByCUSIP                $FilesByCUSIP;
+    public CMBSDistributionFilesHelper $CMBSDistributionFilesHelper;
 
     const  BASE_URL = 'https://www.ctslink.com';
-//    const  PORTFOLIO_IDS_FILENAME                  = '_portfolio_ids.json';
-//    const  DEAL_LINK_SUFFIXES_FILENAME             = '_deal_link_suffixes.json';
-//    const  HISTORY_LINKS_FILENAME                  = '_history_links.json';
-//    const  FILE_INDEX_FILENAME                     = '_file_index.json';
 
 
     /**
      * TESTING, not sure if this will work.
      *
-     * @var CookiesCollection Saving the cookies post login. When the connection dies for no reason, I can restart the
-     *      session.
+     * @var CookiesCollection Saving the cookies post login. When the connection dies for no reason, I can restart the session.
      */
     public CookiesCollection $cookies;
-
-
-    protected int $maxTimesToCheckForDownloadBeforeGivingUp = 10;
-
 
     public function __construct( string $chromePath,
                                  string $user,
@@ -81,10 +52,6 @@ class RemitSpiderCTSLink {
 
         $this->debug             = $debug;
         $this->pathToScreenshots = $pathToScreenshots;
-//        $this->pathToPortfolioIds                = $pathToPortfolioIds . self::PORTFOLIO_IDS_FILENAME;
-//        $this->pathToDealLinkSuffixes            = $pathToDealLinkSuffixes . self::DEAL_LINK_SUFFIXES_FILENAME;
-//        $this->pathToHistoryLinks                = $pathToHistoryLinks . self::HISTORY_LINKS_FILENAME;
-//        $this->pathToFileIndex                   = $pathToFileIndex . self::FILE_INDEX_FILENAME;
 
         $this->timezone = $timezone;
 
@@ -110,70 +77,27 @@ class RemitSpiderCTSLink {
                                                 $this->Debug,
                                                 $this->timezone );
 
-        $this->CMBSDistributionFiles = new CMBSDistributionFiles( $this->CTSLinkBrowser->page,
-                                                                  $this->Debug,
-                                                                  $this->timezone );
-
-//        $this->Portfolios = new Portfolios( $this->USBankBrowser->page,
-//                                            $this->Debug,
-//                                            $this->pathToPortfolioIds,
-//                                            $this->timezone );
-//
-//        $this->Deals = new Deals( $this->USBankBrowser->page,
-//                                  $this->Debug,
-//                                  $this->pathToDealLinkSuffixes,
-//                                  $this->timezone );
-//
-//        $this->HistoryLinks = new HistoryLinks( $this->USBankBrowser->page,
-//                                                $this->Debug,
-//                                                $this->pathToHistoryLinks,
-//                                                $this->timezone );
-//
-//        $this->FileIndex = new FileIndex( $this->USBankBrowser->page,
-//                                          $this->Debug,
-//                                          $this->pathToFileIndex,
-//                                          $this->timezone );
-//
-//        $this->PrincipalAndInterestFactors = new PrincipalAndInterestFactors( $this->USBankBrowser->page,
-//                                                                              $this->Debug,
-//                                                                              $this->timezone );
-//        $this->PeriodicReportsSecured      = new PeriodicReportsSecured( $this->USBankBrowser->page,
-//                                                                         $this->Debug,
-//                                                                         $this->timezone );
-    }
-
-    public function setMaxTimesToCheckForDownloadBeforeGivingUp( int $value ): void {
-        $this->maxTimesToCheckForDownloadBeforeGivingUp = $value;
+        $this->CMBSDistributionFilesHelper = new CMBSDistributionFilesHelper( $this->CTSLinkBrowser->page,
+                                                                              $this->Debug,
+                                                                              $this->timezone );
     }
 
 
     /**
-     *
+     * A little helper function to turn on debugging from the top level object.
+     * @return void
      */
-//    private function _loadIds() {
-//        if ( file_exists( $this->pathToPortfolioIds ) ):
-//            $this->portfolioIds = file( $this->pathToPortfolioIds );
-//        else:
-//            file_put_contents( $this->pathToPortfolioIds, NULL );
-//        endif;
-//
-//        if ( file_exists( $this->pathToDealLinkSuffixes ) ):
-//            $this->dealIds = file( $this->pathToDealLinkSuffixes );
-//        else:
-//            file_put_contents( $this->pathToDealLinkSuffixes, NULL );
-//        endif;
-//    }
-
     public function enableDebug(): void {
         $this->debug = TRUE;
         $this->Debug->enableDebug();
     }
 
+
+    /**
+     * @return void
+     */
     public function disableDebug(): void {
         $this->debug = FALSE;
         $this->Debug->disableDebug();
     }
-
-
-
 }

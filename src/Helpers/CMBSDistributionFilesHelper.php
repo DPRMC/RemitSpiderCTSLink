@@ -20,7 +20,7 @@ use HeadlessChromium\Page;
 /**
  * QUERY SELECTOR EXAMPLES: protected string $querySelectorForLinks = '#results-table > tbody > tr';
  */
-class CMBSDistributionFiles {
+class CMBSDistributionFilesHelper {
 
     protected Page   $Page;
     protected Debug  $Debug;

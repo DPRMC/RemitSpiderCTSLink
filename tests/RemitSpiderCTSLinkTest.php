@@ -124,6 +124,19 @@ class RemitSpiderCTSLinkTest extends TestCase {
 
     /**
      * @test
+     * @group fac
+     */
+    public function testCMBSDistributionFileFactory(){
+        ini_set( 'memory_limit', -1 );
+        $filePath     = getcwd() . '/tests/test_input/BAMLC_2018BNK12_DDST.pdf';
+
+        $factory = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSDistributionFileFactory();
+        $cmbsDistributionFile = $factory->make($filePath);
+    }
+
+
+    /**
+     * @test
      * @group dl
      */
     public function testDownload(){
@@ -131,7 +144,6 @@ class RemitSpiderCTSLinkTest extends TestCase {
         //$spider->disableDebug();
         $spider->Login->login();
 
-        //$href = 'https://fims2.deerparkrd.com/images/nav-bar/fims-nav-bar-logo.png';
         //$href = 'https://i.imgur.com/PmhVTiH.jpeg';
         //$href = 'https://google.com';
         $href = 'https://www.ctslink.com/a/document.html?key=5900425';
@@ -164,7 +176,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $spider = $this->_getSpider();
         $spider->disableDebug();
         $spider->Login->login();
-        $shelfLinks = $spider->CMBSDistributionFiles->getShelfLinks();
+        $shelfLinks = $spider->CMBSDistributionFilesHelper->getShelfLinks();
         $this->assertNotEmpty( $shelfLinks );
     }
 
@@ -177,64 +189,15 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $spider = $this->_getSpider();
         $spider->disableDebug();
         $spider->Login->login();
-        $shelfLinks = $spider->CMBSDistributionFiles->getShelfLinks();
+        $shelfLinks = $spider->CMBSDistributionFilesHelper->getShelfLinks();
 
         $subsetOfShelfLinks = array_slice( $shelfLinks, 0, 10 );
         foreach($subsetOfShelfLinks as $href):
-            $data = $spider->CMBSDistributionFiles->getDistributionDateStatementDataFromLink($href);
+            $data = $spider->CMBSDistributionFilesHelper->getDistributionDateStatementDataFromLink( $href);
             echo "\n\n\n" . $href . "\n";
             print_r($data);
             $this->assertNotEmpty($data);
         endforeach;
     }
-
-
-
-    /**
-     * @test
-     * @group all
-     */
-//    public function testAll() {
-//        $spider = $this->_getSpider();
-//        $spider->Login->login();
-//        $portfolioIds = $spider->Portfolios->getAll( $spider->Login->csrf );
-//
-//        $dealLinkSuffixesByPortfolioId = [];
-//        foreach ( $portfolioIds as $portfolioId ):
-//            $dealLinkSuffixesByPortfolioId[ $portfolioId ] = $spider->Deals->getAllByPortfolioId( $portfolioId );
-//        endforeach;
-//
-//
-//        $historyLinksByPortfolioId = [];
-//        $dealIdToDealName          = [];
-//        foreach ( $dealLinkSuffixesByPortfolioId as $portfolioId => $dealLinkSuffixes ):
-//            $historyLinksByPortfolioId[$portfolioId] = [];
-//            foreach ( $dealLinkSuffixes as $dealLinkSuffix ):
-//                $historyLinks                         = $spider->HistoryLinks->getAllByDeal( $dealLinkSuffix );
-//                $dealId                               = $spider->HistoryLinks->getDealId();
-//                $dealName                             = $spider->HistoryLinks->getDealName();
-//                $dealIdToDealName[ $dealId ]          = $dealName;
-//                $historyLinksByPortfolioId[$portfolioId][ $dealId ] = $historyLinks;
-//            endforeach;
-//        endforeach;
-//
-//
-//
-//        $fileIndexes = [];
-//        foreach ( $historyLinksByPortfolioId as $portfolioId => $dealIds ):
-//            $fileIndexes[$portfolioId] = [];
-//            foreach ( $dealIds as $dealId => $historyLinks ):
-//                $fileIndexes[$portfolioId][$dealId] = [];
-//                foreach($historyLinks as $historyLinkSuffix):
-//                    $tempFileIndexes = $spider->FileIndex->getAllFromHistoryLink( $historyLinkSuffix);
-//                    $fileIndexes[$portfolioId][$dealId] = array_merge($fileIndexes[$portfolioId][$dealId], $tempFileIndexes);
-//                endforeach;
-//            endforeach;
-//        endforeach;
-//
-//
-//        print_r($fileIndexes);
-//    }
-
 
 }

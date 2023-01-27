@@ -2,17 +2,8 @@
 
 namespace DPRMC\RemitSpiderCTSLink\Helpers;
 
-use DPRMC\RemitSpiderCTSLink\Exceptions\WrongNumberOfTitleElementsException;
 use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
-use HeadlessChromium\Clip;
 use HeadlessChromium\Cookies\CookiesCollection;
-use HeadlessChromium\Exception\CommunicationException;
-use HeadlessChromium\Exception\CommunicationException\CannotReadResponse;
-use HeadlessChromium\Exception\CommunicationException\InvalidResponse;
-use HeadlessChromium\Exception\CommunicationException\ResponseHasError;
-use HeadlessChromium\Exception\NavigationExpired;
-use HeadlessChromium\Exception\NoResponseAvailable;
-use HeadlessChromium\Exception\OperationTimedOut;
 use HeadlessChromium\Page;
 
 /**
@@ -27,10 +18,6 @@ abstract class AbstractHelper {
     public CookiesCollection $cookies;
 
     const BASE_URL       = 'https://www.ctslink.com';
-
-
-
-
 
     public function __construct( Page   &$Page,
                                  Debug  &$Debug,
