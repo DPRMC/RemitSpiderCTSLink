@@ -2,29 +2,32 @@
 
 namespace DPRMC\RemitSpiderCTSLink\Factories;
 
-use DPRMC\RemitSpiderCTSLink\Exceptions\CUSIPNotFoundException;
-use DPRMC\RemitSpiderCTSLink\Exceptions\LoginTimedOutException;
-use DPRMC\RemitSpiderCTSLink\Exceptions\WrongNumberOfTitleElementsException;
+use Carbon\Carbon;
+use DPRMC\CUSIP;
 use DPRMC\RemitSpiderCTSLink\Models\CMBSDistributionFile;
-use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
-use HeadlessChromium\Clip;
-use HeadlessChromium\Cookies\CookiesCollection;
-use HeadlessChromium\Exception\CommunicationException;
-use HeadlessChromium\Exception\CommunicationException\CannotReadResponse;
-use HeadlessChromium\Exception\CommunicationException\InvalidResponse;
-use HeadlessChromium\Exception\CommunicationException\ResponseHasError;
-use HeadlessChromium\Exception\NavigationExpired;
-use HeadlessChromium\Exception\NoResponseAvailable;
-use HeadlessChromium\Exception\OperationTimedOut;
-use HeadlessChromium\Page;
-
+use Smalot\PdfParser\Page;
 
 class CMBSDistributionFileFactory {
 
+    const DEFAULT_TIMEZONE = 'America/New_York';
+    protected string $timezone;
+
     protected array                  $pages;
+    protected array                  $pagesAsArrays;
     protected \Smalot\PdfParser\Page $pageWithTableOfContents;
 
+    /**
+     * @var array These get parsed out from the Table of Contents page.
+     */
+    protected array $dates = [];
 
+    const distribution_date      = 'Distribution Date';
+    const determination_date     = 'Determination Date';
+    const next_distribution_date = 'Next Distribution Date';
+    const record_date            = 'Record Date';
+
+
+    // Certificate Distribution Detail fields
     const security_class          = 'Class';
     const cusip                   = 'CUSIP';
     const pass_through_rate       = 'Pass-Through Rate';
@@ -39,9 +42,23 @@ class CMBSDistributionFileFactory {
     const current_credit_support  = 'Current Credit Support';
     const original_credit_support = 'Original Credit Support';
 
+    // Certificate Factor Detail fields (constants defined above are obv omitted here.
+    const interest_shortfalls            = 'Interest Shortfalls / (Paybacks)';
+    const cumulative_interest_shortfalls = 'Cumulative Interest Shortfalls';
+    const losses                         = 'Losses';
 
-    public function __construct() {
+
+    /**
+     * @param string|NULL $timezone
+     */
+    public function __construct( string $timezone = NULL ) {
+        if ( $timezone ):
+            $this->timezone = $timezone;
+        else:
+            $this->timezone = self::DEFAULT_TIMEZONE;
+        endif;
     }
+
 
     public function make( string $pathToDistributionFilePDF ): CMBSDistributionFile {
         $distributionFile                = new CMBSDistributionFile();
@@ -49,13 +66,104 @@ class CMBSDistributionFileFactory {
         $parser                          = new \Smalot\PdfParser\Parser();
         $pdf                             = $parser->parseContent( $fileContents );
         $this->pages                     = $pdf->getPages();
+        $this->pagesAsArrays             = $this->_getPagesAsArrays( $this->pages );
         $distributionFile->numberOfPages = count( $this->pages );
 
-        $this->pageWithTableOfContents = $this->pages[ 0 ];
-
+        $this->pageWithTableOfContents                   = $this->pages[ 0 ];
+        $this->dates                                     = $this->_getDates( $this->pagesAsArrays[ 0 ] );
+        $distributionFile->dates                         = $this->dates;
         $distributionFile->certificateDistributionDetail = $this->getCertificateDistributionDetail();
+        $distributionFile->certificateFactorDetail       = $this->getCertificateFactorDetail();
 
         return $distributionFile;
+    }
+
+
+    /**
+     * There are some dates on the front page.
+     * Parse those out here.
+     * @param array $pageWithTableOfContents
+     * @return array
+     */
+    protected function _getDates( array $pageWithTableOfContents ): array {
+        $distributionDateIndex     = array_search( 'Distribution Date:', $pageWithTableOfContents );
+        $determinationDateIndex    = array_search( 'Determination Date:', $pageWithTableOfContents );
+        $nextDistributionDateIndex = array_search( 'Next Distribution Date:', $pageWithTableOfContents );
+        $recordDateIndex           = array_search( 'Record Date:', $pageWithTableOfContents );
+
+        $distributionDate     = Carbon::parse( $pageWithTableOfContents[ $distributionDateIndex + 1 ], $this->timezone );
+        $determinationDate    = Carbon::parse( $pageWithTableOfContents[ $determinationDateIndex + 1 ], $this->timezone );
+        $nextDistributionDate = Carbon::parse( $pageWithTableOfContents[ $nextDistributionDateIndex + 1 ], $this->timezone );
+        $recordDate           = Carbon::parse( $pageWithTableOfContents[ $recordDateIndex + 1 ], $this->timezone );
+
+        return [
+            self::distribution_date      => $distributionDate,
+            self::determination_date     => $determinationDate,
+            self::next_distribution_date => $nextDistributionDate,
+            self::record_date            => $recordDate,
+        ];
+    }
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    protected function getCertificateDistributionDetail(): array {
+        $sectionName = 'Certificate Distribution Detail';
+        $pageIndexes = $this->getPageRangeBySection( $sectionName );
+
+        $pagesAsArrays = [];
+        foreach ( $pageIndexes as $index ):
+            $currentPage     = $this->pages[ $index ];
+            $pagesAsArrays[] = $currentPage->getTextArray( $currentPage );
+        endforeach;
+
+        $rows = $this->_parseCertificateDistributionDetailRowsFromPageArray( $pagesAsArrays );
+
+        // @TODO maybe split the rows into the following 2 sub arrays.
+//        $certificateDistributionDetail = [];
+//        $regularSubtotal  = array_slice($rows,0,x);
+//        $notionalSubtotal = array_slice($rows,x,y);
+//        return [
+//            'regular_subtotal' => $regularSubtotal,
+//            'notional_subtotal' => $notionalSubtotal,
+//        ];
+
+        return $rows;
+    }
+
+
+    protected function getCertificateFactorDetail(): array {
+        $sectionName = 'Certificate Factor Detail';
+        $pageIndexes = $this->getPageRangeBySection( $sectionName );
+
+        $pagesAsArrays = [];
+        foreach ( $pageIndexes as $index ):
+            $currentPage     = $this->pages[ $index ];
+            $pagesAsArrays[] = $currentPage->getTextArray( $currentPage );
+        endforeach;
+
+        $rows = $this->_parseCertificateFactorDetailRowsFromPageArray( $pagesAsArrays );
+
+        return $rows;
+    }
+
+
+    /**
+     * @param array $pages
+     * @return array
+     * @throws \Exception
+     */
+    private function _getPagesAsArrays( array $pages ): array {
+        $pagesAsArrays = [];
+
+        /**
+         * @var Page $page
+         */
+        foreach ( $pages as $page ):
+            $pagesAsArrays[] = $page->getTextArray( $page );
+        endforeach;
+        return $pagesAsArrays;
     }
 
 
@@ -70,8 +178,6 @@ class CMBSDistributionFileFactory {
 
         $indexOfLabel = array_search( $sectionName, $aFirstPage );
 
-        // DEBUG
-        //$indexOfLabel = 61;
         $pagesString     = $aFirstPage[ $indexOfLabel + 1 ];
         $pageNumberParts = explode( '-', $pagesString );
 
@@ -93,27 +199,13 @@ class CMBSDistributionFileFactory {
     }
 
 
-    protected function getCertificateDistributionDetail(): array {
-        $certificateDistributionDetail = [];
-        $sectionName                   = 'Certificate Distribution Detail';
-        $pageIndexes                   = $this->getPageRangeBySection( $sectionName );
+    /**
+     * @param array $pages
+     * @return array
+     */
+    private function _parseCertificateDistributionDetailRowsFromPageArray( array $pages ): array {
+        $parsedRows = [];
 
-        $pagesAsArrays = [];
-        foreach ( $pageIndexes as $index ):
-            $currentPage     = $this->pages[ $index ];
-            $pagesAsArrays[] = $currentPage->getTextArray( $currentPage );
-        endforeach;
-
-        $this->parseCertificateDistributionDetailRowsFromPageArray( $pagesAsArrays );
-
-
-        $regularSubtotal  = [];
-        $notionalSubtotal = [];
-
-        return $certificateDistributionDetail;
-    }
-
-    private function parseCertificateDistributionDetailRowsFromPageArray( array $pages ): array {
         // Remove Headers
         $numHeaders = 24;
         foreach ( $pages as $page ):
@@ -123,33 +215,150 @@ class CMBSDistributionFileFactory {
 
             $rawRows = array_chunk( $page, 14 );
 
-            print_r( $rawRows );
-            echo "THIS WAASSS PAFGE";
+            foreach ( $rawRows as $rawRow ):
+                if ( $this->_isValidCertificateDistributionDetailRow( $rawRow ) ):
+                    $cusip                = $this->_getCUSIPFromRawCertificateDistributionDetailRow( $rawRow );
+                    $parsedRows[ $cusip ] = $this->_parseCertificateDistributionDetailRow( $rawRow );
+                endif;
+            endforeach;
         endforeach;
 
-        return $pages;
+        return $parsedRows;
     }
 
 
-    private function parseRow( array $row ): array {
+    protected function _parseCertificateFactorDetailRowsFromPageArray( array $pages ): array {
+        $parsedRows = [];
+
+        // Remove Headers
+        $numHeaders = 15;
+        foreach ( $pages as $page ):
+            for ( $i = 0; $i <= $numHeaders; $i++ ):
+                array_shift( $page );
+            endfor;
+
+            $rawRows = array_chunk( $page, 11 );
+
+            foreach ( $rawRows as $rawRow ):
+                if ( $this->_isValidCertificateDistributionDetailRow( $rawRow ) ):
+                    $cusip                = $this->_getCUSIPFromRawCertificateDistributionDetailRow( $rawRow );
+                    $parsedRows[ $cusip ] = $this->_parseCertificateFactorDetailRow( $rawRow );
+                endif;
+            endforeach;
+        endforeach;
+
+        return $parsedRows;
+    }
+
+
+    /**
+     * Works for Certificate Factor Detail rows as well!
+     * @param array $rawRow
+     * @return string|null
+     */
+    private function _getCUSIPFromRawCertificateDistributionDetailRow( array $rawRow ): ?string {
+
+        if ( ! isset( $rawRow[ 1 ] ) ):
+            return NULL;
+        endif;
+
+        if ( CUSIP::isCUSIP( $rawRow[ 1 ] ) ):
+            return trim($rawRow[ 1 ]);
+        endif;
+
+        return NULL;
+    }
+
+
+    /**
+     * Works for Certificate Factor Detail rows as well!
+     * @param array $row
+     * @return bool
+     */
+    private function _isValidCertificateDistributionDetailRow( array $row ): bool {
+        if ( CUSIP::isCUSIP( $this->_getCUSIPFromRawCertificateDistributionDetailRow( $row ) ) ):
+            return TRUE;
+        endif;
+
+        return FALSE;
+    }
+
+
+    /**
+     * @param array $row
+     * @return array
+     */
+    private function _parseCertificateDistributionDetailRow( array $row ): array {
+        unset( $row[ 3 ] );          // It's always blank.
+        $row = array_values( $row ); // Re-index the array.
+
         $newRow = [];
 
         $newRow[ self::security_class ]          = $row[ 0 ];
         $newRow[ self::cusip ]                   = $row[ 1 ];
-        $newRow[ self::pass_through_rate ]       = $row[ 2 ];
-        $newRow[ self::original_balance ]        = $row[ 3 ];
-        $newRow[ self::beginning_balance ]       = $row[ 4 ];
-        $newRow[ self::principal_distribution ]  = $row[ 5 ];
-        $newRow[ self::interest_distribution ]   = $row[ 6 ];
-        $newRow[ self::prepayment_penalties ]    = $row[ 7 ];
-        $newRow[ self::realized_losses ]         = $row[ 8 ];
-        $newRow[ self::total_distribution ]      = $row[ 9 ];
-        $newRow[ self::ending_balance ]          = $row[ 10 ];
-        $newRow[ self::current_credit_support ]  = $row[ 11 ];
-        $newRow[ self::original_credit_support ] = $row[ 12 ];
-
+        $newRow[ self::pass_through_rate ]       = $this->_formatPercent( $row[ 2 ] );
+        $newRow[ self::original_balance ]        = $this->_formatNumber( $row[ 3 ] );
+        $newRow[ self::beginning_balance ]       = $this->_formatNumber( $row[ 4 ] );
+        $newRow[ self::principal_distribution ]  = $this->_formatNumber( $row[ 5 ] );
+        $newRow[ self::interest_distribution ]   = $this->_formatNumber( $row[ 6 ] );
+        $newRow[ self::prepayment_penalties ]    = $this->_formatNumber( $row[ 7 ] );
+        $newRow[ self::realized_losses ]         = $this->_formatNumber( $row[ 8 ] );
+        $newRow[ self::total_distribution ]      = $this->_formatNumber( $row[ 9 ] );
+        $newRow[ self::ending_balance ]          = $this->_formatNumber( $row[ 10 ] );
+        $newRow[ self::current_credit_support ]  = $this->_formatPercent( $row[ 11 ] );
+        $newRow[ self::original_credit_support ] = $this->_formatPercent( $row[ 12 ] );
 
         return $newRow;
+    }
+
+
+    private function _parseCertificateFactorDetailRow( array $row ): array {
+        $newRow = [];
+
+        $newRow[ self::security_class ]                 = $row[ 0 ];
+        $newRow[ self::cusip ]                          = $row[ 1 ];
+        $newRow[ self::beginning_balance ]              = $this->_formatNumber( $row[ 2 ] );
+        $newRow[ self::principal_distribution ]         = $this->_formatNumber( $row[ 3 ] );
+        $newRow[ self::interest_distribution ]          = $this->_formatNumber( $row[ 4 ] );
+        $newRow[ self::interest_shortfalls ]            = $this->_formatNumber( $row[ 5 ] );
+        $newRow[ self::cumulative_interest_shortfalls ] = $this->_formatNumber( $row[ 6 ] );
+        $newRow[ self::prepayment_penalties ]           = $this->_formatNumber( $row[ 7 ] );
+        $newRow[ self::losses ]                         = $this->_formatNumber( $row[ 8 ] );
+        $newRow[ self::total_distribution ]             = $this->_formatNumber( $row[ 9 ] );
+        $newRow[ self::ending_balance ]                 = $this->_formatNumber( $row[ 10 ] );
+
+        return $newRow;
+    }
+
+
+    /**
+     * @param string $number
+     * @return float|null
+     */
+    private function _formatNumber( string $number ): ?float {
+        $number = trim( $number );
+        if ( empty( $number ) ):
+            return NULL;
+        endif;
+        $number = str_replace( ',', '', $number );
+        return (float)$number;
+    }
+
+
+    /**
+     * @param string $number
+     * @return float|null
+     */
+    private function _formatPercent( string $number ): ?float {
+        $number = str_replace( '%', '', $number );
+        $number = trim( $number );
+        if ( empty( $number ) ):
+            return NULL;
+        endif;
+
+        $asPercent = (float)$number / 100;
+
+        return $asPercent;
     }
 
 

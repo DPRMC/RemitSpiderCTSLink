@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "71eba4ce2bc441d40f8f4fb72503e064",
+    "content-hash": "fc1521d961ffeab496387896738d8978",
     "packages": [
         {
             "name": "chrome-php/chrome",
@@ -141,6 +141,50 @@
                 "source": "https://github.com/chrome-php/wrench/tree/v1.3.0"
             },
             "time": "2022-08-28T11:42:16+00:00"
+        },
+        {
+            "name": "dprmc/cusip",
+            "version": "v1.0.12",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DPRMC/CUSIP.git",
+                "reference": "8d122b2ac88444029e005491a8e916e1e232b649"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DPRMC/CUSIP/zipball/8d122b2ac88444029e005491a8e916e1e232b649",
+                "reference": "8d122b2ac88444029e005491a8e916e1e232b649",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.3||^7.0"
+            },
+            "require-dev": {
+                "php-coveralls/php-coveralls": "^2.0",
+                "phpunit/phpunit": "^7.5||^8.0||^9.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Drennen",
+                    "email": "mdrennen@deerparkrd.com"
+                }
+            ],
+            "description": "A php library for validating CUSIP codes.",
+            "support": {
+                "issues": "https://github.com/DPRMC/CUSIP/issues",
+                "source": "https://github.com/DPRMC/CUSIP/tree/v1.0.12"
+            },
+            "time": "2022-04-21T19:45:55+00:00"
         },
         {
             "name": "evenement/evenement",
@@ -4167,7 +4211,8 @@
     "prefer-lowest": false,
     "platform": {
         "php": "^8.0",
-        "ext-dom": "*"
+        "ext-dom": "*",
+        "ext-intl": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.3.0"

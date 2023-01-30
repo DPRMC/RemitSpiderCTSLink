@@ -21,9 +21,12 @@ use HeadlessChromium\Page;
 class CMBSDistributionFile {
 
     public string $pathToDistributionFilePdf;
-    public int $numberOfPages;
+    public int    $numberOfPages;
+
+    public array $dates = [];
 
     public array $certificateDistributionDetail = [];
+    public array $certificateFactorDetail       = [];
 
     public function __construct() {
     }

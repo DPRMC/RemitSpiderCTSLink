@@ -133,6 +133,8 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $factory              = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSDistributionFileFactory();
         $cmbsDistributionFile = $factory->make( $filePath );
 
+        print_r($cmbsDistributionFile);
+
         $this->assertInstanceOf( \DPRMC\RemitSpiderCTSLink\Models\CMBSDistributionFile::class,
                                  $cmbsDistributionFile );
     }
