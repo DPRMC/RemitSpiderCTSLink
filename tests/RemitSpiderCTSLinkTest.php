@@ -37,7 +37,6 @@ class RemitSpiderCTSLinkTest extends TestCase {
     public static function setUpBeforeClass(): void {
 
 
-
     }
 
 
@@ -126,12 +125,16 @@ class RemitSpiderCTSLinkTest extends TestCase {
      * @test
      * @group fac
      */
-    public function testCMBSDistributionFileFactory(){
+    public function testCMBSDistributionFileFactory() {
         ini_set( 'memory_limit', -1 );
-        $filePath     = getcwd() . '/tests/test_input/BAMLC_2018BNK12_DDST.pdf';
+        $filePath = getcwd() . '/tests/test_input/BAMLC_2018BNK12_DDST.pdf';
+        $filePath = getcwd() . '/tests/test_input/CCM_2022B35_DDST.pdf';
 
-        $factory = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSDistributionFileFactory();
-        $cmbsDistributionFile = $factory->make($filePath);
+        $factory              = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSDistributionFileFactory();
+        $cmbsDistributionFile = $factory->make( $filePath );
+
+        $this->assertInstanceOf( \DPRMC\RemitSpiderCTSLink\Models\CMBSDistributionFile::class,
+                                 $cmbsDistributionFile );
     }
 
 
@@ -139,20 +142,20 @@ class RemitSpiderCTSLinkTest extends TestCase {
      * @test
      * @group dl
      */
-    public function testDownload(){
+    public function testDownload() {
         $spider = $this->_getSpider();
         //$spider->disableDebug();
         $spider->Login->login();
 
         //$href = 'https://i.imgur.com/PmhVTiH.jpeg';
         //$href = 'https://google.com';
-        $href = 'https://www.ctslink.com/a/document.html?key=5900425';
-        $temp = 'tests/temp';
+        $href  = 'https://www.ctslink.com/a/document.html?key=5900425';
+        $temp  = 'tests/temp';
         $final = 'tests/final';
-        $name = 'test.pdf';
+        $name  = 'test.pdf';
         //$finalFilePath = $spider->FileDownloader->downloadFile($href, $temp, $final, $name);
 
-       $spider->FileDownloader->fileGetContents($href, $final, $name);
+        $spider->FileDownloader->fileGetContents( $href, $final, $name );
     }
 
     /**
@@ -192,11 +195,11 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $shelfLinks = $spider->CMBSDistributionFilesHelper->getShelfLinks();
 
         $subsetOfShelfLinks = array_slice( $shelfLinks, 0, 10 );
-        foreach($subsetOfShelfLinks as $href):
-            $data = $spider->CMBSDistributionFilesHelper->getDistributionDateStatementDataFromLink( $href);
+        foreach ( $subsetOfShelfLinks as $href ):
+            $data = $spider->CMBSDistributionFilesHelper->getDistributionDateStatementDataFromLink( $href );
             echo "\n\n\n" . $href . "\n";
-            print_r($data);
-            $this->assertNotEmpty($data);
+            print_r( $data );
+            $this->assertNotEmpty( $data );
         endforeach;
     }
 
