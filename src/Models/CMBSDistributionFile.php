@@ -27,6 +27,7 @@ class CMBSDistributionFile {
 
     public array $certificateDistributionDetail = [];
     public array $certificateFactorDetail       = [];
+    public array $certificateInterestReconciliationDetail = [];
 
     public function __construct() {
     }

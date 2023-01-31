@@ -144,16 +144,16 @@
         },
         {
             "name": "dprmc/cusip",
-            "version": "v1.0.12",
+            "version": "v1.0.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DPRMC/CUSIP.git",
-                "reference": "8d122b2ac88444029e005491a8e916e1e232b649"
+                "reference": "2c0047a03ec16b4c6453c92cfe53d0430fe62fb9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DPRMC/CUSIP/zipball/8d122b2ac88444029e005491a8e916e1e232b649",
-                "reference": "8d122b2ac88444029e005491a8e916e1e232b649",
+                "url": "https://api.github.com/repos/DPRMC/CUSIP/zipball/2c0047a03ec16b4c6453c92cfe53d0430fe62fb9",
+                "reference": "2c0047a03ec16b4c6453c92cfe53d0430fe62fb9",
                 "shasum": ""
             },
             "require": {
@@ -176,15 +176,15 @@
             "authors": [
                 {
                     "name": "Michael Drennen",
-                    "email": "mdrennen@deerparkrd.com"
+                    "email": "michaeldrennen74@gmail.com"
                 }
             ],
             "description": "A php library for validating CUSIP codes.",
             "support": {
                 "issues": "https://github.com/DPRMC/CUSIP/issues",
-                "source": "https://github.com/DPRMC/CUSIP/tree/v1.0.12"
+                "source": "https://github.com/DPRMC/CUSIP/tree/v1.0.13"
             },
-            "time": "2022-04-21T19:45:55+00:00"
+            "time": "2023-01-31T15:52:50+00:00"
         },
         {
             "name": "evenement/evenement",
@@ -667,16 +667,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.65.0",
+            "version": "2.66.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "09acf64155c16dc6f580f36569ae89344e9734a3"
+                "reference": "496712849902241f04902033b0441b269effe001"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/09acf64155c16dc6f580f36569ae89344e9734a3",
-                "reference": "09acf64155c16dc6f580f36569ae89344e9734a3",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/496712849902241f04902033b0441b269effe001",
+                "reference": "496712849902241f04902033b0441b269effe001",
                 "shasum": ""
             },
             "require": {
@@ -765,7 +765,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-01-06T15:55:01+00:00"
+            "time": "2023-01-29T18:53:47+00:00"
         },
         {
             "name": "psr/http-client",
@@ -2073,16 +2073,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "9.2.23",
+            "version": "9.2.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "9f1f0f9a2fbb680b26d1cf9b61b6eac43a6e4e9c"
+                "reference": "2cf940ebc6355a9d430462811b5aaa308b174bed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/9f1f0f9a2fbb680b26d1cf9b61b6eac43a6e4e9c",
-                "reference": "9f1f0f9a2fbb680b26d1cf9b61b6eac43a6e4e9c",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/2cf940ebc6355a9d430462811b5aaa308b174bed",
+                "reference": "2cf940ebc6355a9d430462811b5aaa308b174bed",
                 "shasum": ""
             },
             "require": {
@@ -2138,7 +2138,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.23"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.24"
             },
             "funding": [
                 {
@@ -2146,7 +2146,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-12-28T12:41:10+00:00"
+            "time": "2023-01-26T08:26:55+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",

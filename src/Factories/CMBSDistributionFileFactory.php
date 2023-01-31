@@ -42,10 +42,21 @@ class CMBSDistributionFileFactory {
     const current_credit_support  = 'Current Credit Support';
     const original_credit_support = 'Original Credit Support';
 
-    // Certificate Factor Detail fields (constants defined above are obv omitted here.
+    // Certificate Factor Detail fields (constants defined above are obv omitted here.)
     const interest_shortfalls            = 'Interest Shortfalls / (Paybacks)';
     const cumulative_interest_shortfalls = 'Cumulative Interest Shortfalls';
     const losses                         = 'Losses';
+
+    // Certificate Interest Reconciliation Detail fields ((constants defined above are obv omitted here.)
+    const start_accrual_date                          = 'Start Accrual Date';
+    const end_accrual_date                            = 'End Accrual Date';
+    const accrual_days                                = 'Accrual Days';
+    const prior_interest_shortfalls                   = 'Prior Interest Shortfalls';
+    const accrued_certificate_interest                = 'Accrued Certificate Interest';
+    const net_aggregate_prepayment_interest_shortfall = 'Net Aggregate Prepayment Interest Shortfall';
+    const distributable_certificate_interest          = 'Distributable Certificate Interest';
+    const payback_of_prior_realized_losses            = 'Payback of Prior Realized Losses';
+    const additional_interest_distribution_amount     = 'Additional Interest Distribution Amount';
 
 
     /**
@@ -69,11 +80,12 @@ class CMBSDistributionFileFactory {
         $this->pagesAsArrays             = $this->_getPagesAsArrays( $this->pages );
         $distributionFile->numberOfPages = count( $this->pages );
 
-        $this->pageWithTableOfContents                   = $this->pages[ 0 ];
-        $this->dates                                     = $this->_getDates( $this->pagesAsArrays[ 0 ] );
-        $distributionFile->dates                         = $this->dates;
-        $distributionFile->certificateDistributionDetail = $this->getCertificateDistributionDetail();
-        $distributionFile->certificateFactorDetail       = $this->getCertificateFactorDetail();
+        $this->pageWithTableOfContents                             = $this->pages[ 0 ];
+        $this->dates                                               = $this->_getDates( $this->pagesAsArrays[ 0 ] );
+        $distributionFile->dates                                   = $this->dates;
+        $distributionFile->certificateDistributionDetail           = $this->getCertificateDistributionDetail();
+        $distributionFile->certificateFactorDetail                 = $this->getCertificateFactorDetail();
+        $distributionFile->certificateInterestReconciliationDetail = $this->getCertificateInterestReconciliationDetail();
 
         return $distributionFile;
     }
@@ -144,6 +156,21 @@ class CMBSDistributionFileFactory {
         endforeach;
 
         $rows = $this->_parseCertificateFactorDetailRowsFromPageArray( $pagesAsArrays );
+
+        return $rows;
+    }
+
+    protected function getCertificateInterestReconciliationDetail(): array {
+        $sectionName = 'Certificate Interest Reconciliation Detail';
+        $pageIndexes = $this->getPageRangeBySection( $sectionName );
+
+        $pagesAsArrays = [];
+        foreach ( $pageIndexes as $index ):
+            $currentPage     = $this->pages[ $index ];
+            $pagesAsArrays[] = $currentPage->getTextArray( $currentPage );
+        endforeach;
+
+        $rows = $this->_parseCertificateInterestReconciliationDetailRowsFromPageArray( $pagesAsArrays );
 
         return $rows;
     }
@@ -251,6 +278,31 @@ class CMBSDistributionFileFactory {
     }
 
 
+    protected function _parseCertificateInterestReconciliationDetailRowsFromPageArray( array $pages ): array {
+        $parsedRows = [];
+
+
+        // Remove Headers
+        $numHeaders = 28;
+        foreach ( $pages as $page ):
+            for ( $i = 0; $i <= $numHeaders; $i++ ):
+                array_shift( $page );
+            endfor;
+
+            $rawRows = array_chunk( $page, 12 );
+
+            foreach ( $rawRows as $rawRow ):
+                if ( $this->_isValidCertificateInterestReconciliationDetailRow( $rawRow ) ):
+                    $class                = $rawRow[ 0 ];
+                    $parsedRows[ $class ] = $this->_parseCertificateInterestReconciliationDetailRow( $rawRow );
+                endif;
+            endforeach;
+        endforeach;
+
+        return $parsedRows;
+    }
+
+
     /**
      * Works for Certificate Factor Detail rows as well!
      * @param array $rawRow
@@ -263,7 +315,7 @@ class CMBSDistributionFileFactory {
         endif;
 
         if ( CUSIP::isCUSIP( $rawRow[ 1 ] ) ):
-            return trim($rawRow[ 1 ]);
+            return trim( $rawRow[ 1 ] );
         endif;
 
         return NULL;
@@ -281,6 +333,47 @@ class CMBSDistributionFileFactory {
         endif;
 
         return FALSE;
+    }
+
+
+    /**
+     * @param array $row
+     * @return bool
+     */
+    private function _isValidCertificateInterestReconciliationDetailRow( array $row ): bool {
+        if ( count( $row ) != 12 ):
+            return FALSE;
+        endif;
+
+        try {
+            $this->_getDatesForAccrualPeriodFromCertificateInterestReconciliationDetailRow( $row );
+            return TRUE;
+        } catch ( \Exception $exception ) {
+            return FALSE;
+        }
+    }
+
+
+    /**
+     * @param array $row
+     * @return array
+     * @throws \Exception
+     */
+    private function _getDatesForAccrualPeriodFromCertificateInterestReconciliationDetailRow( array $row ): array {
+        $dateString   = $row[ 1 ];
+        $explodedDate = explode( ' - ', $dateString );
+        $explodedDate = array_map( 'trim', $explodedDate );
+
+        try {
+            $startDate = Carbon::parse( $explodedDate[ 0 ], $this->timezone );
+            $endDate   = Carbon::parse( $explodedDate[ 1 ], $this->timezone );
+            return [
+                'start' => $startDate,
+                'end'   => $endDate,
+            ];
+        } catch ( \Exception $exception ) {
+            throw new \Exception( "Not able to get accrual dates. Probably not a valid row. [" . $row[ 1 ] . "]", 0, $exception );
+        }
     }
 
 
@@ -326,6 +419,30 @@ class CMBSDistributionFileFactory {
         $newRow[ self::losses ]                         = $this->_formatNumber( $row[ 8 ] );
         $newRow[ self::total_distribution ]             = $this->_formatNumber( $row[ 9 ] );
         $newRow[ self::ending_balance ]                 = $this->_formatNumber( $row[ 10 ] );
+
+        return $newRow;
+    }
+
+
+    private function _parseCertificateInterestReconciliationDetailRow( array $row ): array {
+        $newRow = [];
+
+        $dates = $this->_getDatesForAccrualPeriodFromCertificateInterestReconciliationDetailRow( $row );
+
+        $newRow[ self::security_class ]     = $row[ 0 ];
+        $newRow[ self::start_accrual_date ] = $dates[ 'start' ];
+        $newRow[ self::end_accrual_date ]   = $dates[ 'end' ];
+
+        $newRow[ self::accrual_days ]                                = $this->_formatNumber( $row[ 2 ] );
+        $newRow[ self::prior_interest_shortfalls ]                   = $this->_formatNumber( $row[ 3 ] );
+        $newRow[ self::accrued_certificate_interest ]                = $this->_formatNumber( $row[ 4 ] );
+        $newRow[ self::net_aggregate_prepayment_interest_shortfall ] = $this->_formatNumber( $row[ 5 ] );
+        $newRow[ self::distributable_certificate_interest ]          = $this->_formatNumber( $row[ 6 ] );
+        $newRow[ self::interest_shortfalls ]                         = $this->_formatNumber( $row[ 7 ] );
+        $newRow[ self::payback_of_prior_realized_losses ]            = $this->_formatNumber( $row[ 8 ] );
+        $newRow[ self::additional_interest_distribution_amount ]     = $this->_formatNumber( $row[ 9 ] );
+        $newRow[ self::interest_distribution ]                       = $this->_formatNumber( $row[ 10 ] );
+        $newRow[ self::cumulative_interest_shortfalls ]              = $this->_formatNumber( $row[ 11 ] );
 
         return $newRow;
     }
