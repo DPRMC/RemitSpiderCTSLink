@@ -59,6 +59,54 @@ class CMBSDistributionFileFactory {
     const additional_interest_distribution_amount     = 'Additional Interest Distribution Amount';
 
 
+    // Modified Loan Detail fields
+    const pros_id                     = 'Pros ID';
+    const loan_number                 = 'Loan Number';
+    const pre_modification_balance    = 'Pre-Modification Balance';
+    const pre_modification_rate       = 'Pre-Modification Rate';
+    const post_modification_balance   = 'Post-Modification Balance';
+    const post_modification_rate      = 'Post-Modification Rate';
+    const modification_code           = 'Modification Code';
+    const modification_booking_date   = 'Modification Booking Date';
+    const modification_closing_date   = 'Modification Closing Date';
+    const modification_effective_date = 'Modification Effective Date';
+
+    // Delinquency Loan Detail fields
+    const paid_through_date             = 'Paid Through Date';
+    const months_delinquent             = 'Months Delinquent';
+    const mortgage_loan_status          = 'Mortgage Loan Status';
+    const current_p_and_i_advances      = 'Current P&I Advances';
+    const outstanding_p_and_i_advances  = 'Outstanding P&I Advances';
+    const outstanding_servicer_advances = 'Outstanding Servicer Advances';
+    const actual_principal_balance      = 'Actual Principal Balance';
+    const servicing_transfer_date       = 'Servicing Transfer Date';
+    const resolution_strategy_code      = 'Resolution Strategy Code';
+    const bankruptcy_date               = 'Bankruptcy Date';
+    const foreclosure_date              = 'Foreclosure Date';
+    const reo_date                      = 'REO Date';
+
+
+    // Historical Detail fields
+    const delinquencies_30_59_days_number                 = 'Delinquencies 30-59 Days - #';
+    const delinquencies_30_59_days_balance                = 'Delinquencies 30-59 Days - Balance';
+    const delinquencies_60_89_days_number                 = 'Delinquencies 60-89 Days - #';
+    const delinquencies_60_89_days_balance                = 'Delinquencies 60-89 Days - Balance';
+    const delinquencies_90_plus_days_number               = 'Delinquencies 90 Days or More - #';
+    const delinquencies_90_plus_days_balance              = 'Delinquencies 90 Days or More - Balance';
+    const foreclosure_number                              = 'Foreclosure #';
+    const foreclosure_balance                             = 'Foreclosure Balance';
+    const reo_number                                      = 'REO #';
+    const reo_balance                                     = 'REO Balance';
+    const modifications_number                            = 'Modifications #';
+    const modifications_balance                           = 'Modifications Balance';
+    const prepayments_curtailments_number                 = 'Prepayments - Curtailments #';
+    const prepayments_curtailments_amount                 = 'Prepayments - Curtailments Amount';
+    const prepayments_payoff_number                       = 'Prepayments - Payoff #';
+    const prepayments_payoff_amount                       = 'Prepayments - Payoff Amount';
+    const rate_and_maturities_net_weighted_average_coupon = 'Rate and Maturities - Net Weighted Avg. - Coupon';
+    const rate_and_maturities_net_weighted_average_remit  = 'Rate and Maturities - Net Weighted Avg. - Remit';
+    const rate_and_maturities_wam                         = 'Rate and Maturities - WAM';
+
     /**
      * @param string|NULL $timezone
      */
@@ -86,6 +134,10 @@ class CMBSDistributionFileFactory {
         $distributionFile->certificateDistributionDetail           = $this->getCertificateDistributionDetail();
         $distributionFile->certificateFactorDetail                 = $this->getCertificateFactorDetail();
         $distributionFile->certificateInterestReconciliationDetail = $this->getCertificateInterestReconciliationDetail();
+        $distributionFile->modifiedLoanDetail                      = $this->getModifiedLoanDetail();
+        $distributionFile->delinquencyLoanDetail                   = $this->getDelinquencyLoanDetail();
+        $distributionFile->historicalDetail                        = $this->getHistoricalDetail();
+
 
         return $distributionFile;
     }
@@ -145,6 +197,10 @@ class CMBSDistributionFileFactory {
     }
 
 
+    /**
+     * @return array
+     * @throws \Exception
+     */
     protected function getCertificateFactorDetail(): array {
         $sectionName = 'Certificate Factor Detail';
         $pageIndexes = $this->getPageRangeBySection( $sectionName );
@@ -160,6 +216,11 @@ class CMBSDistributionFileFactory {
         return $rows;
     }
 
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
     protected function getCertificateInterestReconciliationDetail(): array {
         $sectionName = 'Certificate Interest Reconciliation Detail';
         $pageIndexes = $this->getPageRangeBySection( $sectionName );
@@ -173,6 +234,250 @@ class CMBSDistributionFileFactory {
         $rows = $this->_parseCertificateInterestReconciliationDetailRowsFromPageArray( $pagesAsArrays );
 
         return $rows;
+    }
+
+
+    protected function getModifiedLoanDetail(): array {
+        $sectionName = 'Modified Loan Detail';
+        $pageIndexes = $this->getPageRangeBySection( $sectionName );
+
+        $pagesAsArrays = [];
+        foreach ( $pageIndexes as $index ):
+            $currentPage     = $this->pages[ $index ];
+            $pagesAsArrays[] = $currentPage->getTextArray( $currentPage );
+        endforeach;
+
+        $parsedRows = [];
+
+        // Remove Headers
+        $numHeaders = 20;
+        foreach ( $pagesAsArrays as $page ):
+            for ( $i = 0; $i <= $numHeaders; $i++ ):
+                array_shift( $page );
+            endfor;
+
+            $rawRows = array_chunk( $page, 10 );
+
+            // Remove footer rows
+            $rowsOfInterest = [];
+            foreach ( $rawRows as $i => $rawRow ):
+                if ( 'Totals' == $rawRow[ 0 ] ):
+                    break;
+                endif;
+                $rowsOfInterest[] = $rawRow;
+            endforeach;
+            // Everything after the Totals row is garbage.
+
+            foreach ( $rowsOfInterest as $rawRow ):
+                try {
+                    $bookingDate = Carbon::parse( $rawRow[ 7 ], $this->timezone );
+                } catch ( \Exception $exception ) {
+                    $bookingDate = NULL;
+                }
+
+                try {
+                    $closingDate = Carbon::parse( $rawRow[ 8 ], $this->timezone );
+                } catch ( \Exception $exception ) {
+                    $closingDate = NULL;
+                }
+
+                try {
+                    $effectiveDate = Carbon::parse( $rawRow[ 9 ], $this->timezone );
+                } catch ( \Exception $exception ) {
+                    $effectiveDate = NULL;
+                }
+
+                $parsedRows[] = [
+                    self::pros_id                     => $rawRow[ 0 ],
+                    self::loan_number                 => $rawRow[ 1 ],
+                    self::pre_modification_balance    => $this->_formatNumber( $rawRow[ 2 ] ),
+                    self::pre_modification_rate       => $this->_formatPercent( $rawRow[ 3 ] ),
+                    self::post_modification_balance   => $this->_formatNumber( $rawRow[ 4 ] ),
+                    self::post_modification_rate      => $this->_formatPercent( $rawRow[ 5 ] ),
+                    self::modification_code           => $rawRow[ 6 ],
+                    self::modification_booking_date   => $bookingDate,
+                    self::modification_closing_date   => $closingDate,
+                    self::modification_effective_date => $effectiveDate,
+                ];
+            endforeach;
+        endforeach;
+
+        return $parsedRows;
+    }
+
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    protected function getDelinquencyLoanDetail(): array {
+        $sectionName = 'Delinquency Loan Detail';
+        $pageIndexes = $this->getPageRangeBySection( $sectionName );
+
+        $pagesAsArrays = [];
+        foreach ( $pageIndexes as $index ):
+            $currentPage     = $this->pages[ $index ];
+            $pagesAsArrays[] = $currentPage->getTextArray( $currentPage );
+        endforeach;
+
+        $parsedRows = [];
+
+
+        // Remove Headers
+        $numHeaders = 32;
+        foreach ( $pagesAsArrays as $page ):
+            for ( $i = 0; $i <= $numHeaders; $i++ ):
+                array_shift( $page );
+            endfor;
+
+            // Set CHUNK Size
+            // If there are no bankruptcies etc, then there won't be dates in the last few columns.
+            // If that's the case, then the parser will just skip those cells.
+            try {
+                Carbon::parse( $page[ 9 ], $this->timezone );
+                $chunkSize = 13;
+            } catch ( \Exception $exception ) {
+                $chunkSize = 9;
+            }
+
+            $rawRows = array_chunk( $page, $chunkSize );
+
+            // Remove footer rows
+            $rowsOfInterest = [];
+            foreach ( $rawRows as $i => $rawRow ):
+                if ( 'Totals' == $rawRow[ 0 ] ):
+                    break;
+                endif;
+                $rowsOfInterest[] = $rawRow;
+            endforeach;
+            // Everything after the Totals row is garbage.
+
+            foreach ( $rowsOfInterest as $rawRow ):
+                try {
+                    $paidThroughDate = Carbon::parse( $rawRow[ 2 ], $this->timezone );
+                } catch ( \Exception $exception ) {
+                    $paidThroughDate = NULL;
+                }
+
+                // If there has been some trouble with this security, you will have some extra fields.
+                if ( 13 == $chunkSize ):
+                    try {
+                        $servicingTransferDate = Carbon::parse( $rawRow[ 9 ], $this->timezone );
+                    } catch ( \Exception $exception ) {
+                        $servicingTransferDate = NULL;
+                    }
+
+                    try {
+                        $bankruptcyDate = Carbon::parse( $rawRow[ 11 ], $this->timezone );
+                    } catch ( \Exception $exception ) {
+                        $bankruptcyDate = NULL;
+                    }
+
+                    try {
+                        $foreclosureDate = Carbon::parse( $rawRow[ 12 ], $this->timezone );
+                    } catch ( \Exception $exception ) {
+                        $foreclosureDate = NULL;
+                    }
+
+                    try {
+                        $reoDate = Carbon::parse( $rawRow[ 13 ], $this->timezone );
+                    } catch ( \Exception $exception ) {
+                        $reoDate = NULL;
+                    }
+                else:
+                    $servicingTransferDate = NULL;
+                    $bankruptcyDate        = NULL;
+                    $foreclosureDate       = NULL;
+                    $reoDate               = NULL;
+                endif;
+
+                $parsedRows[] = [
+                    self::pros_id                       => $rawRow[ 0 ],
+                    self::loan_number                   => $rawRow[ 1 ],
+                    self::paid_through_date             => $paidThroughDate,
+                    self::months_delinquent             => $rawRow[ 3 ],
+                    self::mortgage_loan_status          => $rawRow[ 4 ],
+                    self::current_p_and_i_advances      => $this->_formatNumber( $rawRow[ 5 ] ),
+                    self::outstanding_p_and_i_advances  => $this->_formatNumber( $rawRow[ 6 ] ),
+                    self::outstanding_servicer_advances => $this->_formatNumber( $rawRow[ 7 ] ),
+                    self::actual_principal_balance      => $this->_formatNumber( $rawRow[ 8 ] ),
+                    self::servicing_transfer_date       => $servicingTransferDate,
+                    self::resolution_strategy_code      => isset( $rawRow[ 10 ] ) ? $this->_formatNumber( $rawRow[ 10 ] ) : NULL,
+                    self::bankruptcy_date               => $bankruptcyDate,
+                    self::foreclosure_date              => $foreclosureDate,
+                    self::reo_date                      => $reoDate,
+                ];
+            endforeach;
+        endforeach;
+
+        return $parsedRows;
+    }
+
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    protected function getHistoricalDetail(): array {
+        $sectionName = 'Historical Detail';
+        $pageIndexes = $this->getPageRangeBySection( $sectionName );
+
+        $pagesAsArrays = [];
+        foreach ( $pageIndexes as $index ):
+            $currentPage     = $this->pages[ $index ];
+            $pagesAsArrays[] = $currentPage->getTextArray( $currentPage );
+        endforeach;
+
+        $parsedRows = [];
+
+        // Remove Headers
+        $numHeaders = 35;
+        foreach ( $pagesAsArrays as $page ):
+            for ( $i = 0; $i <= $numHeaders; $i++ ):
+                array_shift( $page );
+            endfor;
+
+            $rawRows = array_chunk( $page, 20 );
+
+            // Remove footer rows
+            $rowsOfInterest = [];
+            foreach ( $rawRows as $i => $rawRow ):
+                try {
+                    Carbon::parse( $rawRow[ 0 ], $this->timezone );
+                    $rowsOfInterest[] = $rawRow;
+                } catch ( \Exception $exception ) {
+                    break;
+                }
+            endforeach;
+            // Everything without a date in the first column is garbage.
+
+            foreach ( $rowsOfInterest as $rawRow ):
+                $parsedRows[] = [
+                    self::distribution_date                               => Carbon::parse( $rawRow[ 0 ], $this->timezone ),
+                    self::delinquencies_30_59_days_number                 => $this->_formatNumber( $rawRow[ 1 ] ),
+                    self::delinquencies_30_59_days_balance                => $this->_formatNumber( $rawRow[ 2 ] ),
+                    self::delinquencies_60_89_days_number                 => $this->_formatNumber( $rawRow[ 3 ] ),
+                    self::delinquencies_60_89_days_balance                => $this->_formatNumber( $rawRow[ 4 ] ),
+                    self::delinquencies_90_plus_days_number               => $this->_formatNumber( $rawRow[ 5 ] ),
+                    self::delinquencies_90_plus_days_balance              => $this->_formatNumber( $rawRow[ 6 ] ),
+                    self::foreclosure_number                              => $this->_formatNumber( $rawRow[ 7 ] ),
+                    self::foreclosure_balance                             => $this->_formatNumber( $rawRow[ 8 ] ),
+                    self::reo_number                                      => $this->_formatNumber( $rawRow[ 9 ] ),
+                    self::reo_balance                                     => $this->_formatNumber( $rawRow[ 10 ] ),
+                    self::modifications_number                            => $this->_formatNumber( $rawRow[ 11 ] ),
+                    self::modifications_balance                           => $this->_formatNumber( $rawRow[ 12 ] ),
+                    self::prepayments_curtailments_number                 => $this->_formatNumber( $rawRow[ 13 ] ),
+                    self::prepayments_curtailments_amount                 => $this->_formatNumber( $rawRow[ 14 ] ),
+                    self::prepayments_payoff_number                       => $this->_formatNumber( $rawRow[ 15 ] ),
+                    self::prepayments_payoff_amount                       => $this->_formatNumber( $rawRow[ 16 ] ),
+                    self::rate_and_maturities_net_weighted_average_coupon => $this->_formatPercent( $rawRow[ 17 ] ),
+                    self::rate_and_maturities_net_weighted_average_remit  => $this->_formatPercent( $rawRow[ 18 ] ),
+                    self::rate_and_maturities_wam                         => $this->_formatNumber( $rawRow[ 19 ] ),
+                ];
+            endforeach;
+        endforeach;
+
+        return $parsedRows;
     }
 
 
@@ -254,6 +559,10 @@ class CMBSDistributionFileFactory {
     }
 
 
+    /**
+     * @param array $pages
+     * @return array
+     */
     protected function _parseCertificateFactorDetailRowsFromPageArray( array $pages ): array {
         $parsedRows = [];
 
@@ -278,6 +587,11 @@ class CMBSDistributionFileFactory {
     }
 
 
+    /**
+     * @param array $pages
+     * @return array
+     * @throws \Exception
+     */
     protected function _parseCertificateInterestReconciliationDetailRowsFromPageArray( array $pages ): array {
         $parsedRows = [];
 

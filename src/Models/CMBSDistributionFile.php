@@ -25,9 +25,13 @@ class CMBSDistributionFile {
 
     public array $dates = [];
 
-    public array $certificateDistributionDetail = [];
-    public array $certificateFactorDetail       = [];
+    public array $certificateDistributionDetail           = [];
+    public array $certificateFactorDetail                 = [];
     public array $certificateInterestReconciliationDetail = [];
+
+    public array $modifiedLoanDetail    = [];
+    public array $delinquencyLoanDetail = [];
+    public array $historicalDetail      = [];
 
     public function __construct() {
     }
