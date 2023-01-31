@@ -405,6 +405,10 @@ class CMBSDistributionFileFactory {
     }
 
 
+    /**
+     * @param array $row
+     * @return array
+     */
     private function _parseCertificateFactorDetailRow( array $row ): array {
         $newRow = [];
 
@@ -424,6 +428,11 @@ class CMBSDistributionFileFactory {
     }
 
 
+    /**
+     * @param array $row
+     * @return array
+     * @throws \Exception
+     */
     private function _parseCertificateInterestReconciliationDetailRow( array $row ): array {
         $newRow = [];
 
