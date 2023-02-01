@@ -137,6 +137,7 @@ class CMBSDistributionFileFactory {
         $distributionFile->modifiedLoanDetail                      = $this->getModifiedLoanDetail();
         $distributionFile->delinquencyLoanDetail                   = $this->getDelinquencyLoanDetail();
         $distributionFile->historicalDetail                        = $this->getHistoricalDetail();
+        $distributionFile->mortgageLoanDetailPart1                 = $this->getMortgageLoanDetailPartOne();
 
 
         return $distributionFile;
@@ -438,6 +439,85 @@ class CMBSDistributionFileFactory {
             endfor;
 
             $rawRows = array_chunk( $page, 20 );
+
+            // Remove footer rows
+            $rowsOfInterest = [];
+            foreach ( $rawRows as $i => $rawRow ):
+                try {
+                    Carbon::parse( $rawRow[ 0 ], $this->timezone );
+                    $rowsOfInterest[] = $rawRow;
+                } catch ( \Exception $exception ) {
+                    break;
+                }
+            endforeach;
+            // Everything without a date in the first column is garbage.
+
+            foreach ( $rowsOfInterest as $rawRow ):
+                $parsedRows[] = [
+                    self::distribution_date                               => Carbon::parse( $rawRow[ 0 ], $this->timezone ),
+                    self::delinquencies_30_59_days_number                 => $this->_formatNumber( $rawRow[ 1 ] ),
+                    self::delinquencies_30_59_days_balance                => $this->_formatNumber( $rawRow[ 2 ] ),
+                    self::delinquencies_60_89_days_number                 => $this->_formatNumber( $rawRow[ 3 ] ),
+                    self::delinquencies_60_89_days_balance                => $this->_formatNumber( $rawRow[ 4 ] ),
+                    self::delinquencies_90_plus_days_number               => $this->_formatNumber( $rawRow[ 5 ] ),
+                    self::delinquencies_90_plus_days_balance              => $this->_formatNumber( $rawRow[ 6 ] ),
+                    self::foreclosure_number                              => $this->_formatNumber( $rawRow[ 7 ] ),
+                    self::foreclosure_balance                             => $this->_formatNumber( $rawRow[ 8 ] ),
+                    self::reo_number                                      => $this->_formatNumber( $rawRow[ 9 ] ),
+                    self::reo_balance                                     => $this->_formatNumber( $rawRow[ 10 ] ),
+                    self::modifications_number                            => $this->_formatNumber( $rawRow[ 11 ] ),
+                    self::modifications_balance                           => $this->_formatNumber( $rawRow[ 12 ] ),
+                    self::prepayments_curtailments_number                 => $this->_formatNumber( $rawRow[ 13 ] ),
+                    self::prepayments_curtailments_amount                 => $this->_formatNumber( $rawRow[ 14 ] ),
+                    self::prepayments_payoff_number                       => $this->_formatNumber( $rawRow[ 15 ] ),
+                    self::prepayments_payoff_amount                       => $this->_formatNumber( $rawRow[ 16 ] ),
+                    self::rate_and_maturities_net_weighted_average_coupon => $this->_formatPercent( $rawRow[ 17 ] ),
+                    self::rate_and_maturities_net_weighted_average_remit  => $this->_formatPercent( $rawRow[ 18 ] ),
+                    self::rate_and_maturities_wam                         => $this->_formatNumber( $rawRow[ 19 ] ),
+                ];
+            endforeach;
+        endforeach;
+
+        return $parsedRows;
+    }
+
+
+    protected function getMortgageLoanDetailPartOne(): array {
+        $sectionName = 'Mortgage Loan Detail (Part 1)';
+        $pageIndexes = $this->getPageRangeBySection( $sectionName );
+
+        $pagesAsArrays = [];
+        foreach ( $pageIndexes as $index ):
+            /**
+             * @var Page $currentPage
+             */
+            $currentPage     = $this->pages[ $index ];
+            //$pagesAsArrays[] = $currentPage->getTextArray( $currentPage );
+            $text = $currentPage->getText( $currentPage );
+            $text = $currentPage->getContent( $currentPage );
+            $text = $currentPage->getXObjects(  );
+            $text = $currentPage->getSectionsText( $currentPage );
+
+            var_dump($text);
+            die();
+        endforeach;
+
+        $parsedRows = [];
+
+        print_r( $pagesAsArrays );
+        die( 'death' );
+
+        // Remove Headers
+        $numHeaders = 33;
+        foreach ( $pagesAsArrays as $page ):
+            for ( $i = 0; $i <= $numHeaders; $i++ ):
+                array_shift( $page );
+            endfor;
+
+            $rawRows = array_chunk( $page, 16 );
+
+            print_r( $rawRows );
+            die( 'death' );
 
             // Remove footer rows
             $rowsOfInterest = [];
