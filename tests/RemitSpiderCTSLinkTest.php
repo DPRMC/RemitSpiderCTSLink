@@ -182,6 +182,8 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $spider->disableDebug();
         $spider->Login->login();
         $shelfLinks = $spider->CMBSDistributionFilesHelper->getShelfLinks();
+
+        print_r($shelfLinks);
         $this->assertNotEmpty( $shelfLinks );
     }
 
