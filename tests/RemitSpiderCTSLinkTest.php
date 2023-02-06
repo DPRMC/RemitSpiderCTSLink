@@ -133,7 +133,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $factory              = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSDistributionFileFactory();
         $cmbsDistributionFile = $factory->make( $filePath );
 
-        print_r($cmbsDistributionFile);
+        print_r( $cmbsDistributionFile );
 
         $this->assertInstanceOf( \DPRMC\RemitSpiderCTSLink\Models\CMBSDistributionFile::class,
                                  $cmbsDistributionFile );
@@ -183,7 +183,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $spider->Login->login();
         $shelfLinks = $spider->CMBSDistributionFilesHelper->getShelfLinks();
 
-        print_r($shelfLinks);
+        print_r( $shelfLinks );
         $this->assertNotEmpty( $shelfLinks );
     }
 
@@ -205,6 +205,75 @@ class RemitSpiderCTSLinkTest extends TestCase {
             print_r( $data );
             $this->assertNotEmpty( $data );
         endforeach;
+    }
+
+    /**
+     * @test
+     * @group cmbs-help
+     */
+    public function testCMBSHelper() {
+        $spider = $this->_getSpider();
+        $spider->disableDebug();
+        $spider->Login->login();
+        $shelfLinks = $spider->CMBSDistributionFilesHelper->getShelfLinks();
+
+        print_r( $shelfLinks );
+
+
+        foreach ( $shelfLinks as $shelfLink ):
+            echo "\nSHELF LINK IS: " . $shelfLink . " ";
+            try {
+                $seriesLinks = $spider->CMBSDistributionFilesHelper->getSeriesLinks( $shelfLink );
+                foreach ( $seriesLinks as $i => $seriesLink ):
+                    echo "\n   " . $i + 1 . " of " . count( $seriesLinks ) . ": " . $seriesLink;
+                endforeach;
+            } catch ( \HeadlessChromium\Exception\OperationTimedOut $exception ) {
+                echo "\nEXCEPTION: " . $exception->getMessage();
+            }
+        endforeach;
+    }
+
+
+    /**
+     * @test
+     * @group rest
+     */
+    public function testRestrictedServicerReport(){
+        $seriesLink = 'https://www.ctslink.com/a/seriesdocs.html?shelfId=JPC&seriesId=2015C31';
+
+        // CMBSRestrictedServicerReportHelper
+
+        $spider = $this->_getSpider();
+        $spider->disableDebug();
+        $spider->Login->login();
+
+        $spider->CMBSRestrictedServicerReportHelper->getAllRestrictedServicerReportLinks($seriesLink);
+
+
+
+
+
+//        $shelfLinks = $spider->CMBSRestrictedServicerReportHelper->getShelfLinks();
+//        print_r($shelfLinks);
+//
+//        foreach ( $shelfLinks as $shelfLink ):
+//            echo "\nSHELF LINK IS: " . $shelfLink . " ";
+//            try {
+//                $seriesLinks = $spider->CMBSRestrictedServicerReportHelper->getSeriesLinks( $shelfLink );
+//                foreach ( $seriesLinks as $i => $seriesLink ):
+//                    echo "\n   " . $i + 1 . " of " . count( $seriesLinks ) . ": " . $seriesLink;
+//
+//
+//
+//
+//                endforeach;
+//            } catch ( \HeadlessChromium\Exception\OperationTimedOut $exception ) {
+//                echo "\nEXCEPTION: " . $exception->getMessage();
+//            }
+//
+//        endforeach;
+
+
     }
 
 }

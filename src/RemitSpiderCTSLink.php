@@ -2,6 +2,7 @@
 
 namespace DPRMC\RemitSpiderCTSLink;
 
+use DPRMC\RemitSpiderCTSLink\Helpers\CMBSRestrictedServicerReportsHelper;
 use DPRMC\RemitSpiderCTSLink\Helpers\CTSLinkBrowser;
 use DPRMC\RemitSpiderCTSLink\Helpers\Debug;
 use DPRMC\RemitSpiderCTSLink\Helpers\FileDownloader;
@@ -24,12 +25,14 @@ class RemitSpiderCTSLink {
     /**
      * @var CTSLinkBrowser
      */
-    public CTSLinkBrowser              $CTSLinkBrowser;
-    public Debug                       $Debug;
-    public Login                       $Login;
-    public FileDownloader              $FileDownloader;
-    public FilesByCUSIP                $FilesByCUSIP;
-    public CMBSDistributionFilesHelper $CMBSDistributionFilesHelper;
+    public CTSLinkBrowser                      $CTSLinkBrowser;
+    public Debug                               $Debug;
+    public Login                               $Login;
+    public FileDownloader                      $FileDownloader;
+    public FilesByCUSIP                        $FilesByCUSIP;
+    public CMBSDistributionFilesHelper         $CMBSDistributionFilesHelper;
+    public CMBSRestrictedServicerReportsHelper $CMBSRestrictedServicerReportHelper;
+
 
     const  BASE_URL = 'https://www.ctslink.com';
 
@@ -80,6 +83,10 @@ class RemitSpiderCTSLink {
         $this->CMBSDistributionFilesHelper = new CMBSDistributionFilesHelper( $this->CTSLinkBrowser->page,
                                                                               $this->Debug,
                                                                               $this->timezone );
+
+        $this->CMBSRestrictedServicerReportHelper = new CMBSRestrictedServicerReportsHelper( $this->CTSLinkBrowser->page,
+                                                                                             $this->Debug,
+                                                                                             $this->timezone );
     }
 
 

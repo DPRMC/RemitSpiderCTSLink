@@ -4,7 +4,6 @@ namespace DPRMC\RemitSpiderCTSLink\Helpers;
 
 use DPRMC\RemitSpiderCTSLink\Exceptions\WrongNumberOfTitleElementsException;
 use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
-use HeadlessChromium\Cookies\CookiesCollection;
 use HeadlessChromium\Exception\CommunicationException;
 use HeadlessChromium\Exception\CommunicationException\CannotReadResponse;
 use HeadlessChromium\Exception\CommunicationException\InvalidResponse;
@@ -17,21 +16,7 @@ use HeadlessChromium\Page;
 /**
  * QUERY SELECTOR EXAMPLES: protected string $querySelectorForLinks = '#results-table > tbody > tr';
  */
-class CMBSDistributionFilesHelper {
-
-    protected Page   $Page;
-    protected Debug  $Debug;
-    protected string $timezone;
-
-    public CookiesCollection $cookies;
-
-    const BASE_URL       = 'https://www.ctslink.com';
-    const CMBS_MAIN_PAGE = 'https://www.ctslink.com/a/shelflist.html?shelfType=CMBS';
-
-
-    const type   = 'type';
-    const shelf  = 'shelf';
-    const series = 'series';
+class CMBSDistributionFilesHelper extends CMBSHelper {
 
     const href                       = 'href'; // The URL of the page with this data.
     const access                     = 'access';
@@ -43,8 +28,6 @@ class CMBSDistributionFilesHelper {
     const revised_date               = 'revised_date';
 
 
-
-
     /**
      * Sometimes the CTS link site will time out.
      * A good idea to keep track of the links we were unable to parse, so
@@ -54,52 +37,19 @@ class CMBSDistributionFilesHelper {
     protected array $linksWeWereUnableToPull = [];
 
 
+    /**
+     * @param Page $Page
+     * @param Debug $Debug
+     * @param string $timezone
+     */
     public function __construct( Page   &$Page,
                                  Debug  &$Debug,
                                  string $timezone = RemitSpiderCTSLink::DEFAULT_TIMEZONE ) {
-        $this->Page     = $Page;
-        $this->Debug    = $Debug;
-        $this->timezone = $timezone;
+        parent::__construct( $Page, $Debug, $timezone );
     }
 
 
-    /**
-     * Step one in the process.
-     * We should already be logged in by the Spider at this point.
-     * If there is ONLY one SERIES under a SHELF then this "shelf link" could
-     * indeed be a link to a SERIES page. No way to know until you navigate to it.
-     * @return array Ex: https://www.ctslink.com/a/serieslist.html?shelfId=ZHD
-     * @throws \HeadlessChromium\Exception\CommunicationException
-     * @throws \HeadlessChromium\Exception\CommunicationException\CannotReadResponse
-     * @throws \HeadlessChromium\Exception\CommunicationException\InvalidResponse
-     * @throws \HeadlessChromium\Exception\CommunicationException\ResponseHasError
-     * @throws \HeadlessChromium\Exception\NavigationExpired
-     * @throws \HeadlessChromium\Exception\NoResponseAvailable
-     * @throws \HeadlessChromium\Exception\OperationTimedOut
-     */
-    public function getShelfLinks(): array {
-        $this->Page->navigate( self::CMBS_MAIN_PAGE )->waitForNavigation();
-        $cmbsHTML   = $this->Page->getHtml();
-        $shelfLinks = [];
 
-        $dom = new \DOMDocument();
-        @$dom->loadHTML( $cmbsHTML );
-
-        /**
-         * @var \DOMNodeList $elements
-         */
-        $elements = $dom->getElementsByTagName( 'a' );
-
-        foreach ( $elements as $element ):
-            $href = $element->getAttribute( 'href' );
-            if ( $this->_isShelfLinkOnCMBSPage( $href ) ):
-                $this->Debug->_debug( $href );
-                $shelfLinks[] = self::BASE_URL . $href;
-            endif;
-        endforeach;
-
-        return $shelfLinks;
-    }
 
 
     /**
@@ -107,7 +57,7 @@ class CMBSDistributionFilesHelper {
      * Given a SHELF href (or potentially SERIES href if there is only 1 SERIES under that SHELF)
      * This method will return all the Distribution Date Statement Data.
      * Given all of that data, the calling script can determine which PDFs it downloads.
-     * @param string $href
+     * @param string $potentialShelfLink
      * @return array
      * @throws CannotReadResponse
      * @throws CommunicationException
@@ -117,36 +67,23 @@ class CMBSDistributionFilesHelper {
      * @throws OperationTimedOut
      * @throws ResponseHasError
      */
-    public function getDistributionDateStatementDataFromLink( string $href ): array {
+    public function getDistributionDateStatementDataFromLink( string $potentialShelfLink ): array {
         $distributionFileData = [];
-        $this->Page->navigate( $href )->waitForNavigation();
-        $html = $this->Page->getHtml();
 
-        if ( $this->_isSeriesPage( $html ) ):
-            $seriesData = $this->_getSecurityNamePartsFromHtmlOnSeriesPage( $html, $href );
+        $seriesLinks = $this->getSeriesLinks( $potentialShelfLink);
 
-            $newDistributionFileData = $this->_getDistributionDateStatementDataFromHtml( $html, $seriesData, $href );
+        foreach($seriesLinks as $i => $seriesLink):
+            $this->Page->navigate( $seriesLink )->waitForNavigation();
+            $html = $this->Page->getHtml();
+            $seriesData = $this->_getSecurityNamePartsFromHtmlOnSeriesPage( $html, $potentialShelfLink );
+
+            $newDistributionFileData = $this->_getDistributionDateStatementDataFromHtml( $html,
+                                                                                         $seriesData,
+                                                                                         $potentialShelfLink );
             if ( $newDistributionFileData ):
                 $distributionFileData = array_merge( $distributionFileData, $newDistributionFileData );
             endif;
-        else:
-            $seriesLinks = $this->_getSeriesLinksFromShelfPageHtml( $html );
-            foreach ( $seriesLinks as $seriesLink ):
-                $this->Page->navigate( $seriesLink )->waitForNavigation();
-                $html = $this->Page->getHtml();
-                if ( $this->_isSeriesPage( $html ) ):
-                    $seriesData = $this->_getSecurityNamePartsFromHtmlOnSeriesPage( $html, $seriesLink );
-
-                    $newDistributionFileData = $this->_getDistributionDateStatementDataFromHtml( $html, $seriesData, $seriesLink );
-                    if ( $newDistributionFileData ):
-                        $distributionFileData = array_merge( $distributionFileData, $newDistributionFileData );
-                    endif;
-                else:
-                    $this->Debug->_debug( "WTF is: " . $seriesLink );
-                endif;
-            endforeach;
-
-        endif;
+        endforeach;
 
         return $distributionFileData;
     }
@@ -190,58 +127,9 @@ class CMBSDistributionFilesHelper {
     }
 
 
-    /**
-     * If there are multiple SERIES under a SHELF, then I need to parse out the links
-     * to the SERIES pages from this shelf HTML.
-     * @param string $html
-     * @return array
-     */
-    protected function _getSeriesLinksFromShelfPageHtml( string $html ): array {
-        $seriesLinks = [];
 
-        $dom = new \DOMDocument();
-        @$dom->loadHTML( $html );
 
-        /**
-         * @var \DOMNodeList $elements
-         */
-        $elements = $dom->getElementsByTagName( 'a' );
 
-        /**
-         *
-         */
-        foreach ( $elements as $element ):
-            $seriesLink = trim( $element->getAttribute( 'href' ) );
-            if ( empty( $seriesLink ) ):
-                continue;
-            endif;
-
-            if ( FALSE === str_contains( $seriesLink, '/a/seriesdocs.html?shelfId=' ) ):
-                continue;
-            endif;
-            $seriesLinks[] = self::BASE_URL . $seriesLink;
-        endforeach;
-
-        return $seriesLinks;
-    }
-
-    /**
-     * If this page is a series page, then the string "Restricted Report"
-     * will be in an H2 element towards the top of the page.
-     * The SERIES page will have the links to the PDFs.
-     * The alternative is a SHELF page, that will have a bunch of links to
-     * SERIES pages.
-     * @param string $html
-     * @return bool
-     */
-    private function _isSeriesPage( string $html ): bool {
-        $pattern = '/Restricted Reports/';
-        $found   = preg_match( $pattern, $html, $matches );
-        if ( 1 !== $found ):
-            return FALSE;
-        endif;
-        return TRUE;
-    }
 
 
     /**
@@ -308,47 +196,7 @@ class CMBSDistributionFilesHelper {
     }
 
 
-    /**
-     * This method assumes that $href refers to a SERIES page.
-     * @param string $html
-     * @param string $href A link to a SERIES page.
-     * @return array
-     * @throws \Exception
-     */
-    private function _getSecurityNamePartsFromHtmlOnSeriesPage( string $html, string $href ): array {
-        $dom = new \DOMDocument();
-        @$dom->loadHTML( $html );
-        $xpath     = new \DOMXPath( $dom );
-        $classname = 'c67';
-        $nodes     = $xpath->query( "//*[contains(@class, '$classname')]" );
-        $ul        = $nodes->item( 0 );
-        $lis       = $ul->childNodes;
 
-        $bulletItems = [];
-        /**
-         * @var \DOMNode $li
-         */
-        foreach ( $lis as $li ):
-            $bulletItems[] = trim( $li->textContent );
-        endforeach;
-
-        // Remove empty elements
-        $bulletItems = array_filter( $bulletItems );
-
-        // Remove "Home" from the rest
-        array_shift( $bulletItems );
-
-        if ( 3 != count( $bulletItems ) ):
-            throw new \Exception( "Not the right number of security name parts in . " . $href );
-        endif;
-
-        $data                 = [];
-        $data[ self::type ]   = $bulletItems[ 0 ];
-        $data[ self::shelf ]  = $bulletItems[ 1 ];
-        $data[ self::series ] = $bulletItems[ 2 ];
-
-        return $data;
-    }
 
 
     /**

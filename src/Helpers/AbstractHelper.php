@@ -26,4 +26,6 @@ abstract class AbstractHelper {
         $this->Debug    = $Debug;
         $this->timezone = $timezone;
     }
+
+
 }
