@@ -2,16 +2,8 @@
 
 namespace DPRMC\RemitSpiderCTSLink\Helpers;
 
-use DPRMC\RemitSpiderCTSLink\Exceptions\WrongNumberOfTitleElementsException;
+use DPRMC\RemitSpiderCTSLink\Exceptions\NoAccessToRestrictedServicerReportException;
 use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
-use HeadlessChromium\Cookies\CookiesCollection;
-use HeadlessChromium\Exception\CommunicationException;
-use HeadlessChromium\Exception\CommunicationException\CannotReadResponse;
-use HeadlessChromium\Exception\CommunicationException\InvalidResponse;
-use HeadlessChromium\Exception\CommunicationException\ResponseHasError;
-use HeadlessChromium\Exception\NavigationExpired;
-use HeadlessChromium\Exception\NoResponseAvailable;
-use HeadlessChromium\Exception\OperationTimedOut;
 use HeadlessChromium\Page;
 
 /**
@@ -28,10 +20,70 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
 
 
     /**
+     * https://www.ctslink.com/a/history.html?shelfId=JPC&seriesId=2007CIBC20&doc=JPC_2007CIBC20_RSRV
+     * @param string $shelf
+     * @param string $series
+     * @return array
+     * @throws \HeadlessChromium\Exception\CommunicationException
+     * @throws \HeadlessChromium\Exception\CommunicationException\CannotReadResponse
+     * @throws \HeadlessChromium\Exception\CommunicationException\InvalidResponse
+     * @throws \HeadlessChromium\Exception\CommunicationException\ResponseHasError
+     * @throws \HeadlessChromium\Exception\FilesystemException
+     * @throws \HeadlessChromium\Exception\NavigationExpired
+     * @throws \HeadlessChromium\Exception\NoResponseAvailable
+     * @throws \HeadlessChromium\Exception\OperationTimedOut
+     * @throws \HeadlessChromium\Exception\ScreenshotFailed
+     * @throws NoAccessToRestrictedServicerReportException
+     */
+    public function getAllRestrictedServicerReportLinksFromSeriesPage( string $shelf, string $series ): array {
+        $documentLinks         = [];
+        $additionalHistoryLink = self::HISTORY_URL . 'shelfId=' . $shelf . '&seriesId=' . $series . '&doc=' . $shelf . '_' . $series . '_RSRV';
+        $this->Debug->_debug( " Navigating to: " . $additionalHistoryLink );
+        $this->Page->navigate( $additionalHistoryLink )->waitForNavigation();
+        $this->Debug->_screenshot( urlencode( $additionalHistoryLink ) );
+        $this->Debug->_html( urlencode( $additionalHistoryLink ) );
+
+        $html = $this->Page->getHtml();
+
+        if ( str_contains( $html, 'Get Access' ) ):
+            throw new NoAccessToRestrictedServicerReportException( "We do not have access to this Series: " . $additionalHistoryLink,
+                                                                   0,
+                                                                   NULL,
+                                                                   $shelf,
+                                                                   $series );
+        endif;
+
+        $dom = new \DOMDocument();
+        @$dom->loadHTML( $html );
+
+        /**
+         * @var \DOMNodeList $links
+         */
+        $links = $dom->getElementsByTagName( 'a' );
+
+        /**
+         * @var \DOMElement $link
+         */
+        foreach ( $links as $link ):
+            $href = $link->getAttribute( 'href' );
+            if ( str_contains( $href, '/a/document.html?key=' ) ):
+                $documentLinks[] = CMBSHelper::BASE_URL . $href;
+            endif;
+        endforeach;
+
+        return $documentLinks;
+    }
+
+
+    /**
+     * https://www.ctslink.com/a/serieslist.html?shelfId=JPC
      * https://www.ctslink.com/a/seriesdocs.html?shelfId=JPC&seriesId=2015C31
      * https://www.ctslink.com/a/history.html?shelfId=JPC&seriesId=2015C31&doc=JPC_2015C31_RSRV
+     *
+     * test
+     *  https://www.ctslink.com/a/history.html?shelfId=JPC&seriesId=2007CIBC20&doc=JPC_2007CIBC20_RSRV
      */
-    public function getAllRestrictedServicerReportLinks($seriesLink): array  {
+    public function getAllRestrictedServicerReportLinks( $seriesLink ): array {
         $restrictedServicerReportLinks = [];
 
         $this->Page->navigate( $seriesLink )->waitForNavigation();

@@ -11,6 +11,10 @@ class CMBSHelper extends AbstractHelper {
     const BASE_URL       = 'https://www.ctslink.com';
     const CMBS_MAIN_PAGE = 'https://www.ctslink.com/a/shelflist.html?shelfType=CMBS';
 
+    // EX: https://www.ctslink.com/a/history.html?shelfId=JPC&seriesId=2007CIBC20&doc=JPC_2007CIBC20_RSRV
+    const HISTORY_URL = self::BASE_URL . '/a/history.html?';
+
+
     const type   = 'type';
     const shelf  = 'shelf';
     const series = 'series';
@@ -56,6 +60,75 @@ class CMBSHelper extends AbstractHelper {
         return $shelfLinks;
     }
 
+
+    /**
+     * @param string $potentialShelfLink
+     * @return array
+     * @throws \HeadlessChromium\Exception\CommunicationException
+     * @throws \HeadlessChromium\Exception\CommunicationException\CannotReadResponse
+     * @throws \HeadlessChromium\Exception\CommunicationException\InvalidResponse
+     * @throws \HeadlessChromium\Exception\CommunicationException\ResponseHasError
+     * @throws \HeadlessChromium\Exception\NavigationExpired
+     * @throws \HeadlessChromium\Exception\NoResponseAvailable
+     * @throws \HeadlessChromium\Exception\OperationTimedOut
+     */
+    public function getSeriesLinks( string $potentialShelfLink ): array {
+        $seriesLinks = [];
+
+        $this->Debug->_debug( "Navigating to " . $potentialShelfLink );
+
+        $this->Page->navigate( self::CMBS_MAIN_PAGE )->waitForNavigation();
+
+        $this->Page->navigate( $potentialShelfLink )->waitForNavigation();
+        $html = $this->Page->getHtml();
+
+        $this->Debug->_html( urlencode( $potentialShelfLink ) );
+
+        // If the Shelf link we checked goes right to a Series page, that is the CTS site telling us that
+        // there is only one Series under this Shelf.
+        if ( $this->_isSeriesPage( $html ) ):
+            $this->Debug->_debug( $potentialShelfLink . " is a Series Page" );
+            $seriesLinks[] = $potentialShelfLink;
+        else:
+            $this->Debug->_debug( $potentialShelfLink . " is a SHELF Page" );
+            $this->Debug->_screenshot( urlencode( $potentialShelfLink ) );
+            $seriesLinks = $this->_getSeriesLinksFromShelfPageHtml( $html );
+
+//            $this->Debug->_debug( print_r( $seriesLinks, TRUE ) );
+//            foreach ( $seriesLinks as $seriesLink ):
+//                $this->Debug->_debug( " Navigating to: " . $seriesLink );
+//
+//                $this->Page->navigate( $seriesLink )->waitForNavigation();
+//                $html = $this->Page->getHtml();
+//                if ( $this->_isSeriesPage( $html ) ):
+//                    $seriesLinks[] = $seriesLink;
+//                else:
+//                    $this->Debug->_debug( "WTF is: " . $seriesLink );
+//                endif;
+//            endforeach;
+        endif;
+
+        return $seriesLinks;
+    }
+
+
+    /**
+     * @param string $seriesLink
+     * @return array
+     */
+    public function getPartsFromSeriesLink( string $seriesLink ): array {
+        $parts      = parse_url( $seriesLink );
+        $queryParts = explode( '&', $parts['query'] );
+        $shelf      = str_replace( 'shelfId=', '', $queryParts[ 0 ] );
+        $series     = str_replace( 'seriesId=', '', $queryParts[ 1 ] );
+
+        return [
+            self::shelf  => $shelf,
+            self::series => $series,
+        ];
+    }
+
+
     /**
      * When I load the CMBS page, there will be a list of links to
      * CMBS shelves. There can be 1 or more series under a shelf, FYI.
@@ -71,43 +144,6 @@ class CMBSHelper extends AbstractHelper {
         return TRUE;
     }
 
-
-    /**
-     * @param string $potentialShelfLink
-     * @return array
-     * @throws \HeadlessChromium\Exception\CommunicationException
-     * @throws \HeadlessChromium\Exception\CommunicationException\CannotReadResponse
-     * @throws \HeadlessChromium\Exception\CommunicationException\InvalidResponse
-     * @throws \HeadlessChromium\Exception\CommunicationException\ResponseHasError
-     * @throws \HeadlessChromium\Exception\NavigationExpired
-     * @throws \HeadlessChromium\Exception\NoResponseAvailable
-     * @throws \HeadlessChromium\Exception\OperationTimedOut
-     */
-    public function getSeriesLinks( string $potentialShelfLink): array {
-        $seriesLinks = [];
-
-        $this->Page->navigate( $potentialShelfLink )->waitForNavigation();
-        $html = $this->Page->getHtml();
-
-        // If the Shelf link we checked goes right to a Series page, that is the CTS site telling us that
-        // there is only one Series under this Shelf.
-        if ( $this->_isSeriesPage( $html ) ):
-            $seriesLinks[] = $potentialShelfLink;
-        else:
-            $seriesLinks = $this->_getSeriesLinksFromShelfPageHtml( $html );
-            foreach ( $seriesLinks as $seriesLink ):
-                $this->Page->navigate( $seriesLink )->waitForNavigation();
-                $html = $this->Page->getHtml();
-                if ( $this->_isSeriesPage( $html ) ):
-                    $seriesLinks[] = $seriesLink;
-                else:
-                    $this->Debug->_debug( "WTF is: " . $seriesLink );
-                endif;
-            endforeach;
-        endif;
-
-        return $seriesLinks;
-    }
 
     /**
      * This method assumes that $href refers to a SERIES page.

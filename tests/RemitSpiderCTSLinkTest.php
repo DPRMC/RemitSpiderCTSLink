@@ -213,22 +213,47 @@ class RemitSpiderCTSLinkTest extends TestCase {
      */
     public function testCMBSHelper() {
         $spider = $this->_getSpider();
-        $spider->disableDebug();
+        $spider->enableDebug();
         $spider->Login->login();
         $shelfLinks = $spider->CMBSDistributionFilesHelper->getShelfLinks();
+//        $shelfLinks = [
+//            'https://www.ctslink.com/a/serieslist.html?shelfId=JPC',
+//        ];
 
-        print_r( $shelfLinks );
-
+        $allSeriesLinks = [];
 
         foreach ( $shelfLinks as $shelfLink ):
             echo "\nSHELF LINK IS: " . $shelfLink . " ";
             try {
-                $seriesLinks = $spider->CMBSDistributionFilesHelper->getSeriesLinks( $shelfLink );
+                $seriesLinks = $spider->CMBSRestrictedServicerReportHelper->getSeriesLinks( $shelfLink );
                 foreach ( $seriesLinks as $i => $seriesLink ):
                     echo "\n   " . $i + 1 . " of " . count( $seriesLinks ) . ": " . $seriesLink;
+                    $allSeriesLinks[] = $seriesLink;
                 endforeach;
             } catch ( \HeadlessChromium\Exception\OperationTimedOut $exception ) {
                 echo "\nEXCEPTION: " . $exception->getMessage();
+            } catch ( \HeadlessChromium\Exception\CommunicationException $exception ) {
+                echo "\nEXCEPTION: " . $exception->getMessage();
+            }
+        endforeach;
+
+        echo "\n\nThere are " . count( $allSeriesLinks ) . " total series links.";
+
+        // DEBUG
+//        $allSeriesLinks = [
+//            \DPRMC\RemitSpiderCTSLink\Helpers\CMBSHelper::HISTORY_URL . 'shelfId=JPC&seriesId=2022B32&doc=JPC_2022B32_RSRV',
+//        ];
+
+        foreach ( $allSeriesLinks as $seriesLink ):
+            $parts = $spider->CMBSRestrictedServicerReportHelper->getPartsFromSeriesLink( $seriesLink );
+
+            try {
+                $historyLinks = $spider->CMBSRestrictedServicerReportHelper->getAllRestrictedServicerReportLinksFromSeriesPage( $parts[ \DPRMC\RemitSpiderCTSLink\Helpers\CMBSHelper::shelf ],
+                                                                                                                                $parts[ \DPRMC\RemitSpiderCTSLink\Helpers\CMBSHelper::series ] );
+
+                print_r( $historyLinks );
+            } catch ( \DPRMC\RemitSpiderCTSLink\Exceptions\NoAccessToRestrictedServicerReportException $exception ) {
+                echo "\n " . $exception->getMessage();
             }
         endforeach;
     }
@@ -238,7 +263,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
      * @test
      * @group rest
      */
-    public function testRestrictedServicerReport(){
+    public function testRestrictedServicerReport() {
         $seriesLink = 'https://www.ctslink.com/a/seriesdocs.html?shelfId=JPC&seriesId=2015C31';
 
         // CMBSRestrictedServicerReportHelper
@@ -247,10 +272,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $spider->disableDebug();
         $spider->Login->login();
 
-        $spider->CMBSRestrictedServicerReportHelper->getAllRestrictedServicerReportLinks($seriesLink);
-
-
-
+        $spider->CMBSRestrictedServicerReportHelper->getAllRestrictedServicerReportLinks( $seriesLink );
 
 
 //        $shelfLinks = $spider->CMBSRestrictedServicerReportHelper->getShelfLinks();
