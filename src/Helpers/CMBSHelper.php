@@ -119,6 +119,11 @@ class CMBSHelper extends AbstractHelper {
     public function getPartsFromSeriesLink( string $seriesLink ): array {
         $parts      = parse_url( $seriesLink );
         $queryParts = explode( '&', $parts['query'] );
+
+        if( count($queryParts) < 2):
+            throw new \Exception();
+        endif;
+
         $shelf      = str_replace( 'shelfId=', '', $queryParts[ 0 ] );
         $series     = str_replace( 'seriesId=', '', $queryParts[ 1 ] );
 
