@@ -28,8 +28,8 @@ class Debug {
     }
 
     public function enableDebug(): void {
-        $this->_debug( "Debug now ENABLED. Screenshots are being saved to: " . $this->pathToScreenshots );
         $this->debug = TRUE;
+        $this->_debug( "Debug now ENABLED. Screenshots are being saved to: " . $this->pathToScreenshots );
     }
 
     public function disableDebug(): void {

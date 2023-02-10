@@ -97,6 +97,7 @@ class RemitSpiderCTSLink {
     public function enableDebug(): void {
         $this->debug = TRUE;
         $this->Debug->enableDebug();
+        $this->Debug->_debug("Debug has been enabled.");
     }
 
 
@@ -106,5 +107,6 @@ class RemitSpiderCTSLink {
     public function disableDebug(): void {
         $this->debug = FALSE;
         $this->Debug->disableDebug();
+        $this->Debug->_debug("Debug has been disabled.");
     }
 }
