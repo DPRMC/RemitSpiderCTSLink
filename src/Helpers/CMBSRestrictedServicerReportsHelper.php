@@ -45,7 +45,7 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
 
         $html = $this->Page->getHtml();
 
-        if ( str_contains( $html, 'Get Access' ) ):
+        if ( str_contains( strtolower($html), strtolower('Get Access') ) ):
             throw new NoAccessToRestrictedServicerReportException( "We do not have access to this Series: " . $additionalHistoryLink,
                                                                    0,
                                                                    NULL,
