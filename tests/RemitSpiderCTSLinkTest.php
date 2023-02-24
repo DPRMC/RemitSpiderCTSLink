@@ -1,7 +1,7 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
 use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
+use PHPUnit\Framework\TestCase;
 
 /**
  * To run tests call:
@@ -65,6 +65,8 @@ class RemitSpiderCTSLinkTest extends TestCase {
      */
     public function testLogin() {
         $spider = $this->_getSpider();
+
+        $spider->enableDebug();
         $spider->Login->login();
 
         //$html = $spider->FilesByCUSIP->getFilePathsByCUSIP($_ENV['CMBS_CUSIP']);
@@ -304,7 +306,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
     public function testRestrictedServicerReportFactory(){
         $filePath     = getcwd() . '/tests/test_input/JPC_2022B32_RSRV.xls';
 
-        $factory = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReportFactory(self::TIMEZONE);
+        $factory = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\CMBSRestrictedServicerReportFactory( self::TIMEZONE);
         $restrictedServicerReport = $factory->make($filePath);
     }
 

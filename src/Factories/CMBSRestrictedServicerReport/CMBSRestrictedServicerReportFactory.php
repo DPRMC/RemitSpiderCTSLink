@@ -1,13 +1,9 @@
 <?php
 
-namespace DPRMC\RemitSpiderCTSLink\Factories;
+namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 
-use Carbon\Carbon;
-use DPRMC\CUSIP;
 use DPRMC\Excel\Excel;
-use DPRMC\RemitSpiderCTSLink\Models\CMBSDistributionFile;
-use DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport;
-use Smalot\PdfParser\Page;
+use DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport\CMBSRestrictedServicerReport;
 
 class CMBSRestrictedServicerReportFactory {
 
@@ -48,8 +44,14 @@ class CMBSRestrictedServicerReportFactory {
 
         foreach ( $sheetNames as $sheetName ):
             $rows = Excel::sheetToArray( $pathToRestrictedServicerReportXlsx, $sheetName );
-            dump( $rows );
-            dump($sheetName);
+            if ( 'Watchlist' === $sheetName ):
+                $factory       = new WatchlistFactory( self::DEFAULT_TIMEZONE );
+                $watchlistRows = $factory->parse( $rows );
+            endif;
+
+
+            //dump( $rows );
+            //1dump($sheetName);
         endforeach;
 
 
@@ -72,6 +74,14 @@ class CMBSRestrictedServicerReportFactory {
 
 
         return $restrictedServicerReport;
+    }
+
+
+    protected function _parseWatchlist( array $rows ): array {
+        dump( $rows );
+        $headerRow = $rows[ 10 ];
+
+
     }
 
 
