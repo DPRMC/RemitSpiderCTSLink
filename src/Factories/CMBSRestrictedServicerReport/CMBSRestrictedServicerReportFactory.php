@@ -10,6 +10,11 @@ class CMBSRestrictedServicerReportFactory {
     const DEFAULT_TIMEZONE = 'America/New_York';
     protected string $timezone;
 
+    protected array $watchlist       = [];
+    protected array $llResLOC        = [];
+    protected array $totalLoan       = [];
+    protected array $advanceRecovery = [];
+
     /**
      * @param string|NULL $timezone
      */
@@ -39,14 +44,30 @@ class CMBSRestrictedServicerReportFactory {
         ];
 
         $sheetNames = Excel::getSheetNames( $pathToRestrictedServicerReportXlsx );
-        dump( $sheetNames );
+//        dump( $sheetNames );
 
 
         foreach ( $sheetNames as $sheetName ):
             $rows = Excel::sheetToArray( $pathToRestrictedServicerReportXlsx, $sheetName );
             if ( 'Watchlist' === $sheetName ):
-                $factory       = new WatchlistFactory( self::DEFAULT_TIMEZONE );
-                $watchlistRows = $factory->parse( $rows );
+                $factory         = new WatchlistFactory( self::DEFAULT_TIMEZONE );
+                $this->watchlist = $factory->parse( $rows );
+            endif;
+
+
+            if ( 'LL Res, LOC' === $sheetName ):
+                $factory        = new LLResLOCFactory( self::DEFAULT_TIMEZONE );
+                $this->llResLOC = $factory->parse( $rows );
+            endif;
+
+            if ( 'Total Loan' === $sheetName ):
+                $factory         = new TotalLoanFactory( self::DEFAULT_TIMEZONE );
+                $this->totalLoan = $factory->parse( $rows );
+            endif;
+
+            if ( 'Advance Recovery' === $sheetName ):
+                $factory               = new AdvanceRecoveryFactory( self::DEFAULT_TIMEZONE );
+                $this->advanceRecovery = $factory->parse( $rows );
             endif;
 
 
@@ -72,6 +93,7 @@ class CMBSRestrictedServicerReportFactory {
 //        $restrictedServicerReport->historicalDetail                        = $this->getHistoricalDetail();
 //        $restrictedServicerReport->mortgageLoanDetailPart1                 = $this->getMortgageLoanDetailPartOne();
 
+        dump( $this );
 
         return $restrictedServicerReport;
     }

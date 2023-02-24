@@ -2,7 +2,7 @@
 
 namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 
-class WatchlistFactory extends AbstractTabFactory {
+class LLResLOCFactory extends AbstractTabFactory {
 
     public function parse( array $rows ): array {
         $this->_setDate( $rows );

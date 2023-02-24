@@ -2,11 +2,11 @@
 
 namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 
-class WatchlistFactory extends AbstractTabFactory {
+class AdvanceRecoveryFactory extends AbstractTabFactory {
 
     public function parse( array $rows ): array {
-        $this->_setDate( $rows );
-        $this->_setCleanHeaders( $rows, [ 'Trans ID' ] );
+        $this->_setDate( $rows, 4 );
+        $this->_setCleanHeaders( $rows, [ 'Tran ID' ] );
         $this->_setParsedRows( $rows );
 
         return $this->cleanRows;
