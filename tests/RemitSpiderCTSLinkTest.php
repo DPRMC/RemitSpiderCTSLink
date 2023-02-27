@@ -304,12 +304,13 @@ class RemitSpiderCTSLinkTest extends TestCase {
      * @group rsrf
      */
     public function testRestrictedServicerReportFactory(){
-        $filePath     = getcwd() . '/tests/test_input/JPC_2022B32_RSRV.xls';
+        //$filePath     = getcwd() . '/tests/test_input/JPC_2022B32_RSRV.xls';
+        $filePath     = getcwd() . '/tests/test_input/BOAMLLL_2012CKSV_RSRV.xls';
 
         $factory = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\CMBSRestrictedServicerReportFactory( self::TIMEZONE);
         $restrictedServicerReport = $factory->make($filePath);
 
-        print_r($restrictedServicerReport->csfr);
+        dump($restrictedServicerReport);
 
     }
 

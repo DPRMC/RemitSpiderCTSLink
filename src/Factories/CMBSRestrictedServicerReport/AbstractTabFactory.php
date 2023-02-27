@@ -29,6 +29,7 @@ abstract class AbstractTabFactory {
 
     abstract public function parse( array $rows ): array;
 
+
     protected function _setDate( array $allRows, int $dateRowIndex = 3 ): void {
         $dateRow      = $allRows[ $dateRowIndex ][ 0 ];
         $parts        = explode( ' ', $dateRow );

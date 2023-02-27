@@ -11,6 +11,53 @@ class CMBSRestrictedServicerReportFactory {
     public readonly string $timezone;
 
 
+    const FOOTNOTES = 'FOOTNOTES';
+    const WATCHLIST = 'WATCHLIST';
+    const DLSR      = 'DLSR';
+    const REOSR     = 'REOSR';
+    const CFSR      = 'CFSR';
+    const HLMFLCR   = 'HLMFLCR';
+    const LLRES     = 'LLRES';
+    const TOTALLOAN = 'TOTALLOAN';
+    const RECOVERY  = 'RECOVERY';
+
+    public array $tabs = [
+        self::FOOTNOTES => [
+            'FootNotes',
+        ],
+        self::WATCHLIST => [
+            'Watchlist',
+            'Servicer Watch List',
+        ], // SERVICER WATCHLIST
+        self::DLSR      => [
+            'DLSR',
+            'Del Loan Status Report',
+        ], // Delinquent Loan Status Report
+        self::REOSR     => [
+            'REOSR',
+            'REO Status Report',
+        ], // REO STATUS REPORT
+        self::CFSR      => [
+            'CFSR',
+            'Comp Finan Status Report',
+        ], // COMPARATIVE FINANCIAL STATUS REPORT
+        self::HLMFLCR   => [
+            'HLMFLCR',
+            'Hist Mod-Corr Mtg ln',
+        ], // HISTORICAL LOAN MODIFICATION/FORBEARANCE and CORRECTED MORTGAGE LOAN REPORT
+        self::LLRES     => [
+            'LL Res, LOC',
+            'LL Reserve Rpt',
+        ], // LOAN LEVEL RESERVE/LOC REPORT
+        self::TOTALLOAN => [
+            'Total Loan',
+        ], // TOTAL LOAN REPORT
+        self::RECOVERY  => [
+            'Advance Recovery',
+            'Recovery',
+        ], // ADVANCE RECOVERY REPORT
+    ];
+
     /**
      * @param string|NULL $timezone
      */
@@ -27,18 +74,6 @@ class CMBSRestrictedServicerReportFactory {
 
         //$fileContents                    = file_get_contents( $pathToRestrictedServicerReportXlsx );
 
-        $tabs = [
-            'FootNotes',
-            'Watchlist', // SERVICER WATCHLIST
-            'DLSR', // Delinquent Loan Status Report
-            'REOSR', // REO STATUS REPORT
-            'CFSR', // COMPARATIVE FINANCIAL STATUS REPORT
-            'HLMFLCR', // HISTORICAL LOAN MODIFICATION/FORBEARANCE and CORRECTED MORTGAGE LOAN REPORT
-            'LL Res, LOC', // LOAN LEVEL RESERVE/LOC REPORT
-            'Total Loan', // TOTAL LOAN REPORT
-            'Advance Recovery', // ADVANCE RECOVERY REPORT
-        ];
-
         $sheetNames = Excel::getSheetNames( $pathToRestrictedServicerReportXlsx );
 //        dump( $sheetNames );
 
@@ -51,32 +86,33 @@ class CMBSRestrictedServicerReportFactory {
 
         foreach ( $sheetNames as $sheetName ):
             $rows = Excel::sheetToArray( $pathToRestrictedServicerReportXlsx, $sheetName );
-            if ( 'Watchlist' === $sheetName ):
+
+            if ( $this->_foundSheetName( self::WATCHLIST, $sheetName ) ):
                 $factory   = new WatchlistFactory( self::DEFAULT_TIMEZONE );
                 $watchlist = $factory->parse( $rows );
             endif;
 
-            if ( 'REOSR' === $sheetName ):
+            if ( $this->_foundSheetName( self::REOSR, $sheetName ) ):
                 $factory = new REOSRFactory( self::DEFAULT_TIMEZONE );
                 $reosr   = $factory->parse( $rows );
             endif;
 
-            if ( 'CFSR' === $sheetName ):
+            if ( $this->_foundSheetName( self::CFSR, $sheetName ) ):
                 $factory = new CFSRFactory( self::DEFAULT_TIMEZONE );
                 $csfr    = $factory->parse( $rows );
             endif;
 
-            if ( 'LL Res, LOC' === $sheetName ):
+            if ( $this->_foundSheetName( self::LLRES, $sheetName ) ):
                 $factory  = new LLResLOCFactory( self::DEFAULT_TIMEZONE );
                 $llResLOC = $factory->parse( $rows );
             endif;
 
-            if ( 'Total Loan' === $sheetName ):
+            if ( $this->_foundSheetName( self::TOTALLOAN, $sheetName ) ):
                 $factory   = new TotalLoanFactory( self::DEFAULT_TIMEZONE );
                 $totalLoan = $factory->parse( $rows );
             endif;
 
-            if ( 'Advance Recovery' === $sheetName ):
+            if ( $this->_foundSheetName( self::RECOVERY, $sheetName ) ):
                 $factory         = new AdvanceRecoveryFactory( self::DEFAULT_TIMEZONE );
                 $advanceRecovery = $factory->parse( $rows );
             endif;
@@ -88,6 +124,21 @@ class CMBSRestrictedServicerReportFactory {
                                                  $llResLOC,
                                                  $totalLoan,
                                                  $advanceRecovery );
+    }
+
+
+    /**
+     * @param string $index
+     * @param string $sheetName
+     * @return bool
+     */
+    protected function _foundSheetName( string $index, string $sheetName ): bool {
+        foreach ( $this->tabs[ $index ] as $tabName ):
+            if ( $sheetName == $tabName ):
+                return TRUE;
+            endif;
+        endforeach;
+        return FALSE;
     }
 
 
