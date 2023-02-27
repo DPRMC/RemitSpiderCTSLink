@@ -8,12 +8,8 @@ use DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport\CMBSRestrictedS
 class CMBSRestrictedServicerReportFactory {
 
     const DEFAULT_TIMEZONE = 'America/New_York';
-    protected string $timezone;
+    public readonly string $timezone;
 
-    protected array $watchlist       = [];
-    protected array $llResLOC        = [];
-    protected array $totalLoan       = [];
-    protected array $advanceRecovery = [];
 
     /**
      * @param string|NULL $timezone
@@ -28,7 +24,7 @@ class CMBSRestrictedServicerReportFactory {
 
 
     public function make( string $pathToRestrictedServicerReportXlsx ): CMBSRestrictedServicerReport {
-        $restrictedServicerReport = new CMBSRestrictedServicerReport();
+
         //$fileContents                    = file_get_contents( $pathToRestrictedServicerReportXlsx );
 
         $tabs = [
@@ -46,56 +42,52 @@ class CMBSRestrictedServicerReportFactory {
         $sheetNames = Excel::getSheetNames( $pathToRestrictedServicerReportXlsx );
 //        dump( $sheetNames );
 
+        $watchlist       = [];
+        $reosr           = [];
+        $csfr            = [];
+        $llResLOC        = [];
+        $totalLoan       = [];
+        $advanceRecovery = [];
 
         foreach ( $sheetNames as $sheetName ):
             $rows = Excel::sheetToArray( $pathToRestrictedServicerReportXlsx, $sheetName );
             if ( 'Watchlist' === $sheetName ):
-                $factory         = new WatchlistFactory( self::DEFAULT_TIMEZONE );
-                $this->watchlist = $factory->parse( $rows );
+                $factory   = new WatchlistFactory( self::DEFAULT_TIMEZONE );
+                $watchlist = $factory->parse( $rows );
             endif;
 
+            if ( 'REOSR' === $sheetName ):
+                $factory = new REOSRFactory( self::DEFAULT_TIMEZONE );
+                $reosr   = $factory->parse( $rows );
+            endif;
+
+            if ( 'CFSR' === $sheetName ):
+                $factory = new CFSRFactory( self::DEFAULT_TIMEZONE );
+                $csfr    = $factory->parse( $rows );
+            endif;
 
             if ( 'LL Res, LOC' === $sheetName ):
-                $factory        = new LLResLOCFactory( self::DEFAULT_TIMEZONE );
-                $this->llResLOC = $factory->parse( $rows );
+                $factory  = new LLResLOCFactory( self::DEFAULT_TIMEZONE );
+                $llResLOC = $factory->parse( $rows );
             endif;
 
             if ( 'Total Loan' === $sheetName ):
-                $factory         = new TotalLoanFactory( self::DEFAULT_TIMEZONE );
-                $this->totalLoan = $factory->parse( $rows );
+                $factory   = new TotalLoanFactory( self::DEFAULT_TIMEZONE );
+                $totalLoan = $factory->parse( $rows );
             endif;
 
             if ( 'Advance Recovery' === $sheetName ):
-                $factory               = new AdvanceRecoveryFactory( self::DEFAULT_TIMEZONE );
-                $this->advanceRecovery = $factory->parse( $rows );
+                $factory         = new AdvanceRecoveryFactory( self::DEFAULT_TIMEZONE );
+                $advanceRecovery = $factory->parse( $rows );
             endif;
-
-
-            //dump( $rows );
-            //1dump($sheetName);
         endforeach;
 
-
-//        $parser                          = new \Smalot\PdfParser\Parser();
-//        $pdf                             = $parser->parseContent( $fileContents );
-//        $this->pages                     = $pdf->getPages();
-//        $this->pagesAsArrays             = $this->_getPagesAsArrays( $this->pages );
-//        $restrictedServicerReport->numberOfPages = count( $this->pages );
-//
-//        $this->pageWithTableOfContents                             = $this->pages[ 0 ];
-//        $this->dates                                               = $this->_getDates( $this->pagesAsArrays[ 0 ] );
-//        $restrictedServicerReport->dates                                   = $this->dates;
-//        $restrictedServicerReport->certificateDistributionDetail           = $this->getCertificateDistributionDetail();
-//        $restrictedServicerReport->certificateFactorDetail                 = $this->getCertificateFactorDetail();
-//        $restrictedServicerReport->certificateInterestReconciliationDetail = $this->getCertificateInterestReconciliationDetail();
-//        $restrictedServicerReport->modifiedLoanDetail                      = $this->getModifiedLoanDetail();
-//        $restrictedServicerReport->delinquencyLoanDetail                   = $this->getDelinquencyLoanDetail();
-//        $restrictedServicerReport->historicalDetail                        = $this->getHistoricalDetail();
-//        $restrictedServicerReport->mortgageLoanDetailPart1                 = $this->getMortgageLoanDetailPartOne();
-
-        dump( $this );
-
-        return $restrictedServicerReport;
+        return new CMBSRestrictedServicerReport( $watchlist,
+                                                 $reosr,
+                                                 $csfr,
+                                                 $llResLOC,
+                                                 $totalLoan,
+                                                 $advanceRecovery );
     }
 
 

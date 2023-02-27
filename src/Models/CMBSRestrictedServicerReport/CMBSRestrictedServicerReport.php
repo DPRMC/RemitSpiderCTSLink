@@ -5,23 +5,13 @@ namespace DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport;
 
 class CMBSRestrictedServicerReport {
 
-//    public string $pathToDistributionFilePdf;
-//    public int    $numberOfPages;
-//
-//    public array $dates = [];
-//
-//    public array $certificateDistributionDetail           = [];
-//    public array $certificateFactorDetail                 = [];
-//    public array $certificateInterestReconciliationDetail = [];
-//
-//    public array $modifiedLoanDetail    = [];
-//    public array $delinquencyLoanDetail = [];
-//    public array $historicalDetail      = [];
-//
-//    public array $mortgageLoanDetailPart1 = [];
-//    public array $mortgageLoanDetailPart2 = [];
 
-    public function __construct() {
+    public function __construct( public readonly array $watchlist,
+                                 public readonly array $reosr,
+                                 public readonly array $csfr,
+                                 public readonly array $llResLOC,
+                                 public readonly array $totalLoan,
+                                 public readonly array $advanceRecovery ) {
     }
 
 }

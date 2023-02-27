@@ -62,22 +62,34 @@ abstract class AbstractTabFactory {
                 continue;
             endif;
 
-            $newHeader = strtolower( $header );
-            $newHeader = str_replace( ' ', '_', $newHeader );
-            $newHeader = str_replace( "\n", '_', $newHeader );
-            $newHeader = str_replace( "(s)", '', $newHeader );
-            $newHeader = str_replace( "_(", '_', $newHeader );
-            $newHeader = str_replace( ")", '', $newHeader );
-            $newHeader = str_replace( '/', '_', $newHeader );
-            $newHeader = str_replace( '_-_', '_', $newHeader );
-            $newHeader = str_replace( '--', '_', $newHeader );
-
-            $newHeader = ltrim( $newHeader, '_' );
-            $newHeader = rtrim($newHeader, '_1');
-
-            $cleanHeaders[ $i ] = $newHeader;
+            $cleanHeaders[ $i ] = $this->_cleanHeaderValue( $header);
         endforeach;
         $this->cleanHeaders = $cleanHeaders;
+    }
+
+
+    protected function _cleanHeaderValue( string $header): string {
+        $newHeader = strtolower( $header );
+        $newHeader = str_replace( ' ', '_', $newHeader );
+        $newHeader = str_replace( "\n", '_', $newHeader );
+        $newHeader = str_replace( "(s)", '', $newHeader );
+        $newHeader = str_replace( "_(", '_', $newHeader );
+        $newHeader = str_replace( ")", '', $newHeader );
+        $newHeader = str_replace( '/', '_', $newHeader );
+        $newHeader = str_replace( '_-_', '_', $newHeader );
+        $newHeader = str_replace( '___', '_', $newHeader );
+        $newHeader = str_replace( '__', '_', $newHeader );
+        $newHeader = str_replace( '--', '_', $newHeader );
+        $newHeader = str_replace( '%', 'percent', $newHeader );
+
+        $newHeader = ltrim( $newHeader, 'yyyymmdd' );
+        $newHeader = ltrim( $newHeader, '_' );
+        $newHeader = ltrim( $newHeader, '(1_' );
+
+        $newHeader = rtrim($newHeader, '_1');
+        $newHeader = rtrim($newHeader, '_$');
+
+        return $newHeader;
     }
 
     /**

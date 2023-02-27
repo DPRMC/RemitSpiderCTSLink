@@ -309,7 +309,8 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $factory = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\CMBSRestrictedServicerReportFactory( self::TIMEZONE);
         $restrictedServicerReport = $factory->make($filePath);
 
-        print_r($restrictedServicerReport);
+        print_r($restrictedServicerReport->csfr);
+
     }
 
 }
