@@ -43,6 +43,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
         endif;
 
         $this->_setRowCategoryIndexes();
+
         $this->_setCleanRows( $allRows );
     }
 
@@ -143,22 +144,28 @@ class HLMFCLRFactory extends AbstractTabFactory {
 
     protected function _setRowCategoryIndexes(): void {
         foreach ( $this->indexes as $name => $subHeaderIndex ):
-
             if ( self::LAST_ROW == $name ):
                 return;
             endif;
 
-            $firstLine = $subHeaderIndex + 1;
+            $firstLineOfData = $subHeaderIndex + 1;
+            $nextHeaderLine  = next( $this->indexes );
 
-            $lastLine = next( $this->indexes ) - 1;
+            if ( $firstLineOfData == $nextHeaderLine ):
+                $this->rowCategoryIndexes[ $name ] = [
+                    self::START => NULL,
+                    self::END   => NULL,
+                ];
+                continue;
+            endif;
+
+            $lastLineOfData = $nextHeaderLine - 1;
 
             $this->rowCategoryIndexes[ $name ] = [
-                self::START => $firstLine,
-                self::END   => $lastLine,
+                self::START => $firstLineOfData,
+                self::END   => $lastLineOfData,
             ];
         endforeach;
-
-        dd($this->rowCategoryIndexes);
     }
 
     protected function _setCleanRows( array $allRows ): void {
@@ -166,8 +173,14 @@ class HLMFCLRFactory extends AbstractTabFactory {
 
         foreach ( $this->rowCategoryIndexes as $name => $bookends ):
             $cleanRows[ $name ] = [];
-            $length             = $bookends[ self::END ] - $bookends[ self::START ];
-            $validRows          = array_slice( $allRows, $bookends[ self::START ], $length );
+
+            // These would be null if there were no rows for this category.
+            if ( is_null( $bookends[ self::START ] ) || is_null( $bookends[ self::END ] ) ):
+                continue;
+            endif;
+
+            $length    = $bookends[ self::END ] - $bookends[ self::START ];
+            $validRows = array_slice( $allRows, $bookends[ self::START ], $length );
 
             foreach ( $validRows as $i => $validRow ):
                 $firstCell = trim( $validRow[ 0 ] ?? '' );
@@ -178,7 +191,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
                 $newCleanRow[ 'date' ]     = $this->date->toDateString();
                 $newCleanRow[ 'category' ] = $name;
                 foreach ( $this->cleanHeaders as $j => $header ):
-                    $newCleanRow[ $header ] = $validRow[ $j ];
+                    $newCleanRow[ $header ] = trim($validRow[ $j ] ?? '');
                 endforeach;
                 $cleanRows[ $name ][] = $newCleanRow;
             endforeach;

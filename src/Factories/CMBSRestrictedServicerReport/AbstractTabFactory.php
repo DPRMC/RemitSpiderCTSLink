@@ -104,7 +104,10 @@ abstract class AbstractTabFactory {
 
 
     protected function _cleanHeaderValue( string $header ): string {
+        $newHeader = $header;
+        $newHeader = trim( $newHeader );
         $newHeader = strtolower( $header );
+        $newHeader = str_replace( 'yyyymmdd', '', $newHeader );
         $newHeader = str_replace( ' ', '_', $newHeader );
         $newHeader = str_replace( "\n", '_', $newHeader );
         $newHeader = str_replace( "(s)", '', $newHeader );
@@ -117,12 +120,16 @@ abstract class AbstractTabFactory {
         $newHeader = str_replace( '--', '_', $newHeader );
         $newHeader = str_replace( '%', 'percent', $newHeader );
 
-        $newHeader = ltrim( $newHeader, 'yyyymmdd' );
+
         $newHeader = ltrim( $newHeader, '_' );
         $newHeader = ltrim( $newHeader, '(1_' );
+        $newHeader = ltrim( $newHeader, '2_' );
 
         $newHeader = rtrim( $newHeader, '_1' );
         $newHeader = rtrim( $newHeader, '_$' );
+
+        $newHeader = str_replace( '_$_', '_', $newHeader );
+        $newHeader = str_replace( 'p&i', 'p_and_i', $newHeader );
 
         return $newHeader;
     }
@@ -136,12 +143,12 @@ abstract class AbstractTabFactory {
         $cleanRows = [];
         $validRows = $this->_getRowsToBeParsed( $allRows );
 
-
         foreach ( $validRows as $i => $validRow ):
             $newCleanRow           = [];
             $newCleanRow[ 'date' ] = $this->date->toDateString();
             foreach ( $this->cleanHeaders as $j => $header ):
-                $newCleanRow[ $header ] = $validRow[ $j ];
+                $data                   = trim( $validRow[ $j ] ?? '' );
+                $newCleanRow[ $header ] = $data;
             endforeach;
             $cleanRows[] = $newCleanRow;
         endforeach;
@@ -157,9 +164,8 @@ abstract class AbstractTabFactory {
      */
     protected function _getRowsToBeParsed( array $allRows ): array {
         $firstBlankRowIndex = 0;
-        //$firstRowOfDataIndex = $this->headerRowIndex + 1; // Some data starts at +1, other sheets at +3. So... logic.
-        $firstRowOfDataIndex = $this->_getFirstRowOfDataIfItExists( $allRows );
 
+        $firstRowOfDataIndex = $this->_getFirstRowOfDataIfItExists( $allRows );
 
         $totalNumRows = count( $allRows );
 
@@ -185,7 +191,7 @@ abstract class AbstractTabFactory {
         $maxBlankRowsBeforeData = 3;
         $possibleFirstRowOfData = $this->headerRowIndex + 1;
         $firstRowOfDataIndex    = $possibleFirstRowOfData;
-        $lastIndexToCheck = $possibleFirstRowOfData + $maxBlankRowsBeforeData;
+        $lastIndexToCheck       = $possibleFirstRowOfData + $maxBlankRowsBeforeData;
 
         for ( $i = $possibleFirstRowOfData; $i <= $lastIndexToCheck; $i++ ):
             $data = trim( $allRows[ $i ][ 0 ] ?? '' );

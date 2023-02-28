@@ -16,9 +16,9 @@ class CMBSRestrictedServicerReportFactory {
     const WATCHLIST = 'WATCHLIST';
     const DLSR      = 'DLSR';
     const REOSR     = 'REOSR';
-    const CFSR    = 'CFSR';
-    const HLMFCLR = 'HLMFCLR';
-    const LLRES   = 'LLRES';
+    const CFSR      = 'CFSR';
+    const HLMFCLR   = 'HLMFCLR';
+    const LLRES     = 'LLRES';
     const TOTALLOAN = 'TOTALLOAN';
     const RECOVERY  = 'RECOVERY';
 
@@ -42,7 +42,7 @@ class CMBSRestrictedServicerReportFactory {
             'CFSR',
             'Comp Finan Status Report',
         ], // COMPARATIVE FINANCIAL STATUS REPORT
-        self::HLMFCLR => [
+        self::HLMFCLR   => [
             'HLMFCLR',
             'Hist Mod-Corr Mtg ln',
         ], // HISTORICAL LOAN MODIFICATION/FORBEARANCE and CORRECTED MORTGAGE LOAN REPORT
@@ -72,15 +72,13 @@ class CMBSRestrictedServicerReportFactory {
 
 
     public function make( string $pathToRestrictedServicerReportXlsx ): CMBSRestrictedServicerReport {
-
         $sheetNames = Excel::getSheetNames( $pathToRestrictedServicerReportXlsx );
 
-        dump($sheetNames);
-
         $watchlist       = [];
+        $dlsr            = [];
         $reosr           = [];
-        $hlmfclr         = [];
         $csfr            = [];
+        $hlmfclr         = [];
         $llResLOC        = [];
         $totalLoan       = [];
         $advanceRecovery = [];
@@ -98,11 +96,9 @@ class CMBSRestrictedServicerReportFactory {
          */
         $exceptions = [];
 
-        try {
-            foreach ( $sheetNames as $sheetName ):
 
-                dump($sheetName);
-
+        foreach ( $sheetNames as $sheetName ):
+            try {
                 $rows = Excel::sheetToArray( $pathToRestrictedServicerReportXlsx, $sheetName );
                 if ( $this->_foundSheetName( self::WATCHLIST, $sheetName ) ):
                     $factory   = new WatchlistFactory( self::DEFAULT_TIMEZONE );
@@ -119,40 +115,36 @@ class CMBSRestrictedServicerReportFactory {
                     $reosr   = $factory->parse( $rows );
                 endif;
 
+                if ( $this->_foundSheetName( self::HLMFCLR, $sheetName ) ):
+                    $factory = new HLMFCLRFactory( self::DEFAULT_TIMEZONE );
+                    $hlmfclr = $factory->parse( $rows );
+                endif;
 
-//                if ( $this->_foundSheetName( self::HLMFCLR, $sheetName ) ):
-//                    dump(__LINE__);
-//                    $factory = new HLMFCLRFactory( self::DEFAULT_TIMEZONE );
-//                    $hlmfclr = $factory->parse( $rows );
-//                endif;
-
-                dump(__LINE__);
                 if ( $this->_foundSheetName( self::CFSR, $sheetName ) ):
                     $factory = new CFSRFactory( self::DEFAULT_TIMEZONE );
                     $csfr    = $factory->parse( $rows );
                 endif;
-                dump(__LINE__);
+
                 if ( $this->_foundSheetName( self::LLRES, $sheetName ) ):
                     $factory  = new LLResLOCFactory( self::DEFAULT_TIMEZONE );
                     $llResLOC = $factory->parse( $rows );
                 endif;
-                dump(__LINE__);
+
                 if ( $this->_foundSheetName( self::TOTALLOAN, $sheetName ) ):
                     $factory   = new TotalLoanFactory( self::DEFAULT_TIMEZONE );
                     $totalLoan = $factory->parse( $rows );
                 endif;
-                dump(__LINE__);
+
                 if ( $this->_foundSheetName( self::RECOVERY, $sheetName ) ):
                     $factory         = new AdvanceRecoveryFactory( self::DEFAULT_TIMEZONE );
                     $advanceRecovery = $factory->parse( $rows );
                 endif;
-            endforeach;
-        } catch ( NoDataInTabException $exception ) {
-            $alerts[] = $exception;
-        } catch ( \Exception $exception ) {
-            $exceptions[] = $exception;
-        }
-        dump(__LINE__);
+            } catch ( NoDataInTabException $exception ) {
+                $alerts[] = $exception;
+            } catch ( \Exception $exception ) {
+                $exceptions[] = $exception;
+            }
+        endforeach;
 
         return new CMBSRestrictedServicerReport( $watchlist,
                                                  $dlsr,
