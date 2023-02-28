@@ -11,7 +11,6 @@ class CMBSRestrictedServicerReportFactory {
     const DEFAULT_TIMEZONE = 'America/New_York';
     public readonly string $timezone;
 
-
     const FOOTNOTES = 'FOOTNOTES';
     const WATCHLIST = 'WATCHLIST';
     const DLSR      = 'DLSR';
@@ -71,6 +70,10 @@ class CMBSRestrictedServicerReportFactory {
     }
 
 
+    /**
+     * @param string $pathToRestrictedServicerReportXlsx
+     * @return CMBSRestrictedServicerReport
+     */
     public function make( string $pathToRestrictedServicerReportXlsx ): CMBSRestrictedServicerReport {
         $sheetNames = Excel::getSheetNames( $pathToRestrictedServicerReportXlsx );
 

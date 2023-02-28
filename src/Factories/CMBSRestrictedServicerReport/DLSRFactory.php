@@ -35,6 +35,13 @@ class DLSRFactory extends AbstractTabFactory {
         self::MAT_NON_PERF  => [ self::START => NULL, self::END => NULL ],
     ];
 
+
+    /**
+     * @param array $rows
+     * @return array
+     * @throws \DPRMC\RemitSpiderCTSLink\Exceptions\DateNotFoundInHeaderException
+     * @throws \DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException
+     */
     public function parse( array $rows ): array {
         $this->_setDate( $rows );
         $this->_setCleanHeaders( $rows, [ 'Trans ID' ] );
@@ -44,6 +51,11 @@ class DLSRFactory extends AbstractTabFactory {
     }
 
 
+    /**
+     * @param array $allRows
+     * @return void
+     * @throws DLSRTabMissingSomeDelinquencyCategoriesException
+     */
     protected function _setParsedRows( array $allRows ): void {
         $this->_setDelinquencyIndexes( $allRows );
 
@@ -59,6 +71,11 @@ class DLSRFactory extends AbstractTabFactory {
     }
 
 
+    /**
+     * @param array $allRows
+     * @return array
+     * @throws \DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException
+     */
     protected function _getRowsToBeParsed( array $allRows ): array {
         $firstBlankRowIndex = 0;
         //$firstRowOfDataIndex = $this->headerRowIndex + 1; // Some data starts at +1, other sheets at +3. So... logic.
@@ -80,6 +97,10 @@ class DLSRFactory extends AbstractTabFactory {
     }
 
 
+    /**
+     * @param array $allRows
+     * @return void
+     */
     protected function _setDelinquencyIndexes( array $allRows ): void {
         $numRows = count( $allRows );
 
@@ -144,6 +165,10 @@ class DLSRFactory extends AbstractTabFactory {
     }
 
 
+    /**
+     * @param $row
+     * @return bool
+     */
     protected function _isNinetyPlusIndex( $row ): bool {
         if ( isset( $this->delinquencyIndexes[ self::DEL_90_PLUS ] ) ):
             return FALSE;

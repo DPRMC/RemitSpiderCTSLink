@@ -4,6 +4,12 @@ namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 
 class CFSRFactory extends AbstractTabFactory {
 
+    /**
+     * @param array $rows
+     * @return array
+     * @throws \DPRMC\RemitSpiderCTSLink\Exceptions\DateNotFoundInHeaderException
+     * @throws \DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException
+     */
     public function parse( array $rows ): array {
         $this->_setDate( $rows );
         $this->_setCleanHeaders( $rows, [ 'Trans ID' ] );
