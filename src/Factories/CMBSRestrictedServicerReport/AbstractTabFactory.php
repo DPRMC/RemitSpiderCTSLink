@@ -3,6 +3,8 @@
 namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 
 use Carbon\Carbon;
+use DPRMC\RemitSpiderCTSLink\Exceptions\DateNotFoundInHeaderException;
+use DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException;
 
 abstract class AbstractTabFactory {
 
@@ -30,11 +32,43 @@ abstract class AbstractTabFactory {
     abstract public function parse( array $rows ): array;
 
 
+    /**
+     * @param array $allRows
+     * @param int $dateRowIndex
+     * @return void
+     * @throws DateNotFoundInHeaderException
+     */
     protected function _setDate( array $allRows, int $dateRowIndex = 3 ): void {
-        $dateRow      = $allRows[ $dateRowIndex ][ 0 ];
-        $parts        = explode( ' ', $dateRow );
-        $stringDate   = end( $parts );
-        $this->date   = Carbon::parse( $stringDate, $this->timezone );
+//        $dateRow    = $allRows[ $dateRowIndex ][ 0 ];
+//        $parts      = explode( ' ', $dateRow );
+//        $stringDate = end( $parts );
+//        $this->date = Carbon::parse( $stringDate, $this->timezone );
+
+        $this->date = $this->_searchForDate( $allRows );
+    }
+
+
+    /**
+     * @param array $allRows
+     * @param int $numRowsToCheck
+     * @return Carbon
+     * @throws DateNotFoundInHeaderException
+     */
+    protected function _searchForDate( array $allRows, int $numRowsToCheck = 6 ): Carbon {
+        $pattern = '/\d{1,2}\/\d{1,2}\/\d{4}/'; // Will match dates like 1/1/2023 or 12/31/2023
+        for ( $i = 0; $i <= $numRowsToCheck; $i++ ):
+            $parts = explode( ' ', $allRows[ $i ][ 0 ] ?? '' );
+            foreach ( $parts as $part ):
+                if ( 1 === preg_match( $pattern, $part ) ):
+                    return Carbon::parse( $part, $this->timezone );
+                endif;
+            endforeach;
+        endfor;
+
+        throw new DateNotFoundInHeaderException( "Patch the parser.",
+                                                 8732465782,
+                                                 NULL,
+                                                 array_slice( $allRows, 0, $numRowsToCheck ) );
     }
 
 
@@ -63,13 +97,13 @@ abstract class AbstractTabFactory {
                 continue;
             endif;
 
-            $cleanHeaders[ $i ] = $this->_cleanHeaderValue( $header);
+            $cleanHeaders[ $i ] = $this->_cleanHeaderValue( $header );
         endforeach;
         $this->cleanHeaders = $cleanHeaders;
     }
 
 
-    protected function _cleanHeaderValue( string $header): string {
+    protected function _cleanHeaderValue( string $header ): string {
         $newHeader = strtolower( $header );
         $newHeader = str_replace( ' ', '_', $newHeader );
         $newHeader = str_replace( "\n", '_', $newHeader );
@@ -87,8 +121,8 @@ abstract class AbstractTabFactory {
         $newHeader = ltrim( $newHeader, '_' );
         $newHeader = ltrim( $newHeader, '(1_' );
 
-        $newHeader = rtrim($newHeader, '_1');
-        $newHeader = rtrim($newHeader, '_$');
+        $newHeader = rtrim( $newHeader, '_1' );
+        $newHeader = rtrim( $newHeader, '_$' );
 
         return $newHeader;
     }
@@ -96,10 +130,12 @@ abstract class AbstractTabFactory {
     /**
      * @param array $allRows
      * @return void
+     * @throws NoDataInTabException
      */
     protected function _setParsedRows( array $allRows ): void {
         $cleanRows = [];
         $validRows = $this->_getRowsToBeParsed( $allRows );
+
 
         foreach ( $validRows as $i => $validRow ):
             $newCleanRow           = [];
@@ -113,11 +149,19 @@ abstract class AbstractTabFactory {
         $this->cleanRows = $cleanRows;
     }
 
-    protected function _getRowsToBeParsed( array $allRows ): array {
-        $firstBlankRowIndex  = 0;
-        $firstRowOfDataIndex = $this->headerRowIndex + 3;
-        $totalNumRows        = count( $allRows );
 
+    /**
+     * @param array $allRows
+     * @return array
+     * @throws NoDataInTabException
+     */
+    protected function _getRowsToBeParsed( array $allRows ): array {
+        $firstBlankRowIndex = 0;
+        //$firstRowOfDataIndex = $this->headerRowIndex + 1; // Some data starts at +1, other sheets at +3. So... logic.
+        $firstRowOfDataIndex = $this->_getFirstRowOfDataIfItExists( $allRows );
+
+
+        $totalNumRows = count( $allRows );
 
         for ( $i = $firstRowOfDataIndex; $i < $totalNumRows; $i++ ):
             if ( empty( $allRows[ $i ][ 0 ] ) ):
@@ -129,5 +173,33 @@ abstract class AbstractTabFactory {
         $numRows = $firstBlankRowIndex - $firstRowOfDataIndex;
 
         return array_slice( $allRows, $firstRowOfDataIndex, $numRows );
+    }
+
+
+    /**
+     * @param array $allRows
+     * @return int
+     * @throws NoDataInTabException
+     */
+    protected function _getFirstRowOfDataIfItExists( array $allRows ): int {
+        $maxBlankRowsBeforeData = 3;
+        $possibleFirstRowOfData = $this->headerRowIndex + 1;
+        $firstRowOfDataIndex    = $possibleFirstRowOfData;
+        $lastIndexToCheck = $possibleFirstRowOfData + $maxBlankRowsBeforeData;
+
+        for ( $i = $possibleFirstRowOfData; $i <= $lastIndexToCheck; $i++ ):
+            $data = trim( $allRows[ $i ][ 0 ] ?? '' );
+
+            if ( $data ):
+                return $firstRowOfDataIndex;
+            else:
+                $firstRowOfDataIndex++;
+            endif;
+        endfor;
+
+        throw new NoDataInTabException( "Couldn't find data in this tab.",
+                                        0,
+                                        NULL,
+                                        array_slice( $allRows, $this->headerRowIndex, $maxBlankRowsBeforeData ) );
     }
 }

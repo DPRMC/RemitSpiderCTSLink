@@ -497,9 +497,6 @@ class CMBSDistributionFileFactory {
             $text = $currentPage->getContent( $currentPage );
             $text = $currentPage->getXObjects(  );
             $text = $currentPage->getSectionsText( $currentPage );
-
-            var_dump($text);
-            die();
         endforeach;
 
         $parsedRows = [];
