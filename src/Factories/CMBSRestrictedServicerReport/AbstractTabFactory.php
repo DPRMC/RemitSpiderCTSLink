@@ -29,6 +29,10 @@ abstract class AbstractTabFactory {
     }
 
 
+    /**
+     * @param array $rows
+     * @return array
+     */
     abstract public function parse( array $rows ): array;
 
 
@@ -72,6 +76,11 @@ abstract class AbstractTabFactory {
     }
 
 
+    /**
+     * @param array $allRows
+     * @param array $firstColumnValidTextValues
+     * @return void
+     */
     protected function _setCleanHeaders( array $allRows, array $firstColumnValidTextValues = [] ): void {
         $headerRow = [];
         foreach ( $allRows as $i => $row ):
@@ -103,6 +112,10 @@ abstract class AbstractTabFactory {
     }
 
 
+    /**
+     * @param string $header
+     * @return string
+     */
     protected function _cleanHeaderValue( string $header ): string {
         $newHeader = $header;
         $newHeader = trim( $newHeader );
@@ -120,7 +133,6 @@ abstract class AbstractTabFactory {
         $newHeader = str_replace( '--', '_', $newHeader );
         $newHeader = str_replace( '%', 'percent', $newHeader );
 
-
         $newHeader = ltrim( $newHeader, '_' );
         $newHeader = ltrim( $newHeader, '(1_' );
         $newHeader = ltrim( $newHeader, '2_' );
@@ -133,6 +145,7 @@ abstract class AbstractTabFactory {
 
         return $newHeader;
     }
+
 
     /**
      * @param array $allRows
