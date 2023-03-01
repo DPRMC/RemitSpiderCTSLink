@@ -100,47 +100,59 @@ class CMBSRestrictedServicerReportFactory {
         $exceptions = [];
 
 
+        $cleanHeadersByProperty = [];
+
         foreach ( $sheetNames as $sheetName ):
             try {
                 $rows = Excel::sheetToArray( $pathToRestrictedServicerReportXlsx, $sheetName );
                 if ( $this->_foundSheetName( self::WATCHLIST, $sheetName ) ):
-                    $factory   = new WatchlistFactory( self::DEFAULT_TIMEZONE );
-                    $watchlist = $factory->parse( $rows );
+                    $factory                               = new WatchlistFactory( self::DEFAULT_TIMEZONE );
+                    $cleanHeadersByProperty[ 'watchlist' ] = $factory->getCleanHeaders();
+                    $watchlist                             = $factory->parse( $rows );
                 endif;
 
                 if ( $this->_foundSheetName( self::DLSR, $sheetName ) ):
-                    $factory = new DLSRFactory( self::DEFAULT_TIMEZONE );
-                    $dlsr    = $factory->parse( $rows );
+                    $factory                          = new DLSRFactory( self::DEFAULT_TIMEZONE );
+                    $cleanHeadersByProperty[ 'dlsr' ] = $factory->getCleanHeaders();
+                    $dlsr                             = $factory->parse( $rows );
                 endif;
 
                 if ( $this->_foundSheetName( self::REOSR, $sheetName ) ):
-                    $factory = new REOSRFactory( self::DEFAULT_TIMEZONE );
-                    $reosr   = $factory->parse( $rows );
+                    $factory                           = new REOSRFactory( self::DEFAULT_TIMEZONE );
+                    $cleanHeadersByProperty[ 'reosr' ] = $factory->getCleanHeaders();
+                    $reosr                             = $factory->parse( $rows );
                 endif;
 
                 if ( $this->_foundSheetName( self::HLMFCLR, $sheetName ) ):
-                    $factory = new HLMFCLRFactory( self::DEFAULT_TIMEZONE );
-                    $hlmfclr = $factory->parse( $rows );
+                    $factory                             = new HLMFCLRFactory( self::DEFAULT_TIMEZONE );
+                    $cleanHeadersByProperty[ 'hlmfclr' ] = $factory->getCleanHeaders();
+                    $hlmfclr                             = $factory->parse( $rows );
                 endif;
 
                 if ( $this->_foundSheetName( self::CFSR, $sheetName ) ):
-                    $factory = new CFSRFactory( self::DEFAULT_TIMEZONE );
-                    $csfr    = $factory->parse( $rows );
+                    $factory                          = new CFSRFactory( self::DEFAULT_TIMEZONE );
+                    $cleanHeadersByProperty[ 'csfr' ] = $factory->getCleanHeaders();
+                    $csfr                             = $factory->parse( $rows );
                 endif;
 
                 if ( $this->_foundSheetName( self::LLRES, $sheetName ) ):
-                    $factory  = new LLResLOCFactory( self::DEFAULT_TIMEZONE );
-                    $llResLOC = $factory->parse( $rows );
+                    $factory                              = new LLResLOCFactory( self::DEFAULT_TIMEZONE );
+                    $cleanHeadersByProperty[ 'llResLOC' ] = $factory->getCleanHeaders();
+                    $llResLOC                             = $factory->parse( $rows );
+
                 endif;
 
                 if ( $this->_foundSheetName( self::TOTALLOAN, $sheetName ) ):
-                    $factory   = new TotalLoanFactory( self::DEFAULT_TIMEZONE );
-                    $totalLoan = $factory->parse( $rows );
+                    $factory                               = new TotalLoanFactory( self::DEFAULT_TIMEZONE );
+                    $cleanHeadersByProperty[ 'totalLoan' ] = $factory->getCleanHeaders();
+                    $totalLoan                             = $factory->parse( $rows );
+
                 endif;
 
                 if ( $this->_foundSheetName( self::RECOVERY, $sheetName ) ):
-                    $factory         = new AdvanceRecoveryFactory( self::DEFAULT_TIMEZONE );
-                    $advanceRecovery = $factory->parse( $rows );
+                    $factory                                     = new AdvanceRecoveryFactory( self::DEFAULT_TIMEZONE );
+                    $cleanHeadersByProperty[ 'advanceRecovery' ] = $factory->getCleanHeaders();
+                    $advanceRecovery                             = $factory->parse( $rows );
                 endif;
             } catch ( NoDataInTabException $exception ) {
                 $alerts[] = $exception;
@@ -157,6 +169,7 @@ class CMBSRestrictedServicerReportFactory {
                                                  $llResLOC,
                                                  $totalLoan,
                                                  $advanceRecovery,
+                                                 $cleanHeadersByProperty,
                                                  $alerts,
                                                  $exceptions );
     }

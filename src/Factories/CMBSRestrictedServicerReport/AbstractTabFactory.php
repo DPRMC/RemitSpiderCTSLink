@@ -221,4 +221,12 @@ abstract class AbstractTabFactory {
                                         NULL,
                                         array_slice( $allRows, $this->headerRowIndex, $maxBlankRowsBeforeData ) );
     }
+
+
+    /**
+     * @return array
+     */
+    public function getCleanHeaders(): array  {
+        return $this->cleanHeaders;
+    }
 }
