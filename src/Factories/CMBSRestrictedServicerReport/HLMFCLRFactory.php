@@ -6,6 +6,8 @@ use DPRMC\RemitSpiderCTSLink\Exceptions\HLMFLCRTabMissingSomeCategoriesException
 
 class HLMFCLRFactory extends AbstractTabFactory {
 
+    protected array $firstColumnValidTextValues = [ 'Trans ID' ];
+
     const LOAN_MOD_FORBEAR     = 'loan_modifications_forbearance';   // Loan Modifications/Forbearance
     const CORRECTED_MORT_LOANS = 'corrected_mortgage_loans';         // Corrected Mortgage Loans:
     const LAST_ROW             = 'last_row';                         // Total For All Loans:
@@ -22,14 +24,6 @@ class HLMFCLRFactory extends AbstractTabFactory {
         self::LOAN_MOD_FORBEAR     => [ self::START => NULL, self::END => NULL ],
         self::CORRECTED_MORT_LOANS => [ self::START => NULL, self::END => NULL ],
     ];
-
-    public function parse( array $rows ): array {
-        $this->_setDate( $rows );
-        $this->_setCleanHeaders( $rows, [ 'Trans ID' ] );
-        $this->_setParsedRows( $rows );
-
-        return $this->cleanRows;
-    }
 
 
     protected function _setParsedRows( array $allRows ): void {
@@ -191,7 +185,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
                 $newCleanRow[ 'date' ]     = $this->date->toDateString();
                 $newCleanRow[ 'category' ] = $name;
                 foreach ( $this->cleanHeaders as $j => $header ):
-                    $newCleanRow[ $header ] = trim($validRow[ $j ] ?? '');
+                    $newCleanRow[ $header ] = trim( $validRow[ $j ] ?? '' );
                 endforeach;
                 $cleanRows[ $name ][] = $newCleanRow;
             endforeach;

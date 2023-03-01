@@ -311,7 +311,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $restrictedServicerReport = $factory->make($filePath);
 
 
-        //dd($restrictedServicerReport->cleanHeadersByProperty);
+        dd($restrictedServicerReport);
 
         dump($filePath);
         dump("Showing the toSQL output");

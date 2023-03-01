@@ -8,14 +8,17 @@ namespace DPRMC\RemitSpiderCTSLink\Exceptions;
  */
 class NoDataInTabException extends \Exception {
 
-    public array  $rowsChecked;
+    public array $rowsChecked;
+    public array $cleanHeaders;
 
 
     public function __construct( string      $message = "",
                                  int         $code = 0,
                                  ?\Throwable $previous = NULL,
-                                 ?array      $rowsChecked = [] ) {
+                                 ?array      $rowsChecked = [],
+                                 ?array      $cleanHeaders = [] ) {
         parent::__construct( $message, $code, $previous );
-        $this->rowsChecked = $rowsChecked;
+        $this->rowsChecked  = $rowsChecked;
+        $this->cleanHeaders = $cleanHeaders;
     }
 }

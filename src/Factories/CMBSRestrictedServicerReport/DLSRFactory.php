@@ -6,6 +6,8 @@ use DPRMC\RemitSpiderCTSLink\Exceptions\DLSRTabMissingSomeDelinquencyCategoriesE
 
 class DLSRFactory extends AbstractTabFactory {
 
+    protected array $firstColumnValidTextValues = [ 'Trans ID' ];
+
     const DEL_90_PLUS   = 'del_90_plus';   // 90 + Days Delinquent
     const DEL_60_PLUS   = 'del_60_plus';   // 60 to 89 Days Delinquent
     const DEL_30_PLUS   = 'del_30_plus';   // 30 to 59 Days Delinquent
@@ -34,21 +36,6 @@ class DLSRFactory extends AbstractTabFactory {
         self::MAT_PERF      => [ self::START => NULL, self::END => NULL ],
         self::MAT_NON_PERF  => [ self::START => NULL, self::END => NULL ],
     ];
-
-
-    /**
-     * @param array $rows
-     * @return array
-     * @throws \DPRMC\RemitSpiderCTSLink\Exceptions\DateNotFoundInHeaderException
-     * @throws \DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException
-     */
-    public function parse( array $rows ): array {
-        $this->_setDate( $rows );
-        $this->_setCleanHeaders( $rows, [ 'Trans ID' ] );
-        $this->_setParsedRows( $rows );
-
-        return $this->cleanRows;
-    }
 
 
     /**

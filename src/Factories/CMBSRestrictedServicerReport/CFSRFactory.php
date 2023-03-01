@@ -4,20 +4,7 @@ namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 
 class CFSRFactory extends AbstractTabFactory {
 
-    /**
-     * @param array $rows
-     * @return array
-     * @throws \DPRMC\RemitSpiderCTSLink\Exceptions\DateNotFoundInHeaderException
-     * @throws \DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException
-     */
-    public function parse( array $rows ): array {
-        $this->_setDate( $rows );
-        $this->_setCleanHeaders( $rows, [ 'Trans ID' ] );
-        $this->_setParsedRows( $rows );
-
-        return $this->cleanRows;
-    }
-
+    protected array $firstColumnValidTextValues = [ 'Trans ID' ];
 
     /**
      * I need a custom method here since the header values are in more than one row.
@@ -40,7 +27,6 @@ class CFSRFactory extends AbstractTabFactory {
                 break;
             endif;
         endforeach;
-
 
         $cleanHeaders = [];
 

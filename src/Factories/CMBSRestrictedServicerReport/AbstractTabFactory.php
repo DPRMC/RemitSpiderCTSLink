@@ -17,6 +17,9 @@ abstract class AbstractTabFactory {
 
     protected Carbon $date;
 
+    protected array $firstColumnValidTextValues = [];
+    protected ?int  $dateRowIndex               = NULL;
+
     /**
      * @param string|NULL $timezone
      */
@@ -31,18 +34,27 @@ abstract class AbstractTabFactory {
 
     /**
      * @param array $rows
+     * @param $cleanHeadersByProperty
      * @return array
+     * @throws DateNotFoundInHeaderException
+     * @throws NoDataInTabException
      */
-    abstract public function parse( array $rows ): array;
+    public function parse( array $rows, &$cleanHeadersByProperty ): array {
+        $this->_setDate( $rows, $this->dateRowIndex );
+        $this->_setCleanHeaders( $rows, $this->firstColumnValidTextValues );
+        $cleanHeadersByProperty = $this->getCleanHeaders();
+        $this->_setParsedRows( $rows );
+
+        return $this->cleanRows;
+    }
 
 
     /**
      * @param array $allRows
-     * @param int $dateRowIndex
      * @return void
      * @throws DateNotFoundInHeaderException
      */
-    protected function _setDate( array $allRows, int $dateRowIndex = 3 ): void {
+    protected function _setDate( array $allRows ): void {
 //        $dateRow    = $allRows[ $dateRowIndex ][ 0 ];
 //        $parts      = explode( ' ', $dateRow );
 //        $stringDate = end( $parts );
@@ -70,9 +82,11 @@ abstract class AbstractTabFactory {
         endfor;
 
         throw new DateNotFoundInHeaderException( "Patch the parser.",
-                                                 8732465782,
+                                                 8732465782, // Gibberish
                                                  NULL,
-                                                 array_slice( $allRows, 0, $numRowsToCheck ) );
+                                                 array_slice( $allRows,
+                                                              0,
+                                                              $numRowsToCheck ) );
     }
 
 
@@ -84,11 +98,13 @@ abstract class AbstractTabFactory {
     protected function _setCleanHeaders( array $allRows, array $firstColumnValidTextValues = [] ): void {
         $headerRow = [];
         foreach ( $allRows as $i => $row ):
-            if ( empty( $row[ 0 ] ) ):
+
+            $trimmedValue = trim( $row[ 0 ] ?? '' );
+
+            if ( empty( $trimmedValue ) ):
                 continue;
             endif;
 
-            $trimmedValue = trim( $row[ 0 ] );
 
             if ( in_array( $trimmedValue, $firstColumnValidTextValues ) ):
                 $this->headerRowIndex = $i; // Used in other methods of this class.
@@ -219,14 +235,15 @@ abstract class AbstractTabFactory {
         throw new NoDataInTabException( "Couldn't find data in this tab.",
                                         0,
                                         NULL,
-                                        array_slice( $allRows, $this->headerRowIndex, $maxBlankRowsBeforeData ) );
+                                        array_slice( $allRows, $this->headerRowIndex, $maxBlankRowsBeforeData ),
+                                        $this->getCleanHeaders() );
     }
 
 
     /**
      * @return array
      */
-    public function getCleanHeaders(): array  {
+    public function getCleanHeaders(): array {
         return $this->cleanHeaders;
     }
 }
