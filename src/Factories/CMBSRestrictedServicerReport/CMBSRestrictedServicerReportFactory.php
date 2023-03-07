@@ -101,46 +101,62 @@ class CMBSRestrictedServicerReportFactory {
         $exceptions = [];
 
         // This will save us a ton of time.
-        $cleanHeadersByProperty = [];
+        $cleanHeadersBySheetName = [];
 
         foreach ( $sheetNames as $sheetName ):
             try {
                 $rows = Excel::sheetToArray( $pathToRestrictedServicerReportXlsx, $sheetName );
                 if ( $this->_foundSheetName( self::WATCHLIST, $sheetName ) ):
                     $factory   = new WatchlistFactory( self::DEFAULT_TIMEZONE );
-                    $watchlist = $factory->parse( $rows, $cleanHeadersByProperty );
+                    $watchlist = $factory->parse( $rows,
+                                                  $cleanHeadersBySheetName,
+                                                  CMBSRestrictedServicerReport::watchlist );
 
                 elseif ( $this->_foundSheetName( self::DLSR, $sheetName ) ):
                     $factory = new DLSRFactory( self::DEFAULT_TIMEZONE );
-                    $dlsr    = $factory->parse( $rows, $cleanHeadersByProperty );
+                    $dlsr    = $factory->parse( $rows,
+                                                $cleanHeadersBySheetName,
+                                                CMBSRestrictedServicerReport::dlsr );
 
                 elseif ( $this->_foundSheetName( self::REOSR, $sheetName ) ):
                     $factory = new REOSRFactory( self::DEFAULT_TIMEZONE );
-                    $reosr   = $factory->parse( $rows, $cleanHeadersByProperty );
+                    $reosr   = $factory->parse( $rows,
+                                                $cleanHeadersBySheetName,
+                                                CMBSRestrictedServicerReport::reosr );
 
                 elseif ( $this->_foundSheetName( self::HLMFCLR, $sheetName ) ):
                     $factory = new HLMFCLRFactory( self::DEFAULT_TIMEZONE );
-                    $hlmfclr = $factory->parse( $rows, $cleanHeadersByProperty );
+                    $hlmfclr = $factory->parse( $rows,
+                                                $cleanHeadersBySheetName,
+                                                CMBSRestrictedServicerReport::hlmfclr );
 
                 elseif ( $this->_foundSheetName( self::CFSR, $sheetName ) ):
                     $factory = new CFSRFactory( self::DEFAULT_TIMEZONE );
-                    $csfr    = $factory->parse( $rows, $cleanHeadersByProperty );
+                    $csfr    = $factory->parse( $rows,
+                                                $cleanHeadersBySheetName,
+                                                CMBSRestrictedServicerReport::csfr );
 
                 elseif ( $this->_foundSheetName( self::LLRES, $sheetName ) ):
                     $factory  = new LLResLOCFactory( self::DEFAULT_TIMEZONE );
-                    $llResLOC = $factory->parse( $rows, $cleanHeadersByProperty );
+                    $llResLOC = $factory->parse( $rows,
+                                                 $cleanHeadersBySheetName,
+                                                 CMBSRestrictedServicerReport::llResLOC );
 
                 elseif ( $this->_foundSheetName( self::TOTALLOAN, $sheetName ) ):
                     $factory   = new TotalLoanFactory( self::DEFAULT_TIMEZONE );
-                    $totalLoan = $factory->parse( $rows, $cleanHeadersByProperty );
+                    $totalLoan = $factory->parse( $rows,
+                                                  $cleanHeadersBySheetName,
+                                                  CMBSRestrictedServicerReport::totalLoan );
 
                 elseif ( $this->_foundSheetName( self::RECOVERY, $sheetName ) ):
                     $factory         = new AdvanceRecoveryFactory( self::DEFAULT_TIMEZONE );
-                    $advanceRecovery = $factory->parse( $rows, $cleanHeadersByProperty );
+                    $advanceRecovery = $factory->parse( $rows,
+                                                        $cleanHeadersBySheetName,
+                                                        CMBSRestrictedServicerReport::advanceRecovery );
                 endif;
             } catch ( NoDataInTabException $exception ) {
                 $alerts[] = $exception;
-                $factory->getCleanHeaders();
+                //$factory->getCleanHeaders(); // What was I doing with this?
             } catch ( \Exception $exception ) {
                 $exceptions[] = $exception;
             }
@@ -154,7 +170,7 @@ class CMBSRestrictedServicerReportFactory {
                                                  $llResLOC,
                                                  $totalLoan,
                                                  $advanceRecovery,
-                                                 $cleanHeadersByProperty,
+                                                 $cleanHeadersBySheetName,
                                                  $alerts,
                                                  $exceptions );
     }

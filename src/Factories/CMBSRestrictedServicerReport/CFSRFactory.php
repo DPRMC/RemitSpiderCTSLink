@@ -53,17 +53,17 @@ class CFSRFactory extends AbstractTabFactory {
             13 => 'at_contribution_information' . '_' . 'base_year' . '_',
             14 => 'at_contribution_information' . '_' . 'base_year' . '_',
 
-            15 => 'second_preceding_fy_operating_information' . '_' . 'as of' . '_',
-            16 => 'second_preceding_fy_operating_information' . '_' . 'normalized' . '_',
-            17 => 'second_preceding_fy_operating_information' . '_' . 'normalized' . '_',
-            18 => 'second_preceding_fy_operating_information' . '_' . 'normalized' . '_',
-            19 => 'second_preceding_fy_operating_information' . '_' . 'normalized' . '_',
+            15 => 'sec_prec_fy_operating_info' . '_' . 'as_of' . '_', // secondary_preceding
+            16 => 'sec_prec_fy_operating_info' . '_' . 'normalized' . '_',
+            17 => 'sec_prec_fy_operating_info' . '_' . 'normalized' . '_',
+            18 => 'sec_prec_fy_operating_info' . '_' . 'normalized' . '_',
+            19 => 'sec_prec_fy_operating_info' . '_' . 'normalized' . '_',
 
-            20 => 'preceding_fy_operating_information' . '_' . 'as_of' . '_',
-            21 => 'preceding_fy_operating_information' . '_' . 'normalized' . '_',
-            22 => 'preceding_fy_operating_information' . '_' . 'normalized' . '_',
-            23 => 'preceding_fy_operating_information' . '_' . 'normalized' . '_',
-            24 => 'preceding_fy_operating_information' . '_' . 'normalized' . '_',
+            20 => 'prec_fy_operating_info' . '_' . 'as_of' . '_', // preceding_fy_operating_information
+            21 => 'prec_fy_operating_info' . '_' . 'normalized' . '_',
+            22 => 'prec_fy_operating_info' . '_' . 'normalized' . '_',
+            23 => 'prec_fy_operating_info' . '_' . 'normalized' . '_',
+            24 => 'prec_fy_operating_info' . '_' . 'normalized' . '_',
 
             25 => 'most_recent_financial_information' . '_',
             26 => 'most_recent_financial_information' . '_',

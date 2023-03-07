@@ -303,24 +303,55 @@ class RemitSpiderCTSLinkTest extends TestCase {
      * @test
      * @group rsrf
      */
-    public function testRestrictedServicerReportFactory(){
-        $filePath     = getcwd() . '/tests/test_input/JPC_2022B32_RSRV.xls';
-        $filePath     = getcwd() . '/tests/test_input/BOAMLLL_2012CKSV_RSRV.xls';
+    public function testRestrictedServicerReportFactory() {
+        $filePath = getcwd() . '/tests/test_input/JPC_2022B32_RSRV.xls';
+        $filePath = getcwd() . '/tests/test_input/BOAMLLL_2012CKSV_RSRV.xls';
 
-        $factory = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\CMBSRestrictedServicerReportFactory( self::TIMEZONE);
-        $restrictedServicerReport = $factory->make($filePath);
+        $factory                  = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\CMBSRestrictedServicerReportFactory( self::TIMEZONE );
+        $restrictedServicerReport = $factory->make( $filePath );
+
+        if ( $restrictedServicerReport->alerts ):
+            dump( "ALERTS" );
+            foreach ( $restrictedServicerReport->alerts as $alert ):
+                dump( $alert->getMessage() );
+            endforeach;
+        endif;
+
+        if ( $restrictedServicerReport->exceptions ):
+            dump( "EXCEPTIONS" );
+            foreach ( $restrictedServicerReport->exceptions as $exception ):
 
 
-        dd($restrictedServicerReport);
+                switch ( get_class( $exception ) ):
+                    case \DPRMC\RemitSpiderCTSLink\Exceptions\HeadersTooLongForMySQLException::class:
+                        dump($exception->getTraceAsString());
+                        dump( $exception->getMessage() );
+                        dump( $exception->headersThatAreTooLong );
+                        break;
 
-        dump($filePath);
-        dump("Showing the toSQL output");
-        $sql = $restrictedServicerReport->generateSQL();
+                    default:
+                        dump( get_class($exception) . ': ' . $exception->getMessage() );
+                endswitch;
+            endforeach;
 
-        dump($sql);
+            die( "Done." );
+        endif;
+
+//
+//
+//        dd($restrictedServicerReport);
+
+        dump( $filePath );
+        dump( "Showing the toSQL output" );
+
+        $sqlGenerator = new \DPRMC\RemitSpiderCTSLink\SQL\GenerateSqlFromCMBSRestrictedServicerReport( $restrictedServicerReport );
+
+        $sql = $sqlGenerator->generateSQL();
+
+        dump( $sql );
 
 
-        dump($restrictedServicerReport->failedTables);
+        //dump($restrictedServicerReport->failedTables);
     }
 
 }
