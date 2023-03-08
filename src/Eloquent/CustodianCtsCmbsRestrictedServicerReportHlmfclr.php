@@ -100,6 +100,6 @@ class CustodianCtsCmbsRestrictedServicerReportHlmfclr extends Model {
 
     public function __construct( array $attributes = [] ) {
         parent::__construct( $attributes );
-        $this->connection = env( '' );
+        $this->connection = env( 'DB_CONNECTION_CUSTODIAN_CTS' );
     }
 }

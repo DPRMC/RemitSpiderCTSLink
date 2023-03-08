@@ -38,7 +38,7 @@ class GenerateEloquentModelsFromCMBSRestrictedServicerReport {
 
 
     public function generateModels( string $tablePrefix = 'custodian_cts_cmbs_restricted_servicer_report_',
-                                    string $connection = '' ): array {
+                                    string $connection = 'DB_CONNECTION_CUSTODIAN_CTS' ): array {
         $modelFiles = [];
 
         $template = $this->_getTemplateString();
