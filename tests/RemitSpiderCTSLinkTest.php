@@ -305,7 +305,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
      */
     public function testRestrictedServicerReportFactory() {
         $filePath = getcwd() . '/tests/test_input/JPC_2022B32_RSRV.xls';
-        $filePath = getcwd() . '/tests/test_input/BOAMLLL_2012CKSV_RSRV.xls';
+        //$filePath = getcwd() . '/tests/test_input/BOAMLLL_2012CKSV_RSRV.xls';
 
         $factory                  = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\CMBSRestrictedServicerReportFactory( self::TIMEZONE );
         $restrictedServicerReport = $factory->make( $filePath );
@@ -324,13 +324,13 @@ class RemitSpiderCTSLinkTest extends TestCase {
 
                 switch ( get_class( $exception ) ):
                     case \DPRMC\RemitSpiderCTSLink\Exceptions\HeadersTooLongForMySQLException::class:
-                        dump($exception->getTraceAsString());
+                        dump( $exception->getTraceAsString() );
                         dump( $exception->getMessage() );
                         dump( $exception->headersThatAreTooLong );
                         break;
 
                     default:
-                        dump( get_class($exception) . ': ' . $exception->getMessage() );
+                        dump( get_class( $exception ) . ': ' . $exception->getMessage() );
                 endswitch;
             endforeach;
 
@@ -349,6 +349,9 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $sql = $sqlGenerator->generateSQL();
 
         dump( $sql );
+
+        $modelGenerator = new \DPRMC\RemitSpiderCTSLink\Laravel\GenerateEloquentModelsFromCMBSRestrictedServicerReport( $restrictedServicerReport );
+        $modelGenerator->generateModels();
 
 
         //dump($restrictedServicerReport->failedTables);

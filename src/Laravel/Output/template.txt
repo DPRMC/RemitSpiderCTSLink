@@ -1,0 +1,36 @@
+<?php
+
+
+namespace DPRMC\RemitSpiderCTSLink\Eloquent;
+
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ *
+ */
+class <class_name> extends Model {
+
+    public $table        = '<table>';
+    public $primaryKey   = self::id;
+    public $keyType      = 'integer';
+    public $incrementing = TRUE;
+
+    const id = 'id';
+    const created_at = 'created_at';
+    const updated_at = 'updated_at';
+    <consts>
+
+    protected $casts = [
+        <casts>
+    ];
+
+    protected $fillable = [
+        <fillable>
+    ];
+
+
+    public function __construct( array $attributes = [] ) {
+        parent::__construct( $attributes );
+        $this->connection = env( '<connection>' );
+    }
+}
