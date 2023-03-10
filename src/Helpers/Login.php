@@ -151,7 +151,7 @@ class Login {
         $elements = $dom->getElementsByTagName( 'title' );
 
         if ( 1 != $elements->count() ):
-            throw new WrongNumberOfTitleElementsException( $elements->count() . " were found. Should only see 1.",
+            throw new WrongNumberOfTitleElementsException( $elements->count() . " title elements were found. Should only see 1.",
                                                            0,
                                                            NULL,
                                                            $elements,
