@@ -72,7 +72,7 @@ class Login {
 
         $this->Debug->_screenshot( 'first_page' );
         $this->Debug->_debug( "Filling out user and pass." );
-        $this->Page->evaluate( "document.querySelector('#user_id').value = '" . $this->user . "';" );
+        $this->Page->evaluate( "document.querySelector('#userid').value = '" . $this->user . "';" );
         $this->Page->evaluate( "document.querySelector('#password').value = '" . $this->pass . "';" );
 
         // DEBUG
