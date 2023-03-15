@@ -47,7 +47,7 @@ class DLSRFactory extends AbstractTabFactory {
         $this->_setDelinquencyIndexes( $allRows );
 
         if ( $this->_isMissingSomeDelinquencyIndexes() ):
-            throw new DLSRTabMissingSomeDelinquencyCategoriesException( "Patch the parser. DLSR missing some cats",
+            throw new DLSRTabMissingSomeDelinquencyCategoriesException( "Patch the parser. DLSR isMissingSomeDelinquencyIndexes",
                                                                         0,
                                                                         NULL,
                                                                         $this->delinquencyIndexes );
@@ -219,6 +219,11 @@ class DLSRFactory extends AbstractTabFactory {
             return TRUE;
         endif;
 
+        // Performing Matured Balloon
+        if ( str_starts_with( $data, 'performing matured' ) ):
+            return TRUE;
+        endif;
+
         return FALSE;
     }
 
@@ -235,6 +240,11 @@ class DLSRFactory extends AbstractTabFactory {
         endif;
 
         if ( str_starts_with( $data, 'matured non' ) ):
+            return TRUE;
+        endif;
+
+        // Non Performing Matured Balloon
+        if ( str_starts_with( $data, 'non performing' ) ):
             return TRUE;
         endif;
 

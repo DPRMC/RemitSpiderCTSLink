@@ -72,19 +72,30 @@ abstract class AbstractTabFactory {
      * @param int $numRowsToCheck
      * @return Carbon
      * @throws DateNotFoundInHeaderException
+     * TODO put the patterns in an array and loop through them.
      */
     protected function _searchForDate( array $allRows, int $numRowsToCheck = 6 ): Carbon {
         $pattern = '/\d{1,2}\/\d{1,2}\/\d{4}/'; // Will match dates like 1/1/2023 or 12/31/2023
+        $pattern_2 = '/\d{8}/'; // Matches 20230311
+
         for ( $i = 0; $i <= $numRowsToCheck; $i++ ):
-            $parts = explode( ' ', $allRows[ $i ][ 0 ] ?? '' );
+            // Split on all white space. Not just spaces like I was doing before.
+            $parts = preg_split( '/\s/', $allRows[ $i ][ 0 ] ?? '' );
+
+            // There shouldn't be any whitespace around the parts, but be sure...
+            $parts = array_map( 'trim', $parts );
             foreach ( $parts as $part ):
                 if ( 1 === preg_match( $pattern, $part ) ):
+                    return Carbon::parse( $part, $this->timezone );
+                endif;
+
+                if ( 1 === preg_match( $pattern_2, $part ) ):
                     return Carbon::parse( $part, $this->timezone );
                 endif;
             endforeach;
         endfor;
 
-        throw new DateNotFoundInHeaderException( "Patch the parser.",
+        throw new DateNotFoundInHeaderException( "Patch the parser. Can't find the date.",
                                                  8732465782, // Gibberish
                                                  NULL,
                                                  array_slice( $allRows,
