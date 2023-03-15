@@ -106,6 +106,8 @@ class CMBSRestrictedServicerReportFactory {
         foreach ( $sheetNames as $sheetName ):
             try {
                 $rows = Excel::sheetToArray( $pathToRestrictedServicerReportXlsx, $sheetName );
+
+                //$headers = Excel::sheetHeaderToArray($pathToRestrictedServicerReportXlsx, $sheetName );
                 if ( $this->_foundSheetName( self::WATCHLIST, $sheetName ) ):
                     $factory   = new WatchlistFactory( self::DEFAULT_TIMEZONE );
                     $watchlist = $factory->parse( $rows,

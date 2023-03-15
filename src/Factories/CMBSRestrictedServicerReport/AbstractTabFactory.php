@@ -75,23 +75,39 @@ abstract class AbstractTabFactory {
      * TODO put the patterns in an array and loop through them.
      */
     protected function _searchForDate( array $allRows, int $numRowsToCheck = 6 ): Carbon {
-        $pattern = '/\d{1,2}\/\d{1,2}\/\d{4}/'; // Will match dates like 1/1/2023 or 12/31/2023
-        $pattern_2 = '/\d{8}/'; // Matches 20230311
+        $pattern   = '/\d{1,2}\/\d{1,2}\/\d{4}/'; // Will match dates like 1/1/2023 or 12/31/2023
+        $pattern_2 = '/\d{8}/';                   // Matches 20230311
+        $pattern_3 = '/4\d{4}$/';                 // Matches an Excel date. Will DEFINITELY BREAK IN THE FUTURE.
+
+        $columnsToCheck = [ 0, 1 ]; // Now I need to check the 2nd column too.... thanks CTS!
 
         for ( $i = 0; $i <= $numRowsToCheck; $i++ ):
-            // Split on all white space. Not just spaces like I was doing before.
-            $parts = preg_split( '/\s/', $allRows[ $i ][ 0 ] ?? '' );
+            foreach ( $columnsToCheck as $columnIndex ):
+                // Split on all white space. Not just spaces like I was doing before.
+                $parts = preg_split( '/\s/', $allRows[ $i ][ $columnIndex ] ?? '' );
+                // There shouldn't be any whitespace around the parts, but be sure...
+                $parts = array_map( 'trim', $parts );
 
-            // There shouldn't be any whitespace around the parts, but be sure...
-            $parts = array_map( 'trim', $parts );
-            foreach ( $parts as $part ):
-                if ( 1 === preg_match( $pattern, $part ) ):
-                    return Carbon::parse( $part, $this->timezone );
-                endif;
+                foreach ( $parts as $part ):
+//                    var_dump( $part );
+                    if ( 1 === preg_match( $pattern, $part ) ):
+                        return Carbon::parse( $part, $this->timezone );
+                    endif;
 
-                if ( 1 === preg_match( $pattern_2, $part ) ):
-                    return Carbon::parse( $part, $this->timezone );
-                endif;
+                    if ( 1 === preg_match( $pattern_2, $part ) ):
+                        return Carbon::parse( $part, $this->timezone );
+                    endif;
+
+                    if ( 1 === preg_match( $pattern_3, $part ) ):
+
+                        $unixDate = ( (int)$part - 25569 ) * 86400;
+                        $carbon   = Carbon::createFromTimestamp( $unixDate, $this->timezone );
+
+                        return $carbon;
+                    endif;
+                endforeach;
+
+
             endforeach;
         endfor;
 
@@ -189,6 +205,12 @@ abstract class AbstractTabFactory {
         $newHeader = str_replace( 'reimburse-ment',
                                   'reimbursement_date',
                                   $newHeader ); // servicer_info_initial_reimburse-ment_date
+
+        // most_recent_financial_information_normalized_$_noi_ncf
+        $newHeader = str_replace( 'most_recent_financial_information_normalized_$_noi_ncf',
+                                  'most_recent_financial_information_normalized_noi_ncf',
+                                  $newHeader );
+
 
 
         // Too long.
