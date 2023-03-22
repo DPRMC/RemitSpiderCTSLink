@@ -16,6 +16,7 @@ class CustodianCtsCmbsRestrictedServicerReportTotalLoan extends Model {
     public $incrementing = TRUE;
 
     const id                                              = 'id';
+    const date                                                          = 'date';
     const created_at                                      = 'created_at';
     const updated_at                                      = 'updated_at';
     const transaction_id                                  = 'transaction_id';
@@ -44,6 +45,7 @@ class CustodianCtsCmbsRestrictedServicerReportTotalLoan extends Model {
     const current_lockbox_status                          = 'current_lockbox_status';
 
     protected $casts = [
+        self::date => 'date',
         self:: transaction_id                                  => 'string',
         self:: group_id                                        => 'string',
         self:: loan_id                                         => 'string',
@@ -71,6 +73,7 @@ class CustodianCtsCmbsRestrictedServicerReportTotalLoan extends Model {
     ];
 
     protected $fillable = [
+        self::date,
         self:: transaction_id,
         self:: group_id,
         self:: loan_id,

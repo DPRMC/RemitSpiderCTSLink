@@ -16,6 +16,7 @@ class CustodianCtsCmbsRestrictedServicerReportCfsr extends Model {
     public $incrementing = TRUE;
 
     const id                                                           = 'id';
+    const date                                                          = 'date';
     const created_at                                                   = 'created_at';
     const updated_at                                                   = 'updated_at';
     const trans_id                                                     = 'trans_id';
@@ -55,6 +56,7 @@ class CustodianCtsCmbsRestrictedServicerReportCfsr extends Model {
     const net_change_preceding_and_base_year_dscr                      = 'net_change_preceding_and_base_year_dscr';
 
     protected $casts = [
+        self::date => 'date',
         self:: trans_id                                                     => 'string',
         self:: loan_id                                                      => 'string',
         self:: prospectus_loan_id                                           => 'string',
@@ -93,6 +95,7 @@ class CustodianCtsCmbsRestrictedServicerReportCfsr extends Model {
     ];
 
     protected $fillable = [
+        self::date,
         self:: trans_id,
         self:: loan_id,
         self:: prospectus_loan_id,

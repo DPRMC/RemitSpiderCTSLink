@@ -16,6 +16,7 @@ class CustodianCtsCmbsRestrictedServicerReportLlResLoc extends Model {
     public $incrementing = TRUE;
 
     const id                               = 'id';
+    const date                                                          = 'date';
     const created_at                       = 'created_at';
     const updated_at                       = 'updated_at';
     const trans_id                         = 'trans_id';
@@ -35,6 +36,7 @@ class CustodianCtsCmbsRestrictedServicerReportLlResLoc extends Model {
     const comments_loan_level_reserve_loc  = 'comments_loan_level_reserve_loc';
 
     protected $casts = [
+        self::date => 'date',
         self:: trans_id                         => 'string',
         self:: group_id                         => 'string',
         self:: loan_id                          => 'string',
@@ -53,6 +55,8 @@ class CustodianCtsCmbsRestrictedServicerReportLlResLoc extends Model {
     ];
 
     protected $fillable = [
+        self::date,
+
         self:: trans_id,
         self:: group_id,
         self:: loan_id,
