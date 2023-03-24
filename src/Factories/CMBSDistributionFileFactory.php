@@ -37,7 +37,7 @@ class CMBSDistributionFileFactory {
     const MODIFIED_LOAN_DETAIL                       = 'MODIFIED_LOAN_DETAIL';
     const DELINQUENCY_LOAN_DETAIL                    = 'DELINQUENCY_LOAN_DETAIL';
     const HISTORICAL_DETAIL                          = 'HISTORICAL_DETAIL';
-
+    const MORTGAGE_LOAN_DETAIL_PART_1                = 'MORTGAGE_LOAN_DETAIL_PART_1';
 
     // Certificate Distribution Detail fields
     const security_class          = 'Class';
@@ -173,6 +173,7 @@ class CMBSDistributionFileFactory {
 
 
         foreach ( $tableOfContentsRows as $i => $rowString ):
+            dump( $rowString );
             $rowString = strtolower( $rowString );
             foreach ( $acceptableTabNames[ $targetSectionName ] as $possibleName ):
                 if ( $rowString == $possibleName ):
@@ -203,11 +204,11 @@ class CMBSDistributionFileFactory {
         $distributionFile->dates                                   = $this->dates;
         $distributionFile->certificateDistributionDetail           = $this->getCertificateDistributionDetail();
         $distributionFile->certificateFactorDetail                 = $this->getCertificateFactorDetail();
-        $distributionFile->certificateInterestReconciliationDetail = $this->getCertificateInterestReconciliationDetail();
-        $distributionFile->modifiedLoanDetail                      = $this->getModifiedLoanDetail();
-        $distributionFile->delinquencyLoanDetail                   = $this->getDelinquencyLoanDetail();
-        $distributionFile->historicalDetail                        = $this->getHistoricalDetail();
-        $distributionFile->mortgageLoanDetailPart1                 = $this->getMortgageLoanDetailPartOne();
+//        $distributionFile->certificateInterestReconciliationDetail = $this->getCertificateInterestReconciliationDetail();
+//        $distributionFile->modifiedLoanDetail                      = $this->getModifiedLoanDetail();
+//        $distributionFile->delinquencyLoanDetail                   = $this->getDelinquencyLoanDetail();
+//        $distributionFile->historicalDetail                        = $this->getHistoricalDetail();
+//        $distributionFile->mortgageLoanDetailPart1                 = $this->getMortgageLoanDetailPartOne();
 
 
         return $distributionFile;
@@ -245,7 +246,8 @@ class CMBSDistributionFileFactory {
      * @throws \Exception
      */
     protected function getCertificateDistributionDetail(): array {
-        $sectionName = 'Certificate Distribution Detail';
+        //$sectionName = 'Certificate Distribution Detail';
+        $sectionName = self::CERTIFICATE_DISTRIBUTION_DETAIL;
         $pageIndexes = $this->getPageRangeBySection( $sectionName );
 
         $pagesAsArrays = [];
@@ -274,7 +276,8 @@ class CMBSDistributionFileFactory {
      * @throws \Exception
      */
     protected function getCertificateFactorDetail(): array {
-        $sectionName = 'Certificate Factor Detail';
+        //$sectionName = 'Certificate Factor Detail';
+        $sectionName = self::CERTIFICATE_FACTOR_DETAIL;
         $pageIndexes = $this->getPageRangeBySection( $sectionName );
 
         $pagesAsArrays = [];
@@ -294,11 +297,12 @@ class CMBSDistributionFileFactory {
      * @throws \Exception
      */
     protected function getCertificateInterestReconciliationDetail(): array {
-        $sectionName = 'Certificate Interest Reconciliation Detail';
+        //$sectionName = 'Certificate Interest Reconciliation Detail';
+        $sectionName = self::CERTIFICATE_INTEREST_RECONCILIATION_DETAIL;
         $pageIndexes = $this->getPageRangeBySection( $sectionName );
 
-        dump( '$pageIndexes' );
-        dd( $pageIndexes );
+//        dump( '$pageIndexes' );
+//        dd( $pageIndexes );
 
         $pagesAsArrays = [];
         foreach ( $pageIndexes as $index ):
@@ -313,7 +317,8 @@ class CMBSDistributionFileFactory {
 
 
     protected function getModifiedLoanDetail(): array {
-        $sectionName = 'Modified Loan Detail';
+//        $sectionName = 'Modified Loan Detail';
+        $sectionName = self::MODIFIED_LOAN_DETAIL;
         $pageIndexes = $this->getPageRangeBySection( $sectionName );
 
         $pagesAsArrays = [];
@@ -386,7 +391,8 @@ class CMBSDistributionFileFactory {
      * @throws \Exception
      */
     protected function getDelinquencyLoanDetail(): array {
-        $sectionName = 'Delinquency Loan Detail';
+//        $sectionName = 'Delinquency Loan Detail';
+        $sectionName = self::DELINQUENCY_LOAN_DETAIL;
         $pageIndexes = $this->getPageRangeBySection( $sectionName );
 
         $pagesAsArrays = [];
@@ -495,6 +501,7 @@ class CMBSDistributionFileFactory {
      */
     protected function getHistoricalDetail(): array {
         $sectionName = 'Historical Detail';
+        $sectionName = self::HISTORICAL_DETAIL;
         $pageIndexes = $this->getPageRangeBySection( $sectionName );
 
         $pagesAsArrays = [];
@@ -557,7 +564,8 @@ class CMBSDistributionFileFactory {
 
 
     protected function getMortgageLoanDetailPartOne(): array {
-        $sectionName = 'Mortgage Loan Detail (Part 1)';
+//        $sectionName = 'Mortgage Loan Detail (Part 1)';
+        $sectionName = self::MORTGAGE_LOAN_DETAIL_PART_1;
         $pageIndexes = $this->getPageRangeBySection( $sectionName );
 
         $pagesAsArrays = [];
@@ -656,20 +664,18 @@ class CMBSDistributionFileFactory {
      * @return array
      * @throws UnableToFindIndexOfLabelException
      */
+    /**
+     * @param string $sectionName
+     * @return array
+     * @throws NewSectionNameFoundException
+     */
     protected function getPageRangeBySection( string $sectionName ): array {
         $aFirstPage = $this->pageWithTableOfContents->getTextArray( $this->pageWithTableOfContents );
 
         // Replace this with a method to give you the actual index of the label...
-        $indexOfLabel = array_search( $sectionName, $aFirstPage );
+        //$indexOfLabel = array_search( $sectionName, $aFirstPage );
+        $indexOfLabel = $this->_getIndexOfLabel( $sectionName, $aFirstPage );
 
-
-        if ( FALSE === $indexOfLabel ):
-            throw new UnableToFindIndexOfLabelException( "Unable to find the index of label for " . $sectionName,
-                                                         0,
-                                                         NULL,
-                                                         $sectionName,
-                                                         $aFirstPage );
-        endif;
 
         // Sometimes it's a range of pages.
         $pagesString     = $aFirstPage[ $indexOfLabel + 1 ];
@@ -688,11 +694,6 @@ class CMBSDistributionFileFactory {
             $endPage--; // PHP arrays start index at zero.
             return range( $startPage, $endPage );
         endif;
-
-//        if ( $sectionName == 'Certificate Interest Reconciliation Detail' ):
-//            dump( $aFirstPage );
-//            dump( $indexOfLabel );
-//        endif;
 
         return [ $startPage ];
     }
