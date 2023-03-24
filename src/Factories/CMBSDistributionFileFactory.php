@@ -4,8 +4,10 @@ namespace DPRMC\RemitSpiderCTSLink\Factories;
 
 use Carbon\Carbon;
 use DPRMC\CUSIP;
+use DPRMC\RemitSpiderCTSLink\Exceptions\DistributionFileExceptions\UnableToFindIndexOfLabelException;
 use DPRMC\RemitSpiderCTSLink\Models\CMBSDistributionFile;
 use Smalot\PdfParser\Page;
+use function PHPUnit\Framework\arrayHasKey;
 
 class CMBSDistributionFileFactory {
 
@@ -225,6 +227,9 @@ class CMBSDistributionFileFactory {
     protected function getCertificateInterestReconciliationDetail(): array {
         $sectionName = 'Certificate Interest Reconciliation Detail';
         $pageIndexes = $this->getPageRangeBySection( $sectionName );
+
+        dump( '$pageIndexes' );
+        dd( $pageIndexes );
 
         $pagesAsArrays = [];
         foreach ( $pageIndexes as $index ):
@@ -491,11 +496,11 @@ class CMBSDistributionFileFactory {
             /**
              * @var Page $currentPage
              */
-            $currentPage     = $this->pages[ $index ];
+            $currentPage = $this->pages[ $index ];
             //$pagesAsArrays[] = $currentPage->getTextArray( $currentPage );
             $text = $currentPage->getText( $currentPage );
             $text = $currentPage->getContent( $currentPage );
-            $text = $currentPage->getXObjects(  );
+            $text = $currentPage->getXObjects();
             $text = $currentPage->getSectionsText( $currentPage );
         endforeach;
 
@@ -587,6 +592,15 @@ class CMBSDistributionFileFactory {
 
         $indexOfLabel = array_search( $sectionName, $aFirstPage );
 
+        if ( FALSE === $indexOfLabel ):
+            throw new UnableToFindIndexOfLabelException( "Unable to find the index of label for " . $sectionName,
+                                                         0,
+                                                         NULL,
+                                                         $sectionName,
+                                                         $aFirstPage );
+        endif;
+
+        // Sometimes it's a range of pages.
         $pagesString     = $aFirstPage[ $indexOfLabel + 1 ];
         $pageNumberParts = explode( '-', $pagesString );
 
@@ -602,6 +616,11 @@ class CMBSDistributionFileFactory {
         if ( $endPage ):
             $endPage--; // PHP arrays start index at zero.
             return range( $startPage, $endPage );
+        endif;
+
+        if ( $sectionName == 'Certificate Interest Reconciliation Detail' ):
+            dump( $aFirstPage );
+            dump( $indexOfLabel );
         endif;
 
         return [ $startPage ];

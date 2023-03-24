@@ -129,8 +129,9 @@ class RemitSpiderCTSLinkTest extends TestCase {
      */
     public function testCMBSDistributionFileFactory() {
         ini_set( 'memory_limit', -1 );
-        $filePath = getcwd() . '/tests/test_input/BAMLC_2018BNK12_DDST.pdf';
+        //$filePath = getcwd() . '/tests/test_input/BAMLC_2018BNK12_DDST.pdf';
         //$filePath = getcwd() . '/tests/test_input/CCM_2022B35_DDST.pdf';
+        $filePath = getcwd() . '/tests/test_input/fun_1999c01_20190516_4245037.pdf';
 
         $factory              = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSDistributionFileFactory();
         $cmbsDistributionFile = $factory->make( $filePath );
