@@ -4,10 +4,11 @@ namespace DPRMC\RemitSpiderCTSLink\Factories;
 
 use Carbon\Carbon;
 use DPRMC\CUSIP;
+use DPRMC\RemitSpiderCTSLink\Exceptions\DistributionFileExceptions\NewSectionNameFoundException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\DistributionFileExceptions\UnableToFindIndexOfLabelException;
 use DPRMC\RemitSpiderCTSLink\Models\CMBSDistributionFile;
 use Smalot\PdfParser\Page;
-use function PHPUnit\Framework\arrayHasKey;
+
 
 class CMBSDistributionFileFactory {
 
@@ -27,6 +28,15 @@ class CMBSDistributionFileFactory {
     const determination_date     = 'Determination Date';
     const next_distribution_date = 'Next Distribution Date';
     const record_date            = 'Record Date';
+
+
+    // Tab names
+    const CERTIFICATE_DISTRIBUTION_DETAIL            = 'CERTIFICATE_DISTRIBUTION_DETAIL';
+    const CERTIFICATE_FACTOR_DETAIL                  = 'CERTIFICATE_FACTOR_DETAIL';
+    const CERTIFICATE_INTEREST_RECONCILIATION_DETAIL = 'CERTIFICATE_INTEREST_RECONCILIATION_DETAIL';
+    const MODIFIED_LOAN_DETAIL                       = 'MODIFIED_LOAN_DETAIL';
+    const DELINQUENCY_LOAN_DETAIL                    = 'DELINQUENCY_LOAN_DETAIL';
+    const HISTORICAL_DETAIL                          = 'HISTORICAL_DETAIL';
 
 
     // Certificate Distribution Detail fields
@@ -121,6 +131,64 @@ class CMBSDistributionFileFactory {
     }
 
 
+    /**
+     * @param string $targetSectionName
+     * @param array $tableOfContentsRows
+     * @return int
+     * @throws NewSectionNameFoundException
+     */
+    protected function _getIndexOfLabel( string $targetSectionName,
+                                         array  $tableOfContentsRows ): int {
+
+        $acceptableTabNames = [
+            self::CERTIFICATE_DISTRIBUTION_DETAIL            => [
+                'Certificate Distribution Detail',
+            ],
+            self::CERTIFICATE_FACTOR_DETAIL                  => [
+                'Certificate Factor Detail',
+            ],
+            self::CERTIFICATE_INTEREST_RECONCILIATION_DETAIL => [
+                'Certificate Interest Reconciliation Detail',
+            ],
+            self::MODIFIED_LOAN_DETAIL                       => [
+                'Modified Loan Detail',
+            ],
+            self::DELINQUENCY_LOAN_DETAIL                    => [
+                'Delinquency Loan Detail',
+            ],
+            self::HISTORICAL_DETAIL                          => [
+                'Historical Detail',
+            ],
+        ];
+
+
+        // I am always going to do a case-insensitive search.
+        // This nested for loop allows me to add in mixed case options in the
+        // array above. Just a time saver.
+        foreach ( $acceptableTabNames as $constTabName => $possibleNames ):
+            foreach ( $possibleNames as $i => $possibleName ):
+                $acceptableTabNames[ $constTabName ][ $i ] = strtolower( $possibleName );
+            endforeach;
+        endforeach;
+
+
+        foreach ( $tableOfContentsRows as $i => $rowString ):
+            $rowString = strtolower( $rowString );
+            foreach ( $acceptableTabNames[ $targetSectionName ] as $possibleName ):
+                if ( $rowString == $possibleName ):
+                    return (int)$i;
+                endif;
+            endforeach;
+
+        endforeach;
+
+        throw new NewSectionNameFoundException( "New section name found in a PDF file: [" . $constTabName . "]",
+                                                0,
+                                                NULL,
+                                                $constTabName );
+    }
+
+
     public function make( string $pathToDistributionFilePDF ): CMBSDistributionFile {
         $distributionFile                = new CMBSDistributionFile();
         $fileContents                    = file_get_contents( $pathToDistributionFilePDF );
@@ -170,6 +238,7 @@ class CMBSDistributionFileFactory {
             self::record_date            => $recordDate,
         ];
     }
+
 
     /**
      * @return array
@@ -585,12 +654,14 @@ class CMBSDistributionFileFactory {
      * A little helper method to get page indexes for sections from the Table of Contents.
      * @param string $sectionName
      * @return array
-     * @throws \Exception
+     * @throws UnableToFindIndexOfLabelException
      */
     protected function getPageRangeBySection( string $sectionName ): array {
         $aFirstPage = $this->pageWithTableOfContents->getTextArray( $this->pageWithTableOfContents );
 
+        // Replace this with a method to give you the actual index of the label...
         $indexOfLabel = array_search( $sectionName, $aFirstPage );
+
 
         if ( FALSE === $indexOfLabel ):
             throw new UnableToFindIndexOfLabelException( "Unable to find the index of label for " . $sectionName,
