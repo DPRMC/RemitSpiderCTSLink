@@ -50,6 +50,19 @@ class RemitSpiderCTSLinkTest extends TestCase {
 
 
     /**
+     * @group cusip
+     */
+    public function testGetCusipList() {
+        $filePath = getcwd() . '/tests/test_input/fun_1999c01_20190516_4245037.pdf';
+
+        $factory              = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSDistributionFileFactory();
+        $cusips = $factory->getCUSIPList( $filePath );
+
+        dump($cusips);
+
+    }
+
+    /**
      * @test
      */
     public function testConstructor() {
@@ -136,7 +149,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $factory              = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSDistributionFileFactory();
         $cmbsDistributionFile = $factory->make( $filePath );
 
-        print_r( $cmbsDistributionFile );
+        dump( $cmbsDistributionFile->certificateDistributionDetail );
 
         $this->assertInstanceOf( \DPRMC\RemitSpiderCTSLink\Models\CMBSDistributionFile::class,
                                  $cmbsDistributionFile );
@@ -357,5 +370,9 @@ class RemitSpiderCTSLinkTest extends TestCase {
 
         //dump($restrictedServicerReport->failedTables);
     }
+
+
+
+
 
 }

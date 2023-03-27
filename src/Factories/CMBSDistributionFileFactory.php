@@ -131,6 +131,31 @@ class CMBSDistributionFileFactory {
     }
 
 
+    public function getCUSIPList( string $pathToDistributionFilePDF ): array {
+
+        $cusipList = [];
+        $fileContents  = file_get_contents( $pathToDistributionFilePDF );
+        $parser        = new \Smalot\PdfParser\Parser();
+        $pdf           = $parser->parseContent( $fileContents );
+        $pages         = $pdf->getPages();
+        $pagesAsArrays = $this->_getPagesAsArrays( $pages );
+        $numberOfPages = count( $pages );
+
+        foreach($pagesAsArrays as $i => $page):
+            foreach($page as $j => $value):
+                if(CUSIP::isCUSIP($value)):
+                    $cusipList[] = trim($value);
+                endif;
+            endforeach;
+        endforeach;
+
+
+        $uniqueCUSIPList = array_unique($cusipList);
+
+        return $uniqueCUSIPList;
+    }
+
+
     /**
      * @param string $targetSectionName
      * @param array $tableOfContentsRows
@@ -735,14 +760,25 @@ class CMBSDistributionFileFactory {
     protected function _parseCertificateFactorDetailRowsFromPageArray( array $pages ): array {
         $parsedRows = [];
 
-        // Remove Headers
-        $numHeaders = 15;
+        $numHeaders       = $this->_getNumHeadersForCertificateFactorDetail( $pages );
+        $numColumnsPerRow = $this->_getNumColumnsPerRow( $pages );
+//        dump( 'pages', $pages );
+//        dd( 'asdfasdf' );
+//        // Remove Headers
+//        $numHeaders = 15;
+
+        dump( $numHeaders, 'niumheaderes' );
+        dump( $numColumnsPerRow, 'numcolumnsperrow' );
+        //dd('asdfad');
         foreach ( $pages as $page ):
             for ( $i = 0; $i <= $numHeaders; $i++ ):
-                array_shift( $page );
+                $headerToDelete = array_shift( $page );
+                dump( $headerToDelete );
             endfor;
 
-            $rawRows = array_chunk( $page, 11 );
+            $rawRows = array_chunk( $page, $numColumnsPerRow );
+
+//            dd($rawRows);
 
             foreach ( $rawRows as $rawRow ):
                 if ( $this->_isValidCertificateDistributionDetailRow( $rawRow ) ):
@@ -753,6 +789,83 @@ class CMBSDistributionFileFactory {
         endforeach;
 
         return $parsedRows;
+    }
+
+
+    /**
+     * A little helper function to reduce code duplication.
+     * @param array $pages
+     * @param int $indexToStartLooking
+     * @return int
+     */
+    private function __getIndexOfCusipAfterIndex( array $pages = [], int $indexToStartLooking = 0 ): int {
+        if ( empty( $pages ) ):
+            return 0;
+        endif;
+
+        $firstPage = reset( $pages );
+
+        $cusipIndex = NULL;
+
+        $numValues = count( $firstPage );
+        for ( $i = $indexToStartLooking + 1; $i < $numValues; $i++ ):
+            if ( CUSIP::isCUSIP( $firstPage[ $i ] ) ):
+                $cusipIndex = $i;
+                break;
+            endif;
+        endfor;
+
+        return $cusipIndex;
+    }
+
+
+    /**
+     * @param $pages
+     * @return int
+     */
+    protected function _getNumHeadersForCertificateFactorDetail( $pages ): int {
+        $indexOfFirstCusip = $this->__getIndexOfCusipAfterIndex( $pages, 0 );
+        $indexOfClass      = $indexOfFirstCusip - 1;
+        $indexOfLastHeader = $indexOfClass - 1;
+        return $indexOfLastHeader;
+    }
+
+
+    protected function _getNumColumnsPerRow( array $pages = [] ): int {
+
+        if ( empty( $pages ) ):
+            return 0;
+        endif;
+
+        $firstPage = reset( $pages );
+
+        $firstCusipIndex = 0;
+        foreach ( $firstPage as $i => $value ):
+            if ( CUSIP::isCUSIP( $value ) ):
+                $firstCusipIndex = $i;
+                break;
+            endif;
+        endforeach;
+
+        $numValues        = count( $firstPage );
+        $secondCusipIndex = NULL;
+        for ( $j = $firstCusipIndex + 1; $j < $numValues; $j++ ):
+            if ( CUSIP::isCUSIP( $firstPage[ $j ] ) ):
+                $secondCusipIndex = $j;
+                break;
+            endif;
+        endfor;
+
+
+        // This will only get called if there is ONLY one CUSIP on this page.
+        // I cannot imagine a scenario where this would be the case, but JIC.
+        if ( is_null( $secondCusipIndex ) ):
+            return 11; // Default number of columns per row.
+        endif;
+
+        $numHeaders = $secondCusipIndex - $firstCusipIndex;
+
+        return $numHeaders;
     }
 
 
