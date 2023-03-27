@@ -191,19 +191,20 @@ class CMBSDistributionFileFactory {
 
 
     public function make( string $pathToDistributionFilePDF ): CMBSDistributionFile {
-        $distributionFile                = new CMBSDistributionFile();
-        $fileContents                    = file_get_contents( $pathToDistributionFilePDF );
-        $parser                          = new \Smalot\PdfParser\Parser();
-        $pdf                             = $parser->parseContent( $fileContents );
-        $this->pages                     = $pdf->getPages();
-        $this->pagesAsArrays             = $this->_getPagesAsArrays( $this->pages );
-        $distributionFile->numberOfPages = count( $this->pages );
+        $distributionFile                            = new CMBSDistributionFile();
+        $distributionFile->pathToDistributionFilePdf = $pathToDistributionFilePDF;
+        $fileContents                                = file_get_contents( $pathToDistributionFilePDF );
+        $parser                                      = new \Smalot\PdfParser\Parser();
+        $pdf                                         = $parser->parseContent( $fileContents );
+        $this->pages                                 = $pdf->getPages();
+        $this->pagesAsArrays                         = $this->_getPagesAsArrays( $this->pages );
+        $distributionFile->numberOfPages             = count( $this->pages );
 
-        $this->pageWithTableOfContents                             = $this->pages[ 0 ];
-        $this->dates                                               = $this->_getDates( $this->pagesAsArrays[ 0 ] );
-        $distributionFile->dates                                   = $this->dates;
-        $distributionFile->certificateDistributionDetail           = $this->getCertificateDistributionDetail();
-        $distributionFile->certificateFactorDetail                 = $this->getCertificateFactorDetail();
+        $this->pageWithTableOfContents                   = $this->pages[ 0 ];
+        $this->dates                                     = $this->_getDates( $this->pagesAsArrays[ 0 ] );
+        $distributionFile->dates                         = $this->dates;
+        $distributionFile->certificateDistributionDetail = $this->getCertificateDistributionDetail();
+        $distributionFile->certificateFactorDetail       = $this->getCertificateFactorDetail();
 //        $distributionFile->certificateInterestReconciliationDetail = $this->getCertificateInterestReconciliationDetail();
 //        $distributionFile->modifiedLoanDetail                      = $this->getModifiedLoanDetail();
 //        $distributionFile->delinquencyLoanDetail                   = $this->getDelinquencyLoanDetail();
