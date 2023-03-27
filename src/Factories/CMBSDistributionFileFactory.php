@@ -198,7 +198,6 @@ class CMBSDistributionFileFactory {
 
 
         foreach ( $tableOfContentsRows as $i => $rowString ):
-            dump( $rowString );
             $rowString = strtolower( $rowString );
             foreach ( $acceptableTabNames[ $targetSectionName ] as $possibleName ):
                 if ( $rowString == $possibleName ):
@@ -326,9 +325,6 @@ class CMBSDistributionFileFactory {
         //$sectionName = 'Certificate Interest Reconciliation Detail';
         $sectionName = self::CERTIFICATE_INTEREST_RECONCILIATION_DETAIL;
         $pageIndexes = $this->getPageRangeBySection( $sectionName );
-
-//        dump( '$pageIndexes' );
-//        dd( $pageIndexes );
 
         $pagesAsArrays = [];
         foreach ( $pageIndexes as $index ):
@@ -762,23 +758,13 @@ class CMBSDistributionFileFactory {
 
         $numHeaders       = $this->_getNumHeadersForCertificateFactorDetail( $pages );
         $numColumnsPerRow = $this->_getNumColumnsPerRow( $pages );
-//        dump( 'pages', $pages );
-//        dd( 'asdfasdf' );
-//        // Remove Headers
-//        $numHeaders = 15;
 
-        dump( $numHeaders, 'niumheaderes' );
-        dump( $numColumnsPerRow, 'numcolumnsperrow' );
-        //dd('asdfad');
         foreach ( $pages as $page ):
             for ( $i = 0; $i <= $numHeaders; $i++ ):
                 $headerToDelete = array_shift( $page );
-                dump( $headerToDelete );
             endfor;
 
             $rawRows = array_chunk( $page, $numColumnsPerRow );
-
-//            dd($rawRows);
 
             foreach ( $rawRows as $rawRow ):
                 if ( $this->_isValidCertificateDistributionDetailRow( $rawRow ) ):
