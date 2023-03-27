@@ -996,15 +996,15 @@ class CMBSDistributionFileFactory {
 
         $newRow[ self::security_class ]                 = $row[ 0 ];
         $newRow[ self::cusip ]                          = $row[ 1 ];
-        $newRow[ self::beginning_balance ]              = $this->_formatNumber( $row[ 2 ] );
-        $newRow[ self::principal_distribution ]         = $this->_formatNumber( $row[ 3 ] );
-        $newRow[ self::interest_distribution ]          = $this->_formatNumber( $row[ 4 ] );
-        $newRow[ self::interest_shortfalls ]            = $this->_formatNumber( $row[ 5 ] );
-        $newRow[ self::cumulative_interest_shortfalls ] = $this->_formatNumber( $row[ 6 ] );
-        $newRow[ self::prepayment_penalties ]           = $this->_formatNumber( $row[ 7 ] );
-        $newRow[ self::losses ]                         = $this->_formatNumber( $row[ 8 ] );
-        $newRow[ self::total_distribution ]             = $this->_formatNumber( $row[ 9 ] );
-        $newRow[ self::ending_balance ]                 = $this->_formatNumber( $row[ 10 ] );
+        $newRow[ self::beginning_balance ]              = isset($row[ 2 ] ) ? $this->_formatNumber( $row[ 2 ] ) : null;
+        $newRow[ self::principal_distribution ]         = isset($row[ 3 ] ) ? $this->_formatNumber( $row[ 3 ] ) : null;
+        $newRow[ self::interest_distribution ]          = isset($row[ 4 ] ) ? $this->_formatNumber( $row[ 4 ] ) : null;
+        $newRow[ self::interest_shortfalls ]            = isset($row[ 5 ] ) ? $this->_formatNumber( $row[ 5 ] ) : null;
+        $newRow[ self::cumulative_interest_shortfalls ] = isset($row[ 6 ] ) ? $this->_formatNumber( $row[ 6 ] ) : null;
+        $newRow[ self::prepayment_penalties ]           = isset($row[ 7 ] ) ? $this->_formatNumber( $row[ 7 ] ) : null;
+        $newRow[ self::losses ]                         = isset($row[ 8 ] ) ? $this->_formatNumber( $row[ 8 ] ) : null;
+        $newRow[ self::total_distribution ]             = isset($row[ 9 ] ) ? $this->_formatNumber( $row[ 9 ] ) : null;
+        $newRow[ self::ending_balance ]                 = isset($row[ 10 ] ) ? $this->_formatNumber( $row[ 10 ] ) : null;
 
         return $newRow;
     }
