@@ -21,6 +21,9 @@ abstract class AbstractTabFactory {
     protected array $firstColumnValidTextValues = [];
     protected ?int  $dateRowIndex               = NULL;
 
+
+    protected array $replacementHeaders = [];
+
     /**
      * @param string|NULL $timezone
      */
@@ -329,5 +332,21 @@ abstract class AbstractTabFactory {
         return $this->cleanHeaders;
     }
 
+
+    /**
+     * Rename replacements.
+     * Some sheets have fields named different things.
+     * Make the replacements here.
+     * @param array $cleanHeaders
+     * @return array
+     */
+    protected function _applyReplacementHeaders(array $cleanHeaders): array  {
+        foreach( $cleanHeaders as $i => $cleanHeader):
+            if( array_key_exists($cleanHeader, $this->replacementHeaders)):
+                $cleanHeaders[$i] = $this->replacementHeaders[$cleanHeader];
+            endif;
+        endforeach;
+        return $cleanHeaders;
+    }
 
 }

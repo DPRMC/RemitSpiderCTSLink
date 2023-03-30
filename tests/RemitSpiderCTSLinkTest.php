@@ -324,6 +324,10 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $factory                  = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\CMBSRestrictedServicerReportFactory( self::TIMEZONE );
         $restrictedServicerReport = $factory->make( $filePath );
 
+
+        dump($restrictedServicerReport->csfr);
+        dd('done.dasdfasd');
+
         if ( $restrictedServicerReport->alerts ):
             dump( "ALERTS" );
             foreach ( $restrictedServicerReport->alerts as $alert ):

@@ -6,6 +6,12 @@ class CFSRFactory extends AbstractTabFactory {
 
     protected array $firstColumnValidTextValues = [ 'Trans ID' ];
 
+
+    protected array $replacementHeaders = [
+        'most_recent_financial_information_occ_as_of_date' => 'most_recent_financial_information_occup_as_of_date',
+    ];
+
+
     /**
      * I need a custom method here since the header values are in more than one row.
      * @param array $allRows
@@ -92,6 +98,12 @@ class CFSRFactory extends AbstractTabFactory {
                 $cleanHeaders[ $i ] = $prefix[$i] . $cleanHeaders[ $i ];
             endif;
         endforeach;
+
+
+        $cleanHeaders = $this->_applyReplacementHeaders($cleanHeaders);
+
+
+
         $this->cleanHeaders = $cleanHeaders;
     }
 }
