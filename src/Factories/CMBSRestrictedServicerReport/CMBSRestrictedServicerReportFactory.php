@@ -3,6 +3,7 @@
 namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 
 use DPRMC\Excel\Excel;
+use DPRMC\RemitSpiderCTSLink\Exceptions\HLMFLCRTabMissingSomeCategoriesException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\AtLeastOneTabNotFoundException;
 use DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport\CMBSRestrictedServicerReport;
@@ -185,6 +186,9 @@ class CMBSRestrictedServicerReportFactory {
             } catch ( NoDataInTabException $exception ) {
                 $alerts[] = $exception;
                 //$factory->getCleanHeaders(); // What was I doing with this?
+            } catch ( HLMFLCRTabMissingSomeCategoriesException $exception ) {
+                // Let's make this a show-stopper, so the developer needs to edit the parser.
+                throw $exception;
             } catch ( \Exception $exception ) {
                 $exceptions[] = $exception;
             }
@@ -195,7 +199,7 @@ class CMBSRestrictedServicerReportFactory {
                                                       0,
                                                       NULL,
                                                       $this->tabsThatHaveBeenFound,
-                                                      $pathToRestrictedServicerReportXlsx);
+                                                      $pathToRestrictedServicerReportXlsx );
         endif;
 
         return new CMBSRestrictedServicerReport( $watchlist,
