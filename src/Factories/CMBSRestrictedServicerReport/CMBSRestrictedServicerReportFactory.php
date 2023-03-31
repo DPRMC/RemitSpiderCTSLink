@@ -280,7 +280,7 @@ class CMBSRestrictedServicerReportFactory {
         $uniqueDates = array_unique( $dates );
 
         if ( count( $uniqueDates ) > 1 ):
-            throw new \Exception( "There is more than one date among the tabs. " . implode( '|', $dates ) );
+            throw new \Exception( "There is more than one date among the tabs. " . implode( '|', $uniqueDates ) );
         endif;
 
         if ( count( $uniqueDates ) < 1 ):
