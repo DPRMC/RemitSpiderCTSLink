@@ -288,10 +288,14 @@ class CMBSRestrictedServicerReportFactory {
                 $dateCount[$date]++;
             endforeach;
 
-            rsort($dateCount);
-            dd($dateCount);
+            arsort($dateCount);
 
-            throw new \Exception( "There is more than one date among the tabs. " . implode( '|', $uniqueDates ) );
+            return array_key_first($dateCount);
+
+            // Eh...
+            // Examples have shown that IF there is more than one date... The other(s) are one-offs that can be ignored.
+            // Just go with the date that appears the most times.
+            //throw new \Exception( "There is more than one date among the tabs. " . implode( '|', $uniqueDates ) );
         endif;
 
         if ( count( $uniqueDates ) < 1 ):
