@@ -184,7 +184,8 @@ class CMBSRestrictedServicerReportFactory {
                                                                                       CMBSRestrictedServicerReport::advanceRecovery );
                 endif;
             } catch ( NoDataInTabException $exception ) {
-                $alerts[] = $exception;
+                $exception->sheetName = $sheetName;
+                $alerts[]             = $exception;
                 //$factory->getCleanHeaders(); // What was I doing with this?
             }
 // I wrote this to be a show stopper, but it should be an ALERT. See below.
@@ -199,8 +200,7 @@ class CMBSRestrictedServicerReportFactory {
                 // Let's make this a show-stopper, so the developer needs to edit the parser.
                 //throw $exception;
                 $alerts[] = $exception;
-            }
-        catch ( \Exception $exception ) {
+            } catch ( \Exception $exception ) {
                 $exceptions[] = $exception;
             }
         endforeach;

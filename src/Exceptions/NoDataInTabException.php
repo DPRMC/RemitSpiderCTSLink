@@ -8,8 +8,9 @@ namespace DPRMC\RemitSpiderCTSLink\Exceptions;
  */
 class NoDataInTabException extends \Exception {
 
-    public array $rowsChecked;
-    public array $cleanHeaders;
+    public array  $rowsChecked;
+    public array  $cleanHeaders;
+    public string $sheetName = '';
 
 
     public function __construct( string      $message = "",
