@@ -29,12 +29,13 @@ class HLMFCLRFactory extends AbstractTabFactory {
     protected function _setParsedRows( array $allRows ): void {
         $this->_setCategoryIndexes( $allRows );
 
-        if ( $this->_isMissingSomeIndexes() ):
-            throw new HLMFLCRTabMissingSomeCategoriesException( "Patch the parser. HLMFLCR missing some cats. Look in the indexes array of this exception. Anything that is NULL could not be found. You will need to edit the methods used in _setCategoryIndexes()",
-                                                                0,
-                                                                NULL,
-                                                                $this->indexes );
-        endif;
+// I wrote this, but in fact some of the HLM sheets just WON'T have these indexes.
+//        if ( $this->_isMissingSomeIndexes() ):
+//            throw new HLMFLCRTabMissingSomeCategoriesException( "Patch the parser. HLMFLCR missing some cats. Look in the indexes array of this exception. Anything that is NULL could not be found. You will need to edit the methods used in _setCategoryIndexes()",
+//                                                                0,
+//                                                                NULL,
+//                                                                $this->indexes );
+//        endif;
 
         $this->_setRowCategoryIndexes();
 
@@ -132,8 +133,6 @@ class HLMFCLRFactory extends AbstractTabFactory {
             return FALSE;
         endif;
 
-        dump( $row );
-
         return $this->_catStartsWith( $row, 'correct' );
     }
 
@@ -147,6 +146,9 @@ class HLMFCLRFactory extends AbstractTabFactory {
     }
 
 
+    /**
+     * @return void
+     */
     protected function _setRowCategoryIndexes(): void {
         foreach ( $this->indexes as $name => $subHeaderIndex ):
             if ( self::LAST_ROW == $name ):
