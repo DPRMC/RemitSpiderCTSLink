@@ -78,9 +78,9 @@ abstract class AbstractTabFactory {
      * TODO put the patterns in an array and loop through them.
      */
     protected function _searchForDate( array $allRows, int $numRowsToCheck = 6 ): Carbon {
-        $pattern   = '/\d{1,2}\/\d{1,2}\/\d{4}/'; // Will match dates like 1/1/2023 or 12/31/2023
-        $pattern_2 = '/\d{8}/';                   // Matches 20230311
-        $pattern_3 = '/4\d{4}$/';                 // Matches an Excel date. Will DEFINITELY BREAK IN THE FUTURE.
+        $pattern   = '/^\d{1,2}\/\d{1,2}\/\d{4}$/'; // Will match dates like 1/1/2023 or 12/31/2023
+        $pattern_2 = '/^\d{8}$/';                   // Matches 20230311
+        $pattern_3 = '/^4\d{4}$/';                 // Matches an Excel date. Will DEFINITELY BREAK IN THE FUTURE.
 
         $columnsToCheck = [ 0, 1 ]; // Now I need to check the 2nd column too.... thanks CTS!
 
