@@ -186,10 +186,19 @@ class CMBSRestrictedServicerReportFactory {
             } catch ( NoDataInTabException $exception ) {
                 $alerts[] = $exception;
                 //$factory->getCleanHeaders(); // What was I doing with this?
-            } catch ( HLMFLCRTabMissingSomeCategoriesException $exception ) {
-                // Let's make this a show-stopper, so the developer needs to edit the parser.
-                throw $exception;
-            } catch ( \Exception $exception ) {
+            }
+// Some of the HLM sheets will just not have certain categories.
+// This presents a unique problem.
+// - Am I unable to find a sub category that exists, or
+// - Does the sub category just not exist?
+// I am aggregating alerts/exceptions in the factory.
+// I need to review the alerts regularly and compare against the XLS sheets to see
+// If the parser needs to be updated or if its just a valid non-existent sub category.
+//            catch ( HLMFLCRTabMissingSomeCategoriesException $exception ) {
+//                // Let's make this a show-stopper, so the developer needs to edit the parser.
+//                throw $exception;
+//            }
+        catch ( \Exception $exception ) {
                 $exceptions[] = $exception;
             }
         endforeach;
