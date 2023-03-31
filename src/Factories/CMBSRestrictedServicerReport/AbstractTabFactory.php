@@ -16,7 +16,7 @@ abstract class AbstractTabFactory {
     protected array $cleanHeaders   = [];
     protected array $cleanRows      = [];
 
-    protected Carbon $date;
+    protected ?Carbon $date;
 
     protected array $firstColumnValidTextValues = [];
     protected ?int  $dateRowIndex               = NULL;
@@ -49,7 +49,7 @@ abstract class AbstractTabFactory {
 
         try {
             $this->_setDate( $rows );
-        } catch (DateNotFoundInHeaderException $exception) {
+        } catch ( DateNotFoundInHeaderException $exception ) {
             // In some spreadsheets in some tabs, there is no date present.
             // I think the best strategy is to move forward, and see if I can
             // "borrow" the date from another tab in the sheet.
@@ -87,9 +87,11 @@ abstract class AbstractTabFactory {
      * TODO put the patterns in an array and loop through them.
      */
     protected function _searchForDate( array $allRows, int $numRowsToCheck = 6 ): Carbon {
-        $pattern   = '/^\d{1,2}\/\d{1,2}\/\d{4}$/'; // Will match dates like 1/1/2023 or 12/31/2023
-        $pattern_2 = '/^\d{8}$/';                   // Matches 20230311
-        $pattern_3 = '/^4\d{4}$/';                 // Matches an Excel date. Will DEFINITELY BREAK IN THE FUTURE.
+
+        $this->date = NULL;
+        $pattern    = '/^\d{1,2}\/\d{1,2}\/\d{4}$/'; // Will match dates like 1/1/2023 or 12/31/2023
+        $pattern_2  = '/^\d{8}$/';                   // Matches 20230311
+        $pattern_3  = '/^4\d{4}$/';                  // Matches an Excel date. Will DEFINITELY BREAK IN THE FUTURE.
 
         $columnsToCheck = [ 0, 1 ]; // Now I need to check the 2nd column too.... thanks CTS!
 
@@ -224,7 +226,6 @@ abstract class AbstractTabFactory {
                                   $newHeader );
 
 
-
         // Too long.
         // if_nonrecoverable_advances_reimbursed_from_principal_realized_loss_amount
         $newHeader = str_replace( 'if_nonrecoverable_advances_reimbursed_from_principal_realized_loss_amount',
@@ -247,8 +248,18 @@ abstract class AbstractTabFactory {
         $validRows = $this->_getRowsToBeParsed( $allRows );
 
         foreach ( $validRows as $i => $validRow ):
-            $newCleanRow           = [];
-            $newCleanRow[ 'date' ] = $this->date->toDateString();
+            $newCleanRow = [];
+
+
+            // Some tabs leave the date off.
+            // So set a placeholder of NULL for now, and I will "borrow" the date from another tab.
+            if ( $this->date ):
+                $newCleanRow[ 'date' ] = $this->date->toDateString();
+            else:
+                $newCleanRow[ 'date' ] = NULL;
+            endif;
+
+
             foreach ( $this->cleanHeaders as $j => $header ):
                 $data                   = trim( $validRow[ $j ] ?? '' );
                 $newCleanRow[ $header ] = $data;
@@ -349,10 +360,10 @@ abstract class AbstractTabFactory {
      * @param array $cleanHeaders
      * @return array
      */
-    protected function _applyReplacementHeaders(array $cleanHeaders): array  {
-        foreach( $cleanHeaders as $i => $cleanHeader):
-            if( array_key_exists($cleanHeader, $this->replacementHeaders)):
-                $cleanHeaders[$i] = $this->replacementHeaders[$cleanHeader];
+    protected function _applyReplacementHeaders( array $cleanHeaders ): array {
+        foreach ( $cleanHeaders as $i => $cleanHeader ):
+            if ( array_key_exists( $cleanHeader, $this->replacementHeaders ) ):
+                $cleanHeaders[ $i ] = $this->replacementHeaders[ $cleanHeader ];
             endif;
         endforeach;
         return $cleanHeaders;
