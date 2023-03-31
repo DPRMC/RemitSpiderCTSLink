@@ -280,6 +280,17 @@ class CMBSRestrictedServicerReportFactory {
         $uniqueDates = array_unique( $dates );
 
         if ( count( $uniqueDates ) > 1 ):
+            $dateCount = [];
+            foreach($dates as $date):
+                if(!isset($dateCount[$date])):
+                    $dateCount[$date] = 0;
+                endif;
+                $dateCount[$date]++;
+            endforeach;
+
+            rsort($dateCount);
+            dd($dateCount);
+
             throw new \Exception( "There is more than one date among the tabs. " . implode( '|', $uniqueDates ) );
         endif;
 
