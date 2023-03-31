@@ -4,6 +4,7 @@ namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 
 use DPRMC\Excel\Excel;
 use DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException;
+use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\AtLeastOneTabNotFoundException;
 use DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport\CMBSRestrictedServicerReport;
 
 class CMBSRestrictedServicerReportFactory {
@@ -20,6 +21,18 @@ class CMBSRestrictedServicerReportFactory {
     const LLRES     = 'LLRES';
     const TOTALLOAN = 'TOTALLOAN';
     const RECOVERY  = 'RECOVERY';
+
+    public array $tabsThatHaveBeenFound = [
+        self::FOOTNOTES => FALSE,
+        self::WATCHLIST => FALSE,
+        self::DLSR      => FALSE,
+        self::REOSR     => FALSE,
+        self::CFSR      => FALSE,
+        self::HLMFCLR   => FALSE,
+        self::LLRES     => FALSE,
+        self::TOTALLOAN => FALSE,
+        self::RECOVERY  => FALSE,
+    ];
 
     public array $tabs = [
         self::FOOTNOTES => [
@@ -48,6 +61,7 @@ class CMBSRestrictedServicerReportFactory {
         self::LLRES     => [
             'LL Res, LOC',
             'LL Reserve Rpt',
+            'LL_Res_LOC',
         ], // LOAN LEVEL RESERVE/LOC REPORT
         self::TOTALLOAN => [
             'Total Loan',
@@ -73,6 +87,7 @@ class CMBSRestrictedServicerReportFactory {
     /**
      * @param string $pathToRestrictedServicerReportXlsx
      * @return CMBSRestrictedServicerReport
+     * @throws AtLeastOneTabNotFoundException
      */
     public function make( string $pathToRestrictedServicerReportXlsx ): CMBSRestrictedServicerReport {
         $sheetNames = Excel::getSheetNames( $pathToRestrictedServicerReportXlsx );
@@ -109,52 +124,60 @@ class CMBSRestrictedServicerReportFactory {
 
                 //$headers = Excel::sheetHeaderToArray($pathToRestrictedServicerReportXlsx, $sheetName );
                 if ( $this->_foundSheetName( self::WATCHLIST, $sheetName ) ):
-                    $factory   = new WatchlistFactory( self::DEFAULT_TIMEZONE );
-                    $watchlist = $factory->parse( $rows,
-                                                  $cleanHeadersBySheetName,
-                                                  CMBSRestrictedServicerReport::watchlist );
+                    $this->tabsThatHaveBeenFound[ self::WATCHLIST ] = TRUE;
+                    $factory                                        = new WatchlistFactory( self::DEFAULT_TIMEZONE );
+                    $watchlist                                      = $factory->parse( $rows,
+                                                                                       $cleanHeadersBySheetName,
+                                                                                       CMBSRestrictedServicerReport::watchlist );
 
                 elseif ( $this->_foundSheetName( self::DLSR, $sheetName ) ):
-                    $factory = new DLSRFactory( self::DEFAULT_TIMEZONE );
-                    $dlsr    = $factory->parse( $rows,
-                                                $cleanHeadersBySheetName,
-                                                CMBSRestrictedServicerReport::dlsr );
+                    $this->tabsThatHaveBeenFound[ self::DLSR ] = TRUE;
+                    $factory                                   = new DLSRFactory( self::DEFAULT_TIMEZONE );
+                    $dlsr                                      = $factory->parse( $rows,
+                                                                                  $cleanHeadersBySheetName,
+                                                                                  CMBSRestrictedServicerReport::dlsr );
 
                 elseif ( $this->_foundSheetName( self::REOSR, $sheetName ) ):
-                    $factory = new REOSRFactory( self::DEFAULT_TIMEZONE );
-                    $reosr   = $factory->parse( $rows,
-                                                $cleanHeadersBySheetName,
-                                                CMBSRestrictedServicerReport::reosr );
+                    $this->tabsThatHaveBeenFound[ self::REOSR ] = TRUE;
+                    $factory                                    = new REOSRFactory( self::DEFAULT_TIMEZONE );
+                    $reosr                                      = $factory->parse( $rows,
+                                                                                   $cleanHeadersBySheetName,
+                                                                                   CMBSRestrictedServicerReport::reosr );
 
                 elseif ( $this->_foundSheetName( self::HLMFCLR, $sheetName ) ):
-                    $factory = new HLMFCLRFactory( self::DEFAULT_TIMEZONE );
-                    $hlmfclr = $factory->parse( $rows,
-                                                $cleanHeadersBySheetName,
-                                                CMBSRestrictedServicerReport::hlmfclr );
+                    $this->tabsThatHaveBeenFound[ self::HLMFCLR ] = TRUE;
+                    $factory                                      = new HLMFCLRFactory( self::DEFAULT_TIMEZONE );
+                    $hlmfclr                                      = $factory->parse( $rows,
+                                                                                     $cleanHeadersBySheetName,
+                                                                                     CMBSRestrictedServicerReport::hlmfclr );
 
                 elseif ( $this->_foundSheetName( self::CFSR, $sheetName ) ):
-                    $factory = new CFSRFactory( self::DEFAULT_TIMEZONE );
-                    $csfr    = $factory->parse( $rows,
-                                                $cleanHeadersBySheetName,
-                                                CMBSRestrictedServicerReport::csfr );
+                    $this->tabsThatHaveBeenFound[ self::CFSR ] = TRUE;
+                    $factory                                   = new CFSRFactory( self::DEFAULT_TIMEZONE );
+                    $csfr                                      = $factory->parse( $rows,
+                                                                                  $cleanHeadersBySheetName,
+                                                                                  CMBSRestrictedServicerReport::csfr );
 
                 elseif ( $this->_foundSheetName( self::LLRES, $sheetName ) ):
-                    $factory  = new LLResLOCFactory( self::DEFAULT_TIMEZONE );
-                    $llResLOC = $factory->parse( $rows,
-                                                 $cleanHeadersBySheetName,
-                                                 CMBSRestrictedServicerReport::llResLOC );
+                    $this->tabsThatHaveBeenFound[ self::LLRES ] = TRUE;
+                    $factory                                    = new LLResLOCFactory( self::DEFAULT_TIMEZONE );
+                    $llResLOC                                   = $factory->parse( $rows,
+                                                                                   $cleanHeadersBySheetName,
+                                                                                   CMBSRestrictedServicerReport::llResLOC );
 
                 elseif ( $this->_foundSheetName( self::TOTALLOAN, $sheetName ) ):
-                    $factory   = new TotalLoanFactory( self::DEFAULT_TIMEZONE );
-                    $totalLoan = $factory->parse( $rows,
-                                                  $cleanHeadersBySheetName,
-                                                  CMBSRestrictedServicerReport::totalLoan );
+                    $this->tabsThatHaveBeenFound[ self::TOTALLOAN ] = TRUE;
+                    $factory                                        = new TotalLoanFactory( self::DEFAULT_TIMEZONE );
+                    $totalLoan                                      = $factory->parse( $rows,
+                                                                                       $cleanHeadersBySheetName,
+                                                                                       CMBSRestrictedServicerReport::totalLoan );
 
                 elseif ( $this->_foundSheetName( self::RECOVERY, $sheetName ) ):
-                    $factory         = new AdvanceRecoveryFactory( self::DEFAULT_TIMEZONE );
-                    $advanceRecovery = $factory->parse( $rows,
-                                                        $cleanHeadersBySheetName,
-                                                        CMBSRestrictedServicerReport::advanceRecovery );
+                    $this->tabsThatHaveBeenFound[ self::RECOVERY ] = TRUE;
+                    $factory                                       = new AdvanceRecoveryFactory( self::DEFAULT_TIMEZONE );
+                    $advanceRecovery                               = $factory->parse( $rows,
+                                                                                      $cleanHeadersBySheetName,
+                                                                                      CMBSRestrictedServicerReport::advanceRecovery );
                 endif;
             } catch ( NoDataInTabException $exception ) {
                 $alerts[] = $exception;
@@ -163,6 +186,14 @@ class CMBSRestrictedServicerReportFactory {
                 $exceptions[] = $exception;
             }
         endforeach;
+
+        if ( $this->_atLeastOneTabNotFound() ):
+            throw new AtLeastOneTabNotFoundException( "Need to update the tabs array in CMBSRestrictedServicerReportFactory. CTS has a different spelling for one of their tabs. Update every FALSE tab attached to this exception.",
+                                                      0,
+                                                      NULL,
+                                                      $this->tabsThatHaveBeenFound,
+                                                      $pathToRestrictedServicerReportXlsx);
+        endif;
 
         return new CMBSRestrictedServicerReport( $watchlist,
                                                  $dlsr,
@@ -175,6 +206,20 @@ class CMBSRestrictedServicerReportFactory {
                                                  $cleanHeadersBySheetName,
                                                  $alerts,
                                                  $exceptions );
+    }
+
+
+    /**
+     * A little encapsulated logic to make the above method cleaner.
+     * @return bool
+     */
+    protected function _atLeastOneTabNotFound(): bool {
+        foreach ( $this->tabsThatHaveBeenFound as $tabName => $found ):
+            if ( FALSE === $found ):
+                return TRUE;
+            endif;
+        endforeach;
+        return FALSE;
     }
 
 
