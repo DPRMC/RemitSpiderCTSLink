@@ -187,6 +187,7 @@ class CMBSRestrictedServicerReportFactory {
                 $alerts[] = $exception;
                 //$factory->getCleanHeaders(); // What was I doing with this?
             }
+// I wrote this to be a show stopper, but it should be an ALERT. See below.
 // Some of the HLM sheets will just not have certain categories.
 // This presents a unique problem.
 // - Am I unable to find a sub category that exists, or
@@ -194,10 +195,11 @@ class CMBSRestrictedServicerReportFactory {
 // I am aggregating alerts/exceptions in the factory.
 // I need to review the alerts regularly and compare against the XLS sheets to see
 // If the parser needs to be updated or if its just a valid non-existent sub category.
-//            catch ( HLMFLCRTabMissingSomeCategoriesException $exception ) {
-//                // Let's make this a show-stopper, so the developer needs to edit the parser.
-//                throw $exception;
-//            }
+            catch ( HLMFLCRTabMissingSomeCategoriesException $exception ) {
+                // Let's make this a show-stopper, so the developer needs to edit the parser.
+                //throw $exception;
+                $alerts[] = $exception;
+            }
         catch ( \Exception $exception ) {
                 $exceptions[] = $exception;
             }
