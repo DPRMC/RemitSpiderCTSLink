@@ -237,14 +237,14 @@ class CMBSRestrictedServicerReportFactory {
                                          $advanceRecovery ] );
 
 
-        $watchlist       = $this->_fillDateIfMissing( $watchlist, $date );
-        $dlsr            = $this->_fillDateIfMissing( $dlsr, $date );
-        $reosr           = $this->_fillDateIfMissing( $reosr, $date );
-        $hlmfclr         = $this->_fillDateIfMissing( $hlmfclr, $date );
-        $csfr            = $this->_fillDateIfMissing( $csfr, $date );
-        $llResLOC        = $this->_fillDateIfMissing( $llResLOC, $date );
-        $totalLoan       = $this->_fillDateIfMissing( $totalLoan, $date );
-        $advanceRecovery = $this->_fillDateIfMissing( $advanceRecovery, $date );
+        $watchlist       = $this->_fillDateIfMissing( $watchlist, $theDate );
+        $dlsr            = $this->_fillDateIfMissing( $dlsr, $theDate );
+        $reosr           = $this->_fillDateIfMissing( $reosr, $theDate );
+        $hlmfclr         = $this->_fillDateIfMissing( $hlmfclr, $theDate );
+        $csfr            = $this->_fillDateIfMissing( $csfr, $theDate );
+        $llResLOC        = $this->_fillDateIfMissing( $llResLOC, $theDate );
+        $totalLoan       = $this->_fillDateIfMissing( $totalLoan, $theDate );
+        $advanceRecovery = $this->_fillDateIfMissing( $advanceRecovery, $theDate1 );
 
 
         return new CMBSRestrictedServicerReport( $watchlist,
