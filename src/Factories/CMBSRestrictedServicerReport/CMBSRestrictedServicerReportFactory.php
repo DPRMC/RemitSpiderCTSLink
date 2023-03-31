@@ -23,7 +23,6 @@ class CMBSRestrictedServicerReportFactory {
     const RECOVERY  = 'RECOVERY';
 
     public array $tabsThatHaveBeenFound = [
-        self::FOOTNOTES => FALSE,
         self::WATCHLIST => FALSE,
         self::DLSR      => FALSE,
         self::REOSR     => FALSE,
@@ -53,10 +52,12 @@ class CMBSRestrictedServicerReportFactory {
         self::CFSR      => [
             'CFSR',
             'Comp Finan Status Report',
+            'Comparative_Fin',
         ], // COMPARATIVE FINANCIAL STATUS REPORT
         self::HLMFCLR   => [
             'HLMFCLR',
             'Hist Mod-Corr Mtg ln',
+            'HistLoanModForbCMLR',
         ], // HISTORICAL LOAN MODIFICATION/FORBEARANCE and CORRECTED MORTGAGE LOAN REPORT
         self::LLRES     => [
             'LL Res, LOC',
@@ -65,10 +66,12 @@ class CMBSRestrictedServicerReportFactory {
         ], // LOAN LEVEL RESERVE/LOC REPORT
         self::TOTALLOAN => [
             'Total Loan',
+            'Total Loan Report',
         ], // TOTAL LOAN REPORT
         self::RECOVERY  => [
             'Advance Recovery',
             'Recovery',
+            'Advance_Recovery',
         ], // ADVANCE RECOVERY REPORT
     ];
 
