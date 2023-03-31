@@ -124,7 +124,12 @@ class CMBSRestrictedServicerReportFactory {
 
         foreach ( $sheetNames as $sheetName ):
             try {
-                $rows = Excel::sheetToArray( $pathToRestrictedServicerReportXlsx, $sheetName );
+                $rows = Excel::sheetToArray( $pathToRestrictedServicerReportXlsx,
+                                             $sheetName,
+                                             null,
+                                             null,
+                                             true,
+                                             false );
 
                 //$headers = Excel::sheetHeaderToArray($pathToRestrictedServicerReportXlsx, $sheetName );
                 if ( $this->_foundSheetName( self::WATCHLIST, $sheetName ) ):
