@@ -244,7 +244,7 @@ class CMBSRestrictedServicerReportFactory {
         $csfr            = $this->_fillDateIfMissing( $csfr, $theDate );
         $llResLOC        = $this->_fillDateIfMissing( $llResLOC, $theDate );
         $totalLoan       = $this->_fillDateIfMissing( $totalLoan, $theDate );
-        $advanceRecovery = $this->_fillDateIfMissing( $advanceRecovery, $theDate1 );
+        $advanceRecovery = $this->_fillDateIfMissing( $advanceRecovery, $theDate );
 
 
         return new CMBSRestrictedServicerReport( $watchlist,
