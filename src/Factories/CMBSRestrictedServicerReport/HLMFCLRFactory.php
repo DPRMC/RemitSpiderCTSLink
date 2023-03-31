@@ -30,7 +30,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
         $this->_setCategoryIndexes( $allRows );
 
         if ( $this->_isMissingSomeIndexes() ):
-            throw new HLMFLCRTabMissingSomeCategoriesException( "Patch the parser. HLMFLCR missing some cats",
+            throw new HLMFLCRTabMissingSomeCategoriesException( "Patch the parser. HLMFLCR missing some cats. Look in the indexes array of this exception. Anything that is NULL could not be found. You will need to edit the methods used in _setCategoryIndexes()",
                                                                 0,
                                                                 NULL,
                                                                 $this->indexes );
