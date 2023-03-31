@@ -46,7 +46,16 @@ abstract class AbstractTabFactory {
      * @throws NoDataInTabException
      */
     public function parse( array $rows, array &$cleanHeadersByProperty, string $sheetName ): array {
-        $this->_setDate( $rows );
+
+        try {
+            $this->_setDate( $rows );
+        } catch (DateNotFoundInHeaderException $exception) {
+            // In some spreadsheets in some tabs, there is no date present.
+            // I think the best strategy is to move forward, and see if I can
+            // "borrow" the date from another tab in the sheet.
+        }
+
+
         $this->_setCleanHeaders( $rows, $this->firstColumnValidTextValues );
         $cleanHeadersByProperty[ $sheetName ] = $this->getCleanHeaders();
         $this->_setParsedRows( $rows );
@@ -114,7 +123,7 @@ abstract class AbstractTabFactory {
             endforeach;
         endfor;
 
-        throw new DateNotFoundInHeaderException( "Patch the parser. Can't find the date.",
+        throw new DateNotFoundInHeaderException( "Patch the parser. Can't find the date. Some headers don't have the date present. Going to add code now to 'borrow' the date from another sheet.",
                                                  8732465782, // Gibberish
                                                  NULL,
                                                  array_slice( $allRows,
