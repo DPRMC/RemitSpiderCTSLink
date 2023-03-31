@@ -98,15 +98,23 @@ class HLMFCLRFactory extends AbstractTabFactory {
      * @return bool
      */
     protected function _catStartsWith( array $row, string $strStartsWith ): bool {
-        $data = trim( $row[ 0 ] ?? '' );
-        $data = strtolower( $data );
-        if ( empty( $data ) ):
-            return FALSE;
-        endif;
+        // Usually the word identifying the "sub" category of rows on the sheet is in the 1st column.
+        // I found an example where it is in the 2nd column.
+        // So of course now I have to search both.
+        $colsToCheck = [ 0, 1 ];
 
-        if ( str_starts_with( $data, $strStartsWith ) ):
-            return TRUE;
-        endif;
+        foreach ( $colsToCheck as $colToCheck ):
+            $data = trim( $row[ $colToCheck ] ?? '' );
+            $data = strtolower( $data );
+            if ( empty( $data ) ):
+                continue;
+            endif;
+
+            if ( str_starts_with( $data, $strStartsWith ) ):
+                return TRUE;
+            endif;
+        endforeach;
+
 
         return FALSE;
     }
@@ -123,6 +131,9 @@ class HLMFCLRFactory extends AbstractTabFactory {
         if ( isset( $this->indexes[ self::CORRECTED_MORT_LOANS ] ) ):
             return FALSE;
         endif;
+
+        dump( $row );
+
         return $this->_catStartsWith( $row, 'correct' );
     }
 
