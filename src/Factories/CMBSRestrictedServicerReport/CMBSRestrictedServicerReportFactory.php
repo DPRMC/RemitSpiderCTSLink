@@ -6,6 +6,7 @@ use DPRMC\Excel\Excel;
 use DPRMC\RemitSpiderCTSLink\Exceptions\HLMFLCRTabMissingSomeCategoriesException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\AtLeastOneTabNotFoundException;
+use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\ProbablyExcelDateException;
 use DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport\CMBSRestrictedServicerReport;
 
 class CMBSRestrictedServicerReportFactory {
@@ -126,10 +127,10 @@ class CMBSRestrictedServicerReportFactory {
             try {
                 $rows = Excel::sheetToArray( $pathToRestrictedServicerReportXlsx,
                                              $sheetName,
-                                             null,
-                                             null,
-                                             true,
-                                             false );
+                                             NULL,
+                                             NULL,
+                                             TRUE,
+                                             FALSE );
 
                 //$headers = Excel::sheetHeaderToArray($pathToRestrictedServicerReportXlsx, $sheetName );
                 if ( $this->_foundSheetName( self::WATCHLIST, $sheetName ) ):
@@ -188,6 +189,12 @@ class CMBSRestrictedServicerReportFactory {
                                                                                       $cleanHeadersBySheetName,
                                                                                       CMBSRestrictedServicerReport::advanceRecovery );
                 endif;
+            } catch ( \Carbon\Exceptions\InvalidFormatException $exception ) {
+                $newException = new ProbablyExcelDateException( $exception->getMessage(),
+                                                $exception->getCode(),
+                                                $exception->getPrevious(),
+                                                $sheetName );
+                $exceptions[] = $newException;
             } catch ( NoDataInTabException $exception ) {
                 $exception->sheetName = $sheetName;
                 $alerts[]             = $exception;
