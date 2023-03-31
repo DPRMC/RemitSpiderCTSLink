@@ -192,9 +192,9 @@ class CMBSRestrictedServicerReportFactory {
                 endif;
             } catch ( \Carbon\Exceptions\InvalidFormatException $exception ) {
                 $newException = new ProbablyExcelDateException( $exception->getMessage(),
-                                                $exception->getCode(),
-                                                $exception->getPrevious(),
-                                                $sheetName );
+                                                                $exception->getCode(),
+                                                                $exception->getPrevious(),
+                                                                $sheetName );
                 $exceptions[] = $newException;
             } catch ( NoDataInTabException $exception ) {
                 $exception->sheetName = $sheetName;
@@ -226,6 +226,27 @@ class CMBSRestrictedServicerReportFactory {
                                                       $pathToRestrictedServicerReportXlsx );
         endif;
 
+
+        $theDate = $this->_getTheDate( [ $watchlist,
+                                         $dlsr,
+                                         $reosr,
+                                         $hlmfclr,
+                                         $csfr,
+                                         $llResLOC,
+                                         $totalLoan,
+                                         $advanceRecovery ] );
+
+
+        $watchlist       = $this->_fillDateIfMissing( $watchlist, $date );
+        $dlsr            = $this->_fillDateIfMissing( $dlsr, $date );
+        $reosr           = $this->_fillDateIfMissing( $reosr, $date );
+        $hlmfclr         = $this->_fillDateIfMissing( $hlmfclr, $date );
+        $csfr            = $this->_fillDateIfMissing( $csfr, $date );
+        $llResLOC        = $this->_fillDateIfMissing( $llResLOC, $date );
+        $totalLoan       = $this->_fillDateIfMissing( $totalLoan, $date );
+        $advanceRecovery = $this->_fillDateIfMissing( $advanceRecovery, $date );
+
+
         return new CMBSRestrictedServicerReport( $watchlist,
                                                  $dlsr,
                                                  $reosr,
@@ -237,6 +258,53 @@ class CMBSRestrictedServicerReportFactory {
                                                  $cleanHeadersBySheetName,
                                                  $alerts,
                                                  $exceptions );
+    }
+
+
+    /**
+     * A sanity check to make sure there is ONE and ONLY ONE date among the tabs.
+     * @param array $tabs
+     * @return string
+     * @throws \Exception
+     */
+    protected function _getTheDate( array $tabs ): string {
+        $dates = [];
+        foreach ( $tabs as $tab ):
+            foreach ( $tab as $i => $row ):
+                if ( isset( $row[ 'date' ] ) ):
+                    $dates[] = $row[ 'date' ];
+                endif;
+            endforeach;
+        endforeach;
+
+        $uniqueDates = array_unique( $dates );
+
+        if ( count( $uniqueDates ) > 1 ):
+            throw new \Exception( "There is more than one date among the tabs. " . implode( '|', $dates ) );
+        endif;
+
+        if ( count( $uniqueDates ) < 1 ):
+            throw new \Exception( "There are NO dates in any of the tabs. Which is suuuuuper weird." );
+        endif;
+
+        $date = reset( $uniqueDates ); // THE date
+
+        return $date;
+    }
+
+
+    /**
+     * @param array $rows
+     * @param string $date
+     * @return array
+     */
+    protected function _fillDateIfMissing( array $rows, string $date ): array {
+        foreach ( $rows as $i => $row ):
+            if ( array_key_exists( 'date', $row ) && empty( $row[ 'date' ] ) ):
+                $row[ 'date' ] = $date;
+            endif;
+        endforeach;
+        return $rows;
     }
 
 
