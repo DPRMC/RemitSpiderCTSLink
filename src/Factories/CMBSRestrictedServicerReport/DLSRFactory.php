@@ -287,9 +287,10 @@ class DLSRFactory extends AbstractTabFactory {
                 $newCleanRow[ 'date' ]     = $this->date->toDateString();
                 $newCleanRow[ 'category' ] = $name;
                 foreach ( $this->cleanHeaders as $j => $header ):
-                    $newCleanRow[ $header ] = trim($validRow[ $j ] ?? '');
+                    $newCleanRow[ $header ] = trim( $validRow[ $j ] ?? '' );
                 endforeach;
                 $cleanRows[ $name ][] = $newCleanRow;
+//                $cleanRows[ $name ][ $newCleanRow[ 'loan_id' ] ] = $newCleanRow;
             endforeach;
         endforeach;
 
