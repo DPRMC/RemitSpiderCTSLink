@@ -9,6 +9,7 @@ class CFSRFactory extends AbstractTabFactory {
 
     protected array $replacementHeaders = [
         'most_recent_financial_information_occ_as_of_date' => 'most_recent_financial_information_occup_as_of_date',
+        'most_recent_financial_information_percent_occ'    => 'most_recent_financial_information_physical_occup_percent',
     ];
 
 
@@ -95,13 +96,12 @@ class CFSRFactory extends AbstractTabFactory {
             $cleanHeaders[ $i ] = $this->_cleanHeaderValue( $header );
 
             if ( isset( $prefix[ $i ] ) ):
-                $cleanHeaders[ $i ] = $prefix[$i] . $cleanHeaders[ $i ];
+                $cleanHeaders[ $i ] = $prefix[ $i ] . $cleanHeaders[ $i ];
             endif;
         endforeach;
 
 
-        $cleanHeaders = $this->_applyReplacementHeaders($cleanHeaders);
-
+        $cleanHeaders = $this->_applyReplacementHeaders( $cleanHeaders );
 
 
         $this->cleanHeaders = $cleanHeaders;
