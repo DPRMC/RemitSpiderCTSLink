@@ -289,8 +289,8 @@ class DLSRFactory extends AbstractTabFactory {
                 foreach ( $this->cleanHeaders as $j => $header ):
                     $newCleanRow[ $header ] = trim( $validRow[ $j ] ?? '' );
                 endforeach;
-                $cleanRows[ $name ][] = $newCleanRow;
-//                $cleanRows[ $name ][ $newCleanRow[ 'loan_id' ] ] = $newCleanRow;
+
+                $cleanRows[ $name ][ $newCleanRow[ 'loan_id' ] ] = $newCleanRow;
             endforeach;
         endforeach;
 
