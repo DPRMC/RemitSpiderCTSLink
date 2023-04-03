@@ -8,14 +8,15 @@ class CFSRFactory extends AbstractTabFactory {
 
 
     protected array $replacementHeaders = [
-        'most_recent_financial_information_occ_as_of_date'       => 'most_recent_financial_information_occup_as_of_date',
-        'most_recent_financial_information_percent_occ'          => 'most_recent_financial_information_physical_occup_percent',
-        'at_contribution_information_base_year_$_noi_ncf'        => 'at_contribution_information_base_year_noi_ncf',
-        'sec_prec_fy_operating_info_normalized_$_noi_ncf'        => 'sec_prec_fy_operating_info_normalized_noi_ncf',
-        'prec_fy_operating_info_normalized_$_noi_ncf'            => 'prec_fy_operating_info_normalized_noi_ncf',
-        'most_recent_financial_information_normalized_$_noi_ncf' => 'most_recent_financial_information_normalized_noi_ncf',
-        'most_recent_financial_information_fs_start_date'        => 'most_recent_financial_information_financial_as_of_start_date',
-        'most_recent_financial_information_fs_end_date'          => 'most_recent_financial_information_financial_as_of_end_date',
+        'most_recent_financial_information_occ_as_of_date'           => 'most_recent_financial_information_occup_as_of_date',
+        'most_recent_financial_information_percent_occ'              => 'most_recent_financial_information_physical_occup_percent',
+        'at_contribution_information_base_year_$_noi_ncf'            => 'at_contribution_information_base_year_noi_ncf',
+        'sec_prec_fy_operating_info_normalized_$_noi_ncf'            => 'sec_prec_fy_operating_info_normalized_noi_ncf',
+        'prec_fy_operating_info_normalized_$_noi_ncf'                => 'prec_fy_operating_info_normalized_noi_ncf',
+        'most_recent_financial_information_normalized_$_noi_ncf'     => 'most_recent_financial_information_normalized_noi_ncf',
+        'most_recent_financial_information_fs_start_date'            => 'most_recent_financial_information_financial_as_of_start_date',
+        'most_recent_financial_information_fs_end_date'              => 'most_recent_financial_information_financial_as_of_end_date',
+        'most_recent_financial_information_normalized_total_revenue' => 'most_recent_financial_information_normalized_revenue',
     ];
 
 
