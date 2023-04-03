@@ -3,9 +3,20 @@
 namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 
 class AdvanceRecoveryFactory extends AbstractTabFactory {
-    protected array $firstColumnValidTextValues = [ 'Tran ID', 'Trans ID', 'Trans
+    // The new line is intentional in the Trans ID string below.
+    protected array $firstColumnValidTextValues = [ 'Tran ID',
+                                                    'Trans ID',
+                                                    'Trans
 ID' ];
 
+
+//comments-_advance_recovery
+
+    protected array $replacementHeaders = [
+        'comments-_advance_recovery'         => 'comments_advance_recovery',
+        'wodra_deemed_non-_recoverable_date' => 'wodra_deemed_non_recoverable_date',
+
+    ];
 
 
     /**
@@ -52,10 +63,10 @@ ID' ];
             7 => 'servicer_info' . '_' . 'unreimbursed_adv' . '_',
             8 => 'servicer_info' . '_',
 
-            9 => 'servicer_info' . '_' . 'reimbursed_adv' . '_'. 'principal_collections' . '_', // reimbursed_advances
-            10 => 'servicer_info' . '_' . 'reimbursed_adv' . '_'. 'principal_collections' . '_',
-            11 => 'servicer_info' . '_' . 'reimbursed_adv' . '_'. 'interest_collections' . '_',
-            12 => 'servicer_info' . '_' . 'reimbursed_adv' . '_'. 'interest_collections' . '_',
+            9  => 'servicer_info' . '_' . 'reimbursed_adv' . '_' . 'principal_collections' . '_', // reimbursed_advances
+            10 => 'servicer_info' . '_' . 'reimbursed_adv' . '_' . 'principal_collections' . '_',
+            11 => 'servicer_info' . '_' . 'reimbursed_adv' . '_' . 'interest_collections' . '_',
+            12 => 'servicer_info' . '_' . 'reimbursed_adv' . '_' . 'interest_collections' . '_',
             13 => 'servicer_info' . '_',
 
             15 => 'borrower_info' . '_', // borrower_information. Shortened down for consistency.
@@ -73,7 +84,7 @@ ID' ];
             $cleanHeaders[ $i ] = $this->_cleanHeaderValue( $header );
 
             if ( isset( $prefix[ $i ] ) ):
-                $cleanHeaders[ $i ] = $prefix[$i] . $cleanHeaders[ $i ];
+                $cleanHeaders[ $i ] = $prefix[ $i ] . $cleanHeaders[ $i ];
             endif;
         endforeach;
 
