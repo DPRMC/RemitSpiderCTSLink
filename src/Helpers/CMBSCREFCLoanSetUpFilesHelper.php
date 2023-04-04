@@ -2,6 +2,7 @@
 
 namespace DPRMC\RemitSpiderCTSLink\Helpers;
 
+use DPRMC\RemitSpiderCTSLink\Exceptions\CREFCLoanSetUpFileExceptions\LinkToCREFCLoanSetUpFileNotFoundException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\NoAccessToRestrictedServicerReportException;
 use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
 use HeadlessChromium\Page;
@@ -20,11 +21,12 @@ class CMBSCREFCLoanSetUpFilesHelper extends CMBSHelper {
 
 
     /**
-     *
      * https://www.ctslink.com/a/seriesdocs.html?shelfId=GSM&seriesId=2014GC24&tab=DEALDOCS
      * @param string $shelf
      * @param string $series
-     * @return array
+     * @return string
+     * @throws LinkToCREFCLoanSetUpFileNotFoundException
+     * @throws NoAccessToRestrictedServicerReportException
      * @throws \HeadlessChromium\Exception\CommunicationException
      * @throws \HeadlessChromium\Exception\CommunicationException\CannotReadResponse
      * @throws \HeadlessChromium\Exception\CommunicationException\InvalidResponse
@@ -34,10 +36,9 @@ class CMBSCREFCLoanSetUpFilesHelper extends CMBSHelper {
      * @throws \HeadlessChromium\Exception\NoResponseAvailable
      * @throws \HeadlessChromium\Exception\OperationTimedOut
      * @throws \HeadlessChromium\Exception\ScreenshotFailed
-     * @throws NoAccessToRestrictedServicerReportException
      */
-    public function getCREFCLoanSetUpFile( string $shelf, string $series ): array {
-        $documentLinks         = [];
+    public function getCREFCLoanSetUpFile( string $shelf, string $series ): string {
+        $documentLinks     = [];
         $dealDocumentsLink = self::SERIES_DOCS_URL . 'shelfId=' . $shelf . '&seriesId=' . $series . '&tab=DEALDOCS';
         $this->Debug->_debug( " Navigating to: " . $dealDocumentsLink );
         $this->Page->navigate( $dealDocumentsLink )->waitForNavigation();
@@ -46,7 +47,7 @@ class CMBSCREFCLoanSetUpFilesHelper extends CMBSHelper {
 
         $html = $this->Page->getHtml();
 
-        if ( str_contains( strtolower($html), strtolower('Get Access') ) ):
+        if ( str_contains( strtolower( $html ), strtolower( 'Get Access' ) ) ):
             throw new NoAccessToRestrictedServicerReportException( "We do not have access to this Series: " . $dealDocumentsLink,
                                                                    0,
                                                                    NULL,
@@ -63,13 +64,17 @@ class CMBSCREFCLoanSetUpFilesHelper extends CMBSHelper {
         $inputs = $dom->getElementsByTagName( 'input' );
         foreach ( $inputs as $input ):
             $ariaLabel = $input->getAttribute( 'aria-label' );
-            if(str_contains($ariaLabel,'CREFC Loan Set Up')):
+            if ( str_contains( $ariaLabel, 'CREFC Loan Set Up' ) ):
                 $documentId = $input->getAttribute( 'value' );
-                $documentLinks[] = CMBSHelper::BASE_URL . '/a/document.html?key=' . $documentId;
+                return CMBSHelper::BASE_URL . '/a/document.html?key=' . $documentId;
             endif;
         endforeach;
 
-        return $documentLinks;
+        throw new LinkToCREFCLoanSetUpFileNotFoundException( "Unable to find the CREFC Loan Set Up file link for $shelf $series",
+                                                             0,
+                                                             NULL,
+                                                             $shelf,
+                                                             $series );
     }
 
 }
