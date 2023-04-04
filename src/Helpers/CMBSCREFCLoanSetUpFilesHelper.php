@@ -4,6 +4,7 @@ namespace DPRMC\RemitSpiderCTSLink\Helpers;
 
 use DPRMC\RemitSpiderCTSLink\Exceptions\CREFCLoanSetUpFileExceptions\LinkToCREFCLoanSetUpFileNotFoundException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\NoAccessToRestrictedServicerReportException;
+use DPRMC\RemitSpiderCTSLink\Exceptions\NoAccessToSecurityException;
 use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
 use HeadlessChromium\Page;
 
@@ -26,7 +27,7 @@ class CMBSCREFCLoanSetUpFilesHelper extends CMBSHelper {
      * @param string $series
      * @return string
      * @throws LinkToCREFCLoanSetUpFileNotFoundException
-     * @throws NoAccessToRestrictedServicerReportException
+     * @throws NoAccessToSecurityException
      * @throws \HeadlessChromium\Exception\CommunicationException
      * @throws \HeadlessChromium\Exception\CommunicationException\CannotReadResponse
      * @throws \HeadlessChromium\Exception\CommunicationException\InvalidResponse
@@ -48,7 +49,7 @@ class CMBSCREFCLoanSetUpFilesHelper extends CMBSHelper {
         $html = $this->Page->getHtml();
 
         if ( str_contains( strtolower( $html ), strtolower( 'Get Access' ) ) ):
-            throw new NoAccessToRestrictedServicerReportException( "We do not have access to this Series: " . $dealDocumentsLink,
+            throw new NoAccessToSecurityException( "We do not have access to this Series: " . $dealDocumentsLink,
                                                                    0,
                                                                    NULL,
                                                                    $shelf,
