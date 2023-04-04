@@ -139,6 +139,7 @@ class DLSRFactory extends AbstractTabFactory {
      */
     protected function _isXPlusIndex( array $row, string $strStartsWith ): bool {
         $data = trim( $row[ 0 ] ?? '' );
+        $data = str_replace( '<GROUPHEADER></GROUPHEADER>', '', $data );
         $data = strtolower( $data );
         if ( empty( $data ) ):
             return FALSE;
@@ -284,7 +285,7 @@ class DLSRFactory extends AbstractTabFactory {
                     continue;
                 endif;
                 $newCleanRow               = [];
-                $newCleanRow[ 'date' ]     = empty($this->date) ? null : $this->date->toDateString();
+                $newCleanRow[ 'date' ]     = empty( $this->date ) ? NULL : $this->date->toDateString();
                 $newCleanRow[ 'category' ] = $name;
                 foreach ( $this->cleanHeaders as $j => $header ):
                     $newCleanRow[ $header ] = trim( $validRow[ $j ] ?? '' );
