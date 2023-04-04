@@ -12,7 +12,10 @@ class CMBSHelper extends AbstractHelper {
     const CMBS_MAIN_PAGE = 'https://www.ctslink.com/a/shelflist.html?shelfType=CMBS';
 
     // EX: https://www.ctslink.com/a/history.html?shelfId=JPC&seriesId=2007CIBC20&doc=JPC_2007CIBC20_RSRV
-    const HISTORY_URL = self::BASE_URL . '/a/history.html?';
+    const HISTORY_URL     = self::BASE_URL . '/a/history.html?';
+
+    // EX: https://www.ctslink.com/a/seriesdocs.html?shelfId=GSM&seriesId=2014GC24&tab=DEALDOCS
+    const SERIES_DOCS_URL = self::BASE_URL . '/a/seriesdocs.html?';
 
 
     const type   = 'type';
@@ -118,14 +121,14 @@ class CMBSHelper extends AbstractHelper {
      */
     public function getPartsFromSeriesLink( string $seriesLink ): array {
         $parts      = parse_url( $seriesLink );
-        $queryParts = explode( '&', $parts['query'] );
+        $queryParts = explode( '&', $parts[ 'query' ] );
 
-        if( count($queryParts) < 2):
+        if ( count( $queryParts ) < 2 ):
             throw new \Exception();
         endif;
 
-        $shelf      = str_replace( 'shelfId=', '', $queryParts[ 0 ] );
-        $series     = str_replace( 'seriesId=', '', $queryParts[ 1 ] );
+        $shelf  = str_replace( 'shelfId=', '', $queryParts[ 0 ] );
+        $series = str_replace( 'seriesId=', '', $queryParts[ 1 ] );
 
         return [
             self::shelf  => $shelf,

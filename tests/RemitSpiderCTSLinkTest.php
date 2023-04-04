@@ -109,6 +109,23 @@ class RemitSpiderCTSLinkTest extends TestCase {
 
     /**
      * @test
+     * @group cmbs-crefc
+     */
+    public function testGetCREFCLoanSetUpFile() {
+        $spider = $this->_getSpider();
+        $spider->disableDebug();
+        $spider->Login->login();
+        $shelf = 'GSM';
+        $series = '2014GC24';
+        $linkToCREFCLoanSetUpFile = $spider->CMBSCREFCLoanSetUpFilesHelper->getCREFCLoanSetUpFile($shelf, $series);
+
+        print_r( $linkToCREFCLoanSetUpFile );
+        $this->assertNotEmpty( $linkToCREFCLoanSetUpFile );
+    }
+
+
+    /**
+     * @test
      * @group pdf
      */
     public function testParsePDF() {

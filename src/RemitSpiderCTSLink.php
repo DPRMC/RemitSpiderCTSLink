@@ -2,6 +2,7 @@
 
 namespace DPRMC\RemitSpiderCTSLink;
 
+use DPRMC\RemitSpiderCTSLink\Helpers\CMBSCREFCLoanSetUpFilesHelper;
 use DPRMC\RemitSpiderCTSLink\Helpers\CMBSRestrictedServicerReportsHelper;
 use DPRMC\RemitSpiderCTSLink\Helpers\CTSLinkBrowser;
 use DPRMC\RemitSpiderCTSLink\Helpers\Debug;
@@ -32,6 +33,7 @@ class RemitSpiderCTSLink {
     public FilesByCUSIP                        $FilesByCUSIP;
     public CMBSDistributionFilesHelper         $CMBSDistributionFilesHelper;
     public CMBSRestrictedServicerReportsHelper $CMBSRestrictedServicerReportHelper;
+    public CMBSCREFCLoanSetUpFilesHelper       $CMBSCREFCLoanSetUpFilesHelper;
 
 
     const  BASE_URL = 'https://www.ctslink.com';
@@ -87,6 +89,10 @@ class RemitSpiderCTSLink {
         $this->CMBSRestrictedServicerReportHelper = new CMBSRestrictedServicerReportsHelper( $this->CTSLinkBrowser->page,
                                                                                              $this->Debug,
                                                                                              $this->timezone );
+
+        $this->CMBSCREFCLoanSetUpFilesHelper = new CMBSCREFCLoanSetUpFilesHelper( $this->CTSLinkBrowser->page,
+                                                                                  $this->Debug,
+                                                                                  $this->timezone );
     }
 
 
@@ -97,7 +103,7 @@ class RemitSpiderCTSLink {
     public function enableDebug(): void {
         $this->debug = TRUE;
         $this->Debug->enableDebug();
-        $this->Debug->_debug("Debug has been enabled.");
+        $this->Debug->_debug( "Debug has been enabled." );
     }
 
 
@@ -107,6 +113,6 @@ class RemitSpiderCTSLink {
     public function disableDebug(): void {
         $this->debug = FALSE;
         $this->Debug->disableDebug();
-        $this->Debug->_debug("Debug has been disabled.");
+        $this->Debug->_debug( "Debug has been disabled." );
     }
 }
