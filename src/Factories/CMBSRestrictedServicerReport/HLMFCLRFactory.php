@@ -195,7 +195,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
                     continue;
                 endif;
                 $newCleanRow               = [];
-                $newCleanRow[ 'date' ]     = $this->date->toDateString();
+                $newCleanRow[ 'date' ]     = empty( $this->date ) ? NULL : $this->date->toDateString();
                 $newCleanRow[ 'category' ] = $name;
                 foreach ( $this->cleanHeaders as $j => $header ):
                     $newCleanRow[ $header ] = trim( $validRow[ $j ] ?? '' );
