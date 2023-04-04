@@ -238,14 +238,14 @@ class CMBSRestrictedServicerReportFactory {
                                          $advanceRecovery ] );
 
 
-//        $watchlist       = $this->_fillDateIfMissing( $watchlist, $theDate );
-//        $dlsr            = $this->_fillDateIfMissing( $dlsr, $theDate );
-//        $reosr           = $this->_fillDateIfMissing( $reosr, $theDate );
-//        $hlmfclr         = $this->_fillDateIfMissing( $hlmfclr, $theDate );
-        $csfr = $this->_fillDateIfMissing( $csfr, $theDate );
-//        $llResLOC        = $this->_fillDateIfMissing( $llResLOC, $theDate );
-//        $totalLoan       = $this->_fillDateIfMissing( $totalLoan, $theDate );
-//        $advanceRecovery = $this->_fillDateIfMissing( $advanceRecovery, $theDate );
+        $watchlist       = $this->_fillDateIfMissing( $watchlist, $theDate );
+        $dlsr            = $this->_fillDateIfMissing( $dlsr, $theDate );
+        $reosr           = $this->_fillDateIfMissing( $reosr, $theDate );
+        $hlmfclr         = $this->_fillDateIfMissing( $hlmfclr, $theDate );
+        $csfr            = $this->_fillDateIfMissing( $csfr, $theDate );
+        $llResLOC        = $this->_fillDateIfMissing( $llResLOC, $theDate );
+        $totalLoan       = $this->_fillDateIfMissing( $totalLoan, $theDate );
+        $advanceRecovery = $this->_fillDateIfMissing( $advanceRecovery, $theDate );
 
 
         return new CMBSRestrictedServicerReport( $watchlist,
@@ -282,16 +282,16 @@ class CMBSRestrictedServicerReportFactory {
 
         if ( count( $uniqueDates ) > 1 ):
             $dateCount = [];
-            foreach($dates as $date):
-                if(!isset($dateCount[$date])):
-                    $dateCount[$date] = 0;
+            foreach ( $dates as $date ):
+                if ( ! isset( $dateCount[ $date ] ) ):
+                    $dateCount[ $date ] = 0;
                 endif;
-                $dateCount[$date]++;
+                $dateCount[ $date ]++;
             endforeach;
 
-            arsort($dateCount);
+            arsort( $dateCount );
 
-            return array_key_first($dateCount);
+            return array_key_first( $dateCount );
 
             // Eh...
             // Examples have shown that IF there is more than one date... The other(s) are one-offs that can be ignored.
@@ -318,7 +318,7 @@ class CMBSRestrictedServicerReportFactory {
         foreach ( $rows as $i => $row ):
 
             if ( array_key_exists( 'date', $row ) && empty( $row[ 'date' ] ) ):
-                $rows[$i][ 'date' ] = $date;
+                $rows[ $i ][ 'date' ] = $date;
             endif;
         endforeach;
         return $rows;
