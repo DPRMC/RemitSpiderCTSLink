@@ -117,9 +117,9 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $spider->Login->login();
         $shelf = 'GSM';
         $series = '2014GC24';
-        $linkToCREFCLoanSetUpFile = $spider->CMBSCREFCLoanSetUpFilesHelper->getCREFCLoanSetUpFile($shelf, $series);
+        $linkToCREFCLoanSetUpFile = $spider->CMBSCREFCLoanSetUpFilesHelper->getCREFCLoanSetUpFileLink($shelf, $series);
 
-        print_r( $linkToCREFCLoanSetUpFile );
+        var_dump( $linkToCREFCLoanSetUpFile );
         $this->assertNotEmpty( $linkToCREFCLoanSetUpFile );
     }
 

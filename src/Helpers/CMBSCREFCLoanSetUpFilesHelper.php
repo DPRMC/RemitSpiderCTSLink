@@ -37,7 +37,7 @@ class CMBSCREFCLoanSetUpFilesHelper extends CMBSHelper {
      * @throws \HeadlessChromium\Exception\OperationTimedOut
      * @throws \HeadlessChromium\Exception\ScreenshotFailed
      */
-    public function getCREFCLoanSetUpFile( string $shelf, string $series ): string {
+    public function getCREFCLoanSetUpFileLink( string $shelf, string $series ): string {
         $documentLinks     = [];
         $dealDocumentsLink = self::SERIES_DOCS_URL . 'shelfId=' . $shelf . '&seriesId=' . $series . '&tab=DEALDOCS';
         $this->Debug->_debug( " Navigating to: " . $dealDocumentsLink );
