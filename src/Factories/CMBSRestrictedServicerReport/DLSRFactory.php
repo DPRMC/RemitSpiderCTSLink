@@ -44,6 +44,7 @@ class DLSRFactory extends AbstractTabFactory {
      * @throws DLSRTabMissingSomeDelinquencyCategoriesException
      */
     protected function _setParsedRows( array $allRows ): void {
+
         $this->_setDelinquencyIndexes( $allRows );
 
         if ( $this->_isMissingSomeDelinquencyIndexes() ):
@@ -111,7 +112,7 @@ class DLSRFactory extends AbstractTabFactory {
             elseif ( $this->_isMatureNonPerforming( $allRows[ $i ] ) ):
                 $this->delinquencyIndexes[ self::MAT_NON_PERF ] = $i;
 
-            elseif ( $this->_isLastRow( $allRows[ $i ] ) ):
+            elseif ( $this->_isLastRow( $allRows[ $i ], $numRows ) ):
                 $this->delinquencyIndexes[ self::LAST_ROW ] = $i;
             endif;
         endfor;
@@ -178,19 +179,31 @@ class DLSRFactory extends AbstractTabFactory {
         return $this->_isXPlusIndex( $row, '30' );
     }
 
-    protected function _isLastRow( $row ): bool {
+    protected function _isLastRow( $row, $numRows ): bool {
         if ( isset( $this->delinquencyIndexes[ self::LAST_ROW ] ) ):
             return FALSE;
         endif;
 
-        return $this->_isXPlusIndex( $row, 'the 30' );
+        if ( $this->_isXPlusIndex( $row, 'the 30' ) ):
+            return TRUE;
+        endif;
+
+        if ( $row >= $numRows ):
+            return TRUE;
+        endif;
+
+        return FALSE;
     }
 
     protected function _isCurrentAtSpecialServicer( $row ): bool {
         if ( isset( $this->delinquencyIndexes[ self::CUR_SPEC_SERV ] ) ):
             return FALSE;
         endif;
-        $data = strtolower( $row[ 0 ] ?? '' );
+
+        $data = $row[ 0 ] ?? '';
+        $data = str_replace( '<GROUPHEADER></GROUPHEADER>', '', $data );
+
+        $data = strtolower( $data );
         $data = trim( $data );
 
         if ( empty( $data ) ):
@@ -209,7 +222,11 @@ class DLSRFactory extends AbstractTabFactory {
         if ( isset( $this->delinquencyIndexes[ self::MAT_PERF ] ) ):
             return FALSE;
         endif;
-        $data = strtolower( $row[ 0 ] ?? '' );
+
+        $data = $row[ 0 ] ?? '';
+        $data = str_replace( '<GROUPHEADER></GROUPHEADER>', '', $data );
+
+        $data = strtolower( $data );
         $data = trim( $data );
 
         if ( empty( $data ) ):
@@ -233,7 +250,11 @@ class DLSRFactory extends AbstractTabFactory {
         if ( isset( $this->delinquencyIndexes[ self::MAT_NON_PERF ] ) ):
             return FALSE;
         endif;
-        $data = strtolower( $row[ 0 ] ?? '' );
+
+        $data = $row[ 0 ] ?? '';
+        $data = str_replace( '<GROUPHEADER></GROUPHEADER>', '', $data );
+
+        $data = strtolower( $data );
         $data = trim( $data );
 
         if ( empty( $data ) ):
