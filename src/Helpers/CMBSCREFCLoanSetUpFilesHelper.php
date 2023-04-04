@@ -3,7 +3,6 @@
 namespace DPRMC\RemitSpiderCTSLink\Helpers;
 
 use DPRMC\RemitSpiderCTSLink\Exceptions\CREFCLoanSetUpFileExceptions\LinkToCREFCLoanSetUpFileNotFoundException;
-use DPRMC\RemitSpiderCTSLink\Exceptions\NoAccessToRestrictedServicerReportException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\NoAccessToSecurityException;
 use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
 use HeadlessChromium\Page;
