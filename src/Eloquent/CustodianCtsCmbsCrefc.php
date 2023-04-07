@@ -15,9 +15,12 @@ class CustodianCtsCmbsCrefc extends Model {
     public $keyType      = 'integer';
     public $incrementing = TRUE;
 
-    const id                                          = 'id';
-    const created_at                                  = 'created_at';
-    const updated_at                                  = 'updated_at';
+    const id         = 'id';
+    const created_at = 'created_at';
+    const updated_at = 'updated_at';
+    const shelf      = 'shelf';
+    const series     = 'series';
+
     const transaction_id                              = 'transaction_id';
     const group_id                                    = 'group_id';
     const loan_id                                     = 'loan_id';
@@ -114,6 +117,8 @@ class CustodianCtsCmbsCrefc extends Model {
     const valuation_source_at_contribution            = 'valuation_source_at_contribution';
 
     protected $casts = [
+        self::shelf                                       => 'string',
+        self::series                                      => 'string',
         self::transaction_id                              => 'string',
         self::group_id                                    => 'string',
         self::loan_id                                     => 'string',
@@ -211,6 +216,8 @@ class CustodianCtsCmbsCrefc extends Model {
     ];
 
     protected $fillable = [
+        self::shelf,
+        self::series,
         self::transaction_id,
         self::group_id,
         self::loan_id,
