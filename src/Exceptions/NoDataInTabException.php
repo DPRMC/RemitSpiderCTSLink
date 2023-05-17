@@ -11,15 +11,18 @@ class NoDataInTabException extends \Exception {
     public array  $rowsChecked;
     public array  $cleanHeaders;
     public string $sheetName = '';
+    public string $tabName   = '';
 
 
     public function __construct( string      $message = "",
                                  int         $code = 0,
                                  ?\Throwable $previous = NULL,
                                  ?array      $rowsChecked = [],
-                                 ?array      $cleanHeaders = [] ) {
+                                 ?array      $cleanHeaders = [],
+                                 ?string     $tabName = NULL ) {
         parent::__construct( $message, $code, $previous );
         $this->rowsChecked  = $rowsChecked;
         $this->cleanHeaders = $cleanHeaders;
+        $this->tabName      = $tabName;
     }
 }

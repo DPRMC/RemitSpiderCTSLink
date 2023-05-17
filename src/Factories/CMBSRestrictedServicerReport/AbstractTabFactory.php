@@ -24,6 +24,8 @@ abstract class AbstractTabFactory {
 
     protected array $replacementHeaders = [];
 
+    protected string $sheetName = '';
+
     /**
      * @param string|NULL $timezone
      */
@@ -47,6 +49,7 @@ abstract class AbstractTabFactory {
      */
     public function parse( array $rows, array &$cleanHeadersByProperty, string $sheetName ): array {
 
+        $this->sheetName = $sheetName;
         try {
             $this->_setDate( $rows );
         } catch ( DateNotFoundInHeaderException $exception ) {
@@ -266,7 +269,7 @@ abstract class AbstractTabFactory {
             endforeach;
 
             // Cut off the total row.
-            if(isset($newCleanRow['trans_id']) && str_contains($newCleanRow['trans_id'], 'Total')):
+            if ( isset( $newCleanRow[ 'trans_id' ] ) && str_contains( $newCleanRow[ 'trans_id' ], 'Total' ) ):
                 continue;
             endif;
 
@@ -323,11 +326,12 @@ abstract class AbstractTabFactory {
             endif;
         endfor;
 
-        throw new NoDataInTabException( "Couldn't find data in this tab.",
+        throw new NoDataInTabException( "Couldn't find data in this tab: " . $this->sheetName,
                                         0,
                                         NULL,
                                         array_slice( $allRows, $this->headerRowIndex, $maxBlankRowsBeforeData ),
-                                        $this->getCleanHeaders() );
+                                        $this->getCleanHeaders(),
+                                        $this->sheetName );
     }
 
 
