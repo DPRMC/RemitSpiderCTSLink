@@ -15,8 +15,13 @@ class CustodianCtsCmbsRestrictedServicerReportCfsr extends Model {
     public $keyType      = 'integer';
     public $incrementing = TRUE;
 
+    // Pulled from the filename of the parsed json file.1
+    const shelf       = 'shelf';
+    const series      = 'series';
+    const document_id = 'document_id';
+
     const id                                                           = 'id';
-    const date                                                          = 'date';
+    const date                                                         = 'date';
     const created_at                                                   = 'created_at';
     const updated_at                                                   = 'updated_at';
     const trans_id                                                     = 'trans_id';
@@ -34,6 +39,8 @@ class CustodianCtsCmbsRestrictedServicerReportCfsr extends Model {
     const at_contribution_information_base_year_revenue                = 'at_contribution_information_base_year_revenue';
     const at_contribution_information_base_year_noi_ncf                = 'at_contribution_information_base_year_noi_ncf';
     const at_contribution_information_base_year_dscr_noi_ncf           = 'at_contribution_information_base_year_dscr_noi_ncf';
+
+
     const sec_prec_fy_operating_info_as_of_financials_as_of_date       = 'sec_prec_fy_operating_info_as_of_financials_as_of_date';
     const sec_prec_fy_operating_info_normalized_physical_occup_percent = 'sec_prec_fy_operating_info_normalized_physical_occup_percent';
     const sec_prec_fy_operating_info_normalized_revenue                = 'sec_prec_fy_operating_info_normalized_revenue';
@@ -56,7 +63,7 @@ class CustodianCtsCmbsRestrictedServicerReportCfsr extends Model {
     const net_change_preceding_and_base_year_dscr                      = 'net_change_preceding_and_base_year_dscr';
 
     protected $casts = [
-        self::date => 'date',
+        self::date                                                          => 'date',
         self:: trans_id                                                     => 'string',
         self:: loan_id                                                      => 'string',
         self:: prospectus_loan_id                                           => 'string',
