@@ -264,6 +264,12 @@ abstract class AbstractTabFactory {
                 $data                   = trim( $validRow[ $j ] ?? '' );
                 $newCleanRow[ $header ] = $data;
             endforeach;
+
+            // Cut off the total row.
+            if(isset($newCleanRow['trans_id']) && str_contains($newCleanRow['trans_id'], 'Total')):
+                continue;
+            endif;
+
             $cleanRows[] = $newCleanRow;
         endforeach;
 
