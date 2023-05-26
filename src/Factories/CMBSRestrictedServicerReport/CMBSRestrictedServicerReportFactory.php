@@ -6,6 +6,7 @@ use DPRMC\Excel\Excel;
 use DPRMC\RemitSpiderCTSLink\Exceptions\HLMFLCRTabMissingSomeCategoriesException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\AtLeastOneTabNotFoundException;
+use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\NoDatesInTabsException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\ProbablyExcelDateException;
 use DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport\CMBSRestrictedServicerReport;
 
@@ -269,7 +270,7 @@ class CMBSRestrictedServicerReportFactory {
      * A sanity check to make sure there is ONE and ONLY ONE date among the tabs.
      * @param array $tabs
      * @return string
-     * @throws \Exception
+     * @throws NoDatesInTabsException
      */
     protected function _getTheDate( array $tabs ): string {
         $dates = [];
@@ -303,7 +304,10 @@ class CMBSRestrictedServicerReportFactory {
         endif;
 
         if ( count( $uniqueDates ) < 1 ):
-            throw new \Exception( "There are NO dates in any of the tabs. Which is suuuuuper weird." );
+            throw new NoDatesInTabsException( "There are NO dates in any of the tabs. Which is suuuuuper weird.",
+            0,
+            null,
+            $tabs);
         endif;
 
         $date = reset( $uniqueDates ); // THE date
