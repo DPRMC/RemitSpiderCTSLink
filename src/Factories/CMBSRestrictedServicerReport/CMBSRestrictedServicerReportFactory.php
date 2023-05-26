@@ -99,6 +99,7 @@ class CMBSRestrictedServicerReportFactory {
      * @param string $pathToRestrictedServicerReportXlsx
      * @return CMBSRestrictedServicerReport
      * @throws AtLeastOneTabNotFoundException
+     * @throws NoDatesInTabsException
      */
     public function make( string $pathToRestrictedServicerReportXlsx ): CMBSRestrictedServicerReport {
         $sheetNames = Excel::getSheetNames( $pathToRestrictedServicerReportXlsx );
