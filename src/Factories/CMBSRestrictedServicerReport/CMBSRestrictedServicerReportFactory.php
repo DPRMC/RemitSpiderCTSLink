@@ -42,6 +42,7 @@ class CMBSRestrictedServicerReportFactory {
         self::WATCHLIST => [
             'Watchlist',
             'Servicer Watch List',
+            'Servicer Watch',
         ], // SERVICER WATCHLIST
         self::DLSR      => [
             'DLSR',
@@ -60,11 +61,13 @@ class CMBSRestrictedServicerReportFactory {
             'HLMFCLR',
             'Hist Mod-Corr Mtg ln',
             'HistLoanModForbCMLR',
+            'Hist Mod-Corr Mtg Loan'
         ], // HISTORICAL LOAN MODIFICATION/FORBEARANCE and CORRECTED MORTGAGE LOAN REPORT
         self::LLRES     => [
             'LL Res, LOC',
             'LL Reserve Rpt',
             'LL_Res_LOC',
+            'LL Res LOC'
         ], // LOAN LEVEL RESERVE/LOC REPORT
         self::TOTALLOAN => [
             'Total Loan',
