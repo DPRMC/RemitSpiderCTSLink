@@ -75,6 +75,7 @@ class CMBSRestrictedServicerReportFactory {
             'Total Loan Report',
             'TLR',
             'Total_Loan_Report',
+            'Total_Loan',
         ], // TOTAL LOAN REPORT
         self::RECOVERY  => [
             'Advance Recovery',
@@ -131,6 +132,7 @@ class CMBSRestrictedServicerReportFactory {
         $cleanHeadersBySheetName = [];
 
         foreach ( $sheetNames as $sheetName ):
+
             try {
                 $rows = Excel::sheetToArray( $pathToRestrictedServicerReportXlsx,
                                              $sheetName,
@@ -229,7 +231,8 @@ class CMBSRestrictedServicerReportFactory {
                                                       0,
                                                       NULL,
                                                       $this->tabsThatHaveBeenFound,
-                                                      $pathToRestrictedServicerReportXlsx );
+                                                      $pathToRestrictedServicerReportXlsx,
+                                                      $sheetNames);
         endif;
 
 
@@ -306,9 +309,9 @@ class CMBSRestrictedServicerReportFactory {
 
         if ( count( $uniqueDates ) < 1 ):
             throw new NoDatesInTabsException( "There are NO dates in any of the tabs. Which is suuuuuper weird.",
-            0,
-            null,
-            $tabs);
+                                              0,
+                                              null,
+                                              $tabs);
         endif;
 
         $date = reset( $uniqueDates ); // THE date
