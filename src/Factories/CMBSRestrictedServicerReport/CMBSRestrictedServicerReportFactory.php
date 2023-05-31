@@ -44,6 +44,7 @@ class CMBSRestrictedServicerReportFactory {
             'Watchlist',
             'Servicer Watch List',
             'Servicer Watch',
+            'rptSvcWatchList',
         ], // SERVICER WATCHLIST
         self::DLSR      => [
             'DLSR',
@@ -57,6 +58,7 @@ class CMBSRestrictedServicerReportFactory {
             'CFSR',
             'Comp Finan Status Report',
             'Comparative_Fin',
+            'tCComparativeFinancialStatusIRP',
         ], // COMPARATIVE FINANCIAL STATUS REPORT
         self::HLMFCLR   => [
             'HLMFCLR',
