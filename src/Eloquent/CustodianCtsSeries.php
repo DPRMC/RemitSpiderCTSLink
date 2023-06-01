@@ -21,13 +21,14 @@ class CustodianCtsSeries extends Model {
     const shelf      = 'shelf';
     const series     = 'series';
     const url        = 'url';
+    const has_access = 'has_access';
 
 
     protected $casts = [
-        self::shelf  => 'string',
-        self::series => 'string',
-        self::url    => 'string',
-
+        self::shelf      => 'string',
+        self::series     => 'string',
+        self::url        => 'string',
+        self::has_access => 'boolean',
     ];
 
     protected $guarded = [];
@@ -37,4 +38,6 @@ class CustodianCtsSeries extends Model {
         parent::__construct( $attributes );
         $this->connection = env( 'DB_CONNECTION_CUSTODIAN_CTS' );
     }
+
+
 }
