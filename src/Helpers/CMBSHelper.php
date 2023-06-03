@@ -184,7 +184,7 @@ class CMBSHelper extends AbstractHelper {
         array_shift( $bulletItems );
 
         if ( 3 != count( $bulletItems ) ):
-            throw new \Exception( "Not the right number of security name parts in . " . $href );
+            throw new \Exception( "Not the right number of security name parts in " . $href );
         endif;
 
         $data                 = [];
