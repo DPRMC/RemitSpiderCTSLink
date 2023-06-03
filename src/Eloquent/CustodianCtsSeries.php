@@ -36,6 +36,15 @@ class CustodianCtsSeries extends Model {
         self::series     => 'string',
         self::url        => 'string',
         self::has_access => 'boolean',
+
+        self::terminated     => 'boolean',
+        self::current_cycle  => 'date',
+        self::next_cycle     => 'date',
+        self::next_available => 'date',
+        self::revised_date   => 'date',
+
+        self::link_to_most_recent_distribution_date_statement => 'string',
+        self::link_to_historical_distribution_date_statements => 'string',
     ];
 
     protected $guarded = [];
