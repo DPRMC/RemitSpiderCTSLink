@@ -23,6 +23,13 @@ class CustodianCtsSeries extends Model {
     const url        = 'url';
     const has_access = 'has_access';
 
+    const terminated                                      = 'terminated';
+    const current_cycle                                   = 'current_cycle';
+    const next_cycle                                      = 'next_cycle';
+    const next_available                                  = 'next_available';
+    const revised_date                                    = 'revised_date';
+    const link_to_most_recent_distribution_date_statement = 'link_to_most_recent_distribution_date_statement';
+    const link_to_historical_distribution_date_statements = 'link_to_historical_distribution_date_statements';
 
     protected $casts = [
         self::shelf      => 'string',
