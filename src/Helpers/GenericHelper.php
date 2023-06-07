@@ -110,20 +110,20 @@ class GenericHelper extends AbstractHelper {
              * @var \DOMElement $anchorWithSeriesLink
              */
             $anchorWithSeriesLink = $myTds->item( 5 )->childNodes->item( 1 );
-            $seriesHref           = $anchorWithSeriesLink->getAttribute( 'href' );
+            $seriesListHref           = $anchorWithSeriesLink->getAttribute( 'href' );
 
             /**
              * @var \DOMElement $anchorWithShelfLink
              */
             $anchorWithShelfLink = $myTds->item( 7 )->childNodes->item( 1 );
             if ( $anchorWithShelfLink ):
-                $shelfHref = $anchorWithShelfLink->getAttribute( 'href' );
+                $shelfDocsHref = $anchorWithShelfLink->getAttribute( 'href' );
             else:
-                $shelfHref = '';
+                $shelfDocsHref = '';
             endif;
 
 
-            $models[] = new CTSLinkShelf( $productType, $issuerName, $seriesHref, $shelfHref );
+            $models[] = new CTSLinkShelf( $productType, $issuerName, $seriesListHref, $shelfDocsHref );
         endforeach;
 
         return $models;
