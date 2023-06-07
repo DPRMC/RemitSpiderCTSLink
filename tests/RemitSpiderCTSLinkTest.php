@@ -79,10 +79,11 @@ class RemitSpiderCTSLinkTest extends TestCase {
     public function testGenericHelper() {
         $spider = $this->_getSpider();
 
-        $spider->enableDebug();
-        $spider->Login->login();
+//        $spider->enableDebug();
+//        $spider->Login->login();
 
-        $ctsLinkShelfModels = $spider->GenericHelper->getCtsLinkShelfModels();
+        $html = file_get_contents('/Users/michaeldrennen/PhpstormProjects/RemitSpiderCTSLink/deleteme.html');
+        $ctsLinkShelfModels = $spider->GenericHelper->getCtsLinkShelfModels($html);
         dump( end($ctsLinkShelfModels) );
 
     }

@@ -115,7 +115,7 @@ class GenericHelper extends AbstractHelper {
             /**
              * @var \DOMElement $anchorWithShelfLink
              */
-            $anchorWithShelfLink = $myTds->item( 6 )->childNodes->item( 1 );
+            $anchorWithShelfLink = $myTds->item( 7 )->childNodes->item( 1 );
             if ( $anchorWithShelfLink ):
                 $shelfHref = $anchorWithShelfLink->getAttribute( 'href' );
             else:
