@@ -1,13 +1,18 @@
 <?php
 
-namespace DPRMC\RemitSpiderCTSLink\Helpers;
+namespace DPRMC\RemitSpiderCTSLink\Helpers\Generic;
 
+use DPRMC\RemitSpiderCTSLink\Helpers\AbstractHelper;
+use DPRMC\RemitSpiderCTSLink\Helpers\Debug;
 use DPRMC\RemitSpiderCTSLink\Models\CTSLinkShelf;
 use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
 use HeadlessChromium\Page;
 
 
 class GenericHelper extends AbstractHelper {
+
+    public SeriesLinkHelper $SeriesLinkHelper;
+    public ShelfDocsHelper  $ShelfDocsHelper;
 
     public array $validProductTypes = [
         "CMBS",
@@ -38,6 +43,10 @@ class GenericHelper extends AbstractHelper {
                                  Debug  &$Debug,
                                  string $timezone = RemitSpiderCTSLink::DEFAULT_TIMEZONE ) {
         parent::__construct( $Page, $Debug, $timezone );
+
+
+        $this->SeriesLinkHelper = new SeriesLinkHelper( $Page, $Debug, $timezone );
+        $this->ShelfDocsHelper  = new ShelfDocsHelper( $Page, $Debug, $timezone );
     }
 
 
@@ -110,7 +119,7 @@ class GenericHelper extends AbstractHelper {
              * @var \DOMElement $anchorWithSeriesLink
              */
             $anchorWithSeriesLink = $myTds->item( 5 )->childNodes->item( 1 );
-            $seriesListHref           = $anchorWithSeriesLink->getAttribute( 'href' );
+            $seriesListHref       = $anchorWithSeriesLink->getAttribute( 'href' );
 
             /**
              * @var \DOMElement $anchorWithShelfLink

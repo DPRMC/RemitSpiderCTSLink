@@ -3,14 +3,14 @@
 namespace DPRMC\RemitSpiderCTSLink;
 
 use DPRMC\RemitSpiderCTSLink\Helpers\CMBSCREFCLoanSetUpFilesHelper;
+use DPRMC\RemitSpiderCTSLink\Helpers\CMBSDistributionFilesHelper;
 use DPRMC\RemitSpiderCTSLink\Helpers\CMBSRestrictedServicerReportsHelper;
 use DPRMC\RemitSpiderCTSLink\Helpers\CTSLinkBrowser;
 use DPRMC\RemitSpiderCTSLink\Helpers\Debug;
 use DPRMC\RemitSpiderCTSLink\Helpers\FileDownloader;
 use DPRMC\RemitSpiderCTSLink\Helpers\FilesByCUSIP;
-use DPRMC\RemitSpiderCTSLink\Helpers\GenericHelper;
+use DPRMC\RemitSpiderCTSLink\Helpers\Generic\GenericHelper;
 use DPRMC\RemitSpiderCTSLink\Helpers\Login;
-use DPRMC\RemitSpiderCTSLink\Helpers\CMBSDistributionFilesHelper;
 use HeadlessChromium\Cookies\CookiesCollection;
 
 
