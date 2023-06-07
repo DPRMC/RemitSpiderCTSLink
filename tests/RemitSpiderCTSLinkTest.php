@@ -55,10 +55,10 @@ class RemitSpiderCTSLinkTest extends TestCase {
     public function testGetCusipList() {
         $filePath = getcwd() . '/tests/test_input/fun_1999c01_20190516_4245037.pdf';
 
-        $factory              = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSDistributionFileFactory();
-        $cusips = $factory->getCUSIPList( $filePath );
+        $factory = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSDistributionFileFactory();
+        $cusips  = $factory->getCUSIPList( $filePath );
 
-        dump($cusips);
+        dump( $cusips );
 
     }
 
@@ -71,6 +71,21 @@ class RemitSpiderCTSLinkTest extends TestCase {
                                  $spider );
     }
 
+
+    /**
+     * @test
+     * @group generic
+     */
+    public function testGenericHelper() {
+        $spider = $this->_getSpider();
+
+//        $spider->enableDebug();
+//        $spider->Login->login();
+
+        $ctsLinkShelfModels = $spider->GenericHelper->getCtsLinkShelfModels();
+        //dump( $ctsLinkShelfModels );
+
+    }
 
     /**
      * @test
@@ -115,9 +130,9 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $spider = $this->_getSpider();
         $spider->disableDebug();
         $spider->Login->login();
-        $shelf = 'GSM';
-        $series = '2014GC24';
-        $linkToCREFCLoanSetUpFile = $spider->CMBSCREFCLoanSetUpFilesHelper->getCREFCLoanSetUpFileLink($shelf, $series);
+        $shelf                    = 'GSM';
+        $series                   = '2014GC24';
+        $linkToCREFCLoanSetUpFile = $spider->CMBSCREFCLoanSetUpFilesHelper->getCREFCLoanSetUpFileLink( $shelf, $series );
 
         var_dump( $linkToCREFCLoanSetUpFile );
         $this->assertNotEmpty( $linkToCREFCLoanSetUpFile );
@@ -342,8 +357,8 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $restrictedServicerReport = $factory->make( $filePath );
 
 
-        dump($restrictedServicerReport->csfr);
-        dd('done.dasdfasd');
+        dump( $restrictedServicerReport->csfr );
+        dd( 'done.dasdfasd' );
 
         if ( $restrictedServicerReport->alerts ):
             dump( "ALERTS" );
@@ -391,9 +406,6 @@ class RemitSpiderCTSLinkTest extends TestCase {
 
         //dump($restrictedServicerReport->failedTables);
     }
-
-
-
 
 
 }

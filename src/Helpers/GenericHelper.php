@@ -2,17 +2,29 @@
 
 namespace DPRMC\RemitSpiderCTSLink\Helpers;
 
+use DPRMC\RemitSpiderCTSLink\Models\CTSLinkShelf;
 use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
 use HeadlessChromium\Page;
 
 
 class GenericHelper extends AbstractHelper {
 
+    public array $validProductTypes = [
+        "CMBS",
+        "ABS",
+        "CDO",
+        "MBS",
+        "LEASE",
+        "INFO",
+        "CDSS",
+        "FMLP",
+    ];
+
     const BASE_URL       = 'https://www.ctslink.com';
     const SHELFLIST_PAGE = 'https://www.ctslink.com/a/shelflist.html';
 
     // EX: https://www.ctslink.com/a/history.html?shelfId=JPC&seriesId=2007CIBC20&doc=JPC_2007CIBC20_RSRV
-    const HISTORY_URL     = self::BASE_URL . '/a/history.html?';
+    const HISTORY_URL = self::BASE_URL . '/a/history.html?';
 
     // EX: https://www.ctslink.com/a/seriesdocs.html?shelfId=GSM&seriesId=2014GC24&tab=DEALDOCS
     const SERIES_DOCS_URL = self::BASE_URL . '/a/seriesdocs.html?';
@@ -26,6 +38,75 @@ class GenericHelper extends AbstractHelper {
                                  Debug  &$Debug,
                                  string $timezone = RemitSpiderCTSLink::DEFAULT_TIMEZONE ) {
         parent::__construct( $Page, $Debug, $timezone );
+    }
+
+
+    public function getCtsLinkShelfModels(): array {
+        $models = [];
+//        $this->Page->navigate( self::SHELFLIST_PAGE )->waitForNavigation();
+//        $html   = $this->Page->getHtml();
+
+        // DEBUG
+        $html = file_get_contents( '/Users/michaeldrennen/PhpstormProjects/RemitSpiderCTSLink/deleteme.html' );
+
+        $models = $this->_getModels( $html );
+
+        return $models;
+    }
+
+
+    /**
+     * @param string $html
+     * @return array
+     */
+    private function _getModels( string $html ): array {
+        $cleanRows = [];
+        $models    = [];
+        $dom       = new \DOMDocument();
+        @$dom->loadHTML( $html );
+
+        $trs = $dom->getElementsByTagName( 'tr' );
+
+        /**
+         * @var \DOMElement $tr
+         */
+        foreach ( $trs as $tr ):
+            $newRow = [];
+
+            /**
+             * @var \DOMElement $td
+             */
+            foreach ( $tr->childNodes as $td ):
+                $newRow[] = trim( $td->textContent );
+            endforeach;
+            $newRow      = array_filter( $newRow );
+            $cleanRows[] = $newRow;
+        endforeach;
+
+        foreach ( $cleanRows as $i => $row ):
+            if ( 3 != count( $row ) ):
+                continue;
+            endif;
+
+            if ( ! in_array( $row[ 1 ], $this->validProductTypes ) ):
+                continue;
+            endif;
+
+            $myTds = $trs->item( $i )->childNodes;
+
+            $productType = trim( $myTds->item( 1 )->textContent );
+            $issuerName  = trim( $myTds->item( 3 )->textContent );
+            /**
+             * @var \DOMElement $anchorWithLink
+             */
+            $anchorWithLink = $myTds->item( 5 )->childNodes->item( 1 );
+
+            $href = $anchorWithLink->getAttribute( 'href' );
+
+            $models[] = new CTSLinkShelf( $productType, $issuerName, $href );
+        endforeach;
+
+        return $models;
     }
 
 

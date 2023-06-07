@@ -8,6 +8,7 @@ use DPRMC\RemitSpiderCTSLink\Helpers\CTSLinkBrowser;
 use DPRMC\RemitSpiderCTSLink\Helpers\Debug;
 use DPRMC\RemitSpiderCTSLink\Helpers\FileDownloader;
 use DPRMC\RemitSpiderCTSLink\Helpers\FilesByCUSIP;
+use DPRMC\RemitSpiderCTSLink\Helpers\GenericHelper;
 use DPRMC\RemitSpiderCTSLink\Helpers\Login;
 use DPRMC\RemitSpiderCTSLink\Helpers\CMBSDistributionFilesHelper;
 use HeadlessChromium\Cookies\CookiesCollection;
@@ -34,6 +35,8 @@ class RemitSpiderCTSLink {
     public CMBSDistributionFilesHelper         $CMBSDistributionFilesHelper;
     public CMBSRestrictedServicerReportsHelper $CMBSRestrictedServicerReportHelper;
     public CMBSCREFCLoanSetUpFilesHelper       $CMBSCREFCLoanSetUpFilesHelper;
+
+    public GenericHelper $GenericHelper;
 
 
     const  BASE_URL = 'https://www.ctslink.com';
@@ -93,6 +96,10 @@ class RemitSpiderCTSLink {
         $this->CMBSCREFCLoanSetUpFilesHelper = new CMBSCREFCLoanSetUpFilesHelper( $this->CTSLinkBrowser->page,
                                                                                   $this->Debug,
                                                                                   $this->timezone );
+
+        $this->GenericHelper = new GenericHelper( $this->CTSLinkBrowser->page,
+                                                  $this->Debug,
+                                                  $this->timezone );
     }
 
 
