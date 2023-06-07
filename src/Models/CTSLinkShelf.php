@@ -7,14 +7,16 @@ class CTSLinkShelf {
 
     public string $productType = '';
     public string $issuerName  = '';
-    public string $href        = '';
+    public string $seriesHref  = '';
+    public string $shelfHref   = '';
     public string $shelf       = '';
 
-    public function __construct( string $productType, string $issuerName, string $href ) {
+    public function __construct( string $productType, string $issuerName, string $seriesHref, string $shelfHref = NULL ) {
         $this->productType = $productType;
         $this->issuerName  = $issuerName;
-        $this->href        = $href;
-        $this->shelf       = $this->_getShelfFromHref( $href );
+        $this->seriesHref  = $seriesHref;
+        $this->shelfHref   = $shelfHref;
+        $this->shelf       = $this->_getShelfFromHref( $seriesHref );
     }
 
 

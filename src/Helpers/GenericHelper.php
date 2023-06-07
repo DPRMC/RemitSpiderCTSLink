@@ -93,7 +93,7 @@ class GenericHelper extends AbstractHelper {
         endforeach;
 
         foreach ( $cleanRows as $i => $row ):
-            if ( 3 != count( $row ) ):
+            if ( 3 != count( $row ) &&  4 != count( $row )):
                 continue;
             endif;
 
@@ -105,14 +105,20 @@ class GenericHelper extends AbstractHelper {
 
             $productType = trim( $myTds->item( 1 )->textContent );
             $issuerName  = trim( $myTds->item( 3 )->textContent );
+
             /**
-             * @var \DOMElement $anchorWithLink
+             * @var \DOMElement $anchorWithSeriesLink
              */
-            $anchorWithLink = $myTds->item( 5 )->childNodes->item( 1 );
+            $anchorWithSeriesLink = $myTds->item( 5 )->childNodes->item( 1 );
+            $seriesHref = $anchorWithSeriesLink->getAttribute( 'href' );
 
-            $href = $anchorWithLink->getAttribute( 'href' );
+            /**
+             * @var \DOMElement $anchorWithShelfLink
+             */
+            $anchorWithShelfLink = $myTds->item( 6 )->childNodes->item( 1 );
+            $shelfHref = $anchorWithShelfLink->getAttribute( 'href' );
 
-            $models[] = new CTSLinkShelf( $productType, $issuerName, $href );
+            $models[] = new CTSLinkShelf( $productType, $issuerName, $seriesHref, $shelfHref );
         endforeach;
 
         return $models;
