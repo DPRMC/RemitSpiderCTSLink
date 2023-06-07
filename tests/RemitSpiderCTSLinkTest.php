@@ -83,7 +83,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
 //        $spider->Login->login();
 
         $ctsLinkShelfModels = $spider->GenericHelper->getCtsLinkShelfModels();
-        //dump( $ctsLinkShelfModels );
+        dump( $ctsLinkShelfModels );
 
     }
 

@@ -41,17 +41,26 @@ class GenericHelper extends AbstractHelper {
     }
 
 
-    public function getCtsLinkShelfModels(): array {
-        $models = [];
-//        $this->Page->navigate( self::SHELFLIST_PAGE )->waitForNavigation();
-//        $html   = $this->Page->getHtml();
+    /**
+     * @param string|NULL $html
+     * @return array
+     * @throws \HeadlessChromium\Exception\CommunicationException
+     * @throws \HeadlessChromium\Exception\CommunicationException\CannotReadResponse
+     * @throws \HeadlessChromium\Exception\CommunicationException\InvalidResponse
+     * @throws \HeadlessChromium\Exception\CommunicationException\ResponseHasError
+     * @throws \HeadlessChromium\Exception\NavigationExpired
+     * @throws \HeadlessChromium\Exception\NoResponseAvailable
+     * @throws \HeadlessChromium\Exception\OperationTimedOut
+     */
+    public function getCtsLinkShelfModels(string $html=null): array {
+        if($html):
+            // Used for debugging.
+        else:
+            $this->Page->navigate( self::SHELFLIST_PAGE )->waitForNavigation();
+            $html   = $this->Page->getHtml();
+        endif;
 
-        // DEBUG
-        $html = file_get_contents( '/Users/michaeldrennen/PhpstormProjects/RemitSpiderCTSLink/deleteme.html' );
-
-        $models = $this->_getModels( $html );
-
-        return $models;
+        return $this->_getModels( $html );
     }
 
 
