@@ -52,12 +52,12 @@ class GenericHelper extends AbstractHelper {
      * @throws \HeadlessChromium\Exception\NoResponseAvailable
      * @throws \HeadlessChromium\Exception\OperationTimedOut
      */
-    public function getCtsLinkShelfModels(string $html=null): array {
-        if($html):
+    public function getCtsLinkShelfModels( string $html = NULL ): array {
+        if ( $html ):
             // Used for debugging.
         else:
             $this->Page->navigate( self::SHELFLIST_PAGE )->waitForNavigation();
-            $html   = $this->Page->getHtml();
+            $html = $this->Page->getHtml();
         endif;
 
         return $this->_getModels( $html );
@@ -93,7 +93,7 @@ class GenericHelper extends AbstractHelper {
         endforeach;
 
         foreach ( $cleanRows as $i => $row ):
-            if ( 3 != count( $row ) &&  4 != count( $row )):
+            if ( 3 != count( $row ) && 4 != count( $row ) ):
                 continue;
             endif;
 
@@ -110,13 +110,18 @@ class GenericHelper extends AbstractHelper {
              * @var \DOMElement $anchorWithSeriesLink
              */
             $anchorWithSeriesLink = $myTds->item( 5 )->childNodes->item( 1 );
-            $seriesHref = $anchorWithSeriesLink->getAttribute( 'href' );
+            $seriesHref           = $anchorWithSeriesLink->getAttribute( 'href' );
 
             /**
              * @var \DOMElement $anchorWithShelfLink
              */
             $anchorWithShelfLink = $myTds->item( 6 )->childNodes->item( 1 );
-            $shelfHref = $anchorWithShelfLink->getAttribute( 'href' );
+            if ( $anchorWithShelfLink ):
+                $shelfHref = $anchorWithShelfLink->getAttribute( 'href' );
+            else:
+                $shelfHref = '';
+            endif;
+
 
             $models[] = new CTSLinkShelf( $productType, $issuerName, $seriesHref, $shelfHref );
         endforeach;

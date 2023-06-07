@@ -11,7 +11,7 @@ class CTSLinkShelf {
     public string $shelfHref   = '';
     public string $shelf       = '';
 
-    public function __construct( string $productType, string $issuerName, string $seriesHref, string $shelfHref = NULL ) {
+    public function __construct( string $productType, string $issuerName, string $seriesHref, string $shelfHref = '' ) {
         $this->productType = $productType;
         $this->issuerName  = $issuerName;
         $this->seriesHref  = $seriesHref;
