@@ -31,6 +31,8 @@ class CustodianCtsSeries extends Model {
     const link_to_most_recent_distribution_date_statement = 'link_to_most_recent_distribution_date_statement';
     const link_to_historical_distribution_date_statements = 'link_to_historical_distribution_date_statements';
 
+    const product_type = 'product_type';
+
     protected $casts = [
         self::shelf      => 'string',
         self::series     => 'string',
@@ -45,6 +47,8 @@ class CustodianCtsSeries extends Model {
 
         self::link_to_most_recent_distribution_date_statement => 'string',
         self::link_to_historical_distribution_date_statements => 'string',
+
+        self::product_type => 'string',
     ];
 
     protected $guarded = [];
