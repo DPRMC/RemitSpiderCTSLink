@@ -79,13 +79,62 @@ class RemitSpiderCTSLinkTest extends TestCase {
     public function testGenericHelper() {
         $spider = $this->_getSpider();
 
-//        $spider->enableDebug();
-//        $spider->Login->login();
+        $spider->enableDebug();
+        $spider->Login->login();
 
-        $html = file_get_contents('/Users/michaeldrennen/PhpstormProjects/RemitSpiderCTSLink/deleteme.html');
-        $ctsLinkShelfModels = $spider->GenericHelper->getCtsLinkShelfModels($html);
-        dump( end($ctsLinkShelfModels) );
+        // This page has all the links to the shelves.
+        //$html = file_get_contents( '/Users/michaeldrennen/PhpstormProjects/RemitSpiderCTSLink/deleteme.html' );
+        $html               = NULL;
+        $ctsLinkShelfModels = $spider->GenericHelper->getCtsLinkShelfModels( $html );
+        dump("I found " . count($ctsLinkShelfModels) . " shelves to look at.");
+        //dump( end( $ctsLinkShelfModels ) );
 
+        /**
+         * @var \DPRMC\RemitSpiderCTSLink\Models\CTSLinkShelf $lastModel
+         */
+        //$lastModel = end( $ctsLinkShelfModels );
+
+        //$debugSeriesHtml = file_get_contents('/Users/michaeldrennen/PhpstormProjects/RemitSpiderCTSLink/delete-series.html');
+        //$debugSeriesHtml = file_get_contents('/Users/michaeldrennen/PhpstormProjects/RemitSpiderCTSLink/delete-series-2.html');
+        $debugSeriesHtml = NULL;
+
+        $seriesLinks = [];
+
+        /**
+         * @var \DPRMC\RemitSpiderCTSLink\Models\CTSLinkShelf $ctsLinkShelfModel
+         */
+        foreach ( $ctsLinkShelfModels as $ctsLinkShelfModel ):
+            dump(" Getting series links for: " . $ctsLinkShelfModel->issuerName . " " . $ctsLinkShelfModel->shelf);
+            $newLinks = $spider->GenericHelper->SeriesLinkHelper->getLinks( $ctsLinkShelfModel->seriesListHref,
+                                                                            $debugSeriesHtml );
+
+            foreach ( $newLinks as $seriesDocsPageUrl ):
+                $parts = parse_url( $seriesDocsPageUrl, PHP_URL_QUERY );
+                parse_str( $parts, $output );
+                $shelf  = $output[ 'shelfId' ];
+                $series = $output[ 'seriesId' ];
+
+                //$debugDocsHtml = file_get_contents( '/Users/michaeldrennen/PhpstormProjects/RemitSpiderCTSLink/delete-docs.html' );
+                $debugDocsHtml = NULL;
+                try {
+                    $docLinks = $spider->GenericHelper->ShelfDocsHelper->getLinks( $seriesDocsPageUrl,
+                                                                                   $debugDocsHtml );
+
+                    //
+                    dump("  Here are the doc links I found: ");
+                    dump( $docLinks );
+                    //dd( 'short stop' );
+                } catch ( \DPRMC\RemitSpiderCTSLink\Helpers\Generic\Exceptions\NoAccessToDealException $exception ) {
+                    dump( $exception->getMessage() );
+                    // This is where I would report to bugsnag perhaps.
+                    // Or record that I do not have access to this deal.
+                }
+
+
+            endforeach;
+        endforeach;
+
+        dump( $seriesLinks );
     }
 
     /**
