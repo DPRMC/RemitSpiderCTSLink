@@ -33,6 +33,11 @@ class CustodianCtsSeries extends Model {
 
     const product_type = 'product_type';
 
+    // This is the last time this shelf/series was checked for documents.
+    // This is an important field to look at when determining the health of the system.
+    // And more specifically, how up to date our data is.
+    const last_checked = 'last_checked';
+
     protected $casts = [
         self::shelf      => 'string',
         self::series     => 'string',
@@ -49,6 +54,8 @@ class CustodianCtsSeries extends Model {
         self::link_to_historical_distribution_date_statements => 'string',
 
         self::product_type => 'string',
+
+        self::last_checked => 'date'
     ];
 
     protected $guarded = [];
