@@ -51,8 +51,9 @@ class GenericHelper extends AbstractHelper {
 
 
     /**
+     * These models contain product type (like CMBS), the issuer name, and links to the series list and shelf docs.
      * @param string|NULL $html
-     * @return array
+     * @return CTSLinkShelf[]
      * @throws \HeadlessChromium\Exception\CommunicationException
      * @throws \HeadlessChromium\Exception\CommunicationException\CannotReadResponse
      * @throws \HeadlessChromium\Exception\CommunicationException\InvalidResponse
@@ -75,7 +76,7 @@ class GenericHelper extends AbstractHelper {
 
     /**
      * @param string $html
-     * @return array
+     * @return CTSLinkShelf[]
      */
     private function _getModels( string $html ): array {
         $cleanRows = [];

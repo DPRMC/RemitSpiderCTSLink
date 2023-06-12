@@ -118,6 +118,7 @@ class CMBSHelper extends AbstractHelper {
     /**
      * @param string $seriesLink
      * @return array
+     * @throws \Exception
      */
     public function getPartsFromSeriesLink( string $seriesLink ): array {
         $parts      = parse_url( $seriesLink );

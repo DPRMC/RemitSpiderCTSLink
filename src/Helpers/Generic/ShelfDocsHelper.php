@@ -138,6 +138,10 @@ class ShelfDocsHelper extends AbstractHelper {
         $dom->preserveWhiteSpace = FALSE;
         @$dom->loadHTML( $html );
 
+        $hasAccess = TRUE;
+        if ( str_contains( $html, 'getaccess.html' ) ):
+            $hasAccess = FALSE;
+        endif;
 
         /**
          * @var \DOMNodeList $elements
@@ -154,14 +158,14 @@ class ShelfDocsHelper extends AbstractHelper {
             $href = trim( $anchorElement->getAttribute( 'href' ) );
             $this->Debug->_debug( $i . " " . $href );
 
-            if ( $this->_isGetAccessLink( $href ) ):
-//                throw new NoAccessToDealException( "You don't have access to this deal.",
-//                                                   0,
-//                                                   NULL );
-                $hasAccess = FALSE;
-            else:
-                $hasAccess = TRUE;
-            endif;
+//            if ( $this->_isGetAccessLink( $href ) ):
+////                throw new NoAccessToDealException( "You don't have access to this deal.",
+////                                                   0,
+////                                                   NULL );
+//                $hasAccess = FALSE;
+//            else:
+//                $hasAccess = TRUE;
+//            endif;
 
             if ( $this->_isDocLink( $href ) ):
                 //dump( trim( $anchorElement->textContent ) );
