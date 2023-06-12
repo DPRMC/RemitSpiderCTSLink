@@ -21,7 +21,7 @@ class ShelfDocsHelper extends AbstractHelper {
      * This is the parent method. All other code below, goes to add functionality to this.
      * @param string $href
      * @param string|NULL $debugHtml
-     * @return array
+     * @return DocLink[] An array of DocLink objects
      * @throws \HeadlessChromium\Exception\CommunicationException
      * @throws \HeadlessChromium\Exception\CommunicationException\CannotReadResponse
      * @throws \HeadlessChromium\Exception\CommunicationException\InvalidResponse
@@ -61,8 +61,8 @@ class ShelfDocsHelper extends AbstractHelper {
                     $html = $this->Page->getHtml();
 
                     $newLinks = $this->_getLinksToDocs( $html );
-                    dump( "These are the new links" );
-                    dump( $newLinks );
+                    //dump( "These are the new links" );
+                    //dump( $newLinks );
                     $links = array_merge( $links, $newLinks );
                     break;
             endswitch;
@@ -155,13 +155,16 @@ class ShelfDocsHelper extends AbstractHelper {
             $this->Debug->_debug( $i . " " . $href );
 
             if ( $this->_isGetAccessLink( $href ) ):
-                throw new NoAccessToDealException( "You don't have access to this deal.",
-                                                   0,
-                                                   NULL );
+//                throw new NoAccessToDealException( "You don't have access to this deal.",
+//                                                   0,
+//                                                   NULL );
+                $hasAccess = FALSE;
+            else:
+                $hasAccess = TRUE;
             endif;
 
             if ( $this->_isDocLink( $href ) ):
-                dump( trim( $anchorElement->textContent ) );
+                //dump( trim( $anchorElement->textContent ) );
                 $trElement  = $anchorElement->parentNode->parentNode;
                 $tdElements = $trElement->childNodes;
 
@@ -185,12 +188,18 @@ class ShelfDocsHelper extends AbstractHelper {
 
                 $tdWithAdditionalHistory         = $tdElements->item( 11 );
                 $anchorWithAdditionalHistoryLink = $tdWithAdditionalHistory->childNodes;
-                $anchorWithAdditionalHistoryLink = $anchorWithAdditionalHistoryLink->item(1);
+                $anchorWithAdditionalHistoryLink = $anchorWithAdditionalHistoryLink->item( 1 );
                 $additionalHistoryHref           = $anchorWithAdditionalHistoryLink->getAttribute( 'href' );
 
-                dump($nameOfFile,$currentCycle, $nextCycle, $nextAvailableDateTime, $additionalHistoryHref, $href);
+//                dump($nameOfFile,$currentCycle, $nextCycle, $nextAvailableDateTime, $additionalHistoryHref, $href);
 
-                $docLinks[] = $href;
+                $docLinks[] = new DocLink( $nameOfFile,
+                                           $currentCycle,
+                                           $nextCycle,
+                                           $nextAvailableDateTime,
+                                           $additionalHistoryHref,
+                                           $href,
+                                           $hasAccess );
             endif;
         endforeach;
 
