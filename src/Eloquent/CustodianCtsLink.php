@@ -24,6 +24,7 @@ class CustodianCtsLink extends Model {
     const name            = 'name';
     const downloaded_at   = 'downloaded_at';
     const downloaded_name = 'downloaded_name';
+    const date_of_file    = 'date_of_file';
 
     protected $casts = [
         self::shelf           => 'string',
@@ -32,6 +33,7 @@ class CustodianCtsLink extends Model {
         self::name            => 'string',
         self::downloaded_at   => 'datetime',
         self::downloaded_name => 'string ',
+        self::date_of_file    => 'date',
     ];
 
     protected $guarded = [];
