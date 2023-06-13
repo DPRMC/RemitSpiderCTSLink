@@ -5,7 +5,6 @@ namespace DPRMC\RemitSpiderCTSLink\Helpers\Generic;
 use DPRMC\RemitSpiderCTSLink\Helpers\AbstractHelper;
 use DPRMC\RemitSpiderCTSLink\Helpers\Debug;
 use DPRMC\RemitSpiderCTSLink\Helpers\Generic\Exceptions\NoAccessToDealException;
-use DPRMC\RemitSpiderCTSLink\Models\CTSLinkShelf;
 use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
 use HeadlessChromium\Page;
 
@@ -200,9 +199,6 @@ class ShelfDocsHelper extends AbstractHelper {
                     $additionalHistoryHref = NULL;
                 endif;
 
-
-//                dump($nameOfFile,$currentCycle, $nextCycle, $nextAvailableDateTime, $additionalHistoryHref, $href);
-
                 $docLinks[] = new DocLink( $nameOfFile,
                                            $currentCycle,
                                            $nextCycle,
@@ -225,6 +221,5 @@ class ShelfDocsHelper extends AbstractHelper {
 
     protected function _isGetAccessLink( string $href ): bool {
         return str_contains( $href, 'getaccess.html' );
-
     }
 }
