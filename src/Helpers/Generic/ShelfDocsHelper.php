@@ -193,7 +193,13 @@ class ShelfDocsHelper extends AbstractHelper {
                 $tdWithAdditionalHistory         = $tdElements->item( 11 );
                 $anchorWithAdditionalHistoryLink = $tdWithAdditionalHistory->childNodes;
                 $anchorWithAdditionalHistoryLink = $anchorWithAdditionalHistoryLink->item( 1 );
-                $additionalHistoryHref           = $anchorWithAdditionalHistoryLink->getAttribute( 'href' );
+
+                if ( $anchorWithAdditionalHistoryLink ):
+                    $additionalHistoryHref = $anchorWithAdditionalHistoryLink->getAttribute( 'href' );
+                else:
+                    $additionalHistoryHref = NULL;
+                endif;
+
 
 //                dump($nameOfFile,$currentCycle, $nextCycle, $nextAvailableDateTime, $additionalHistoryHref, $href);
 
