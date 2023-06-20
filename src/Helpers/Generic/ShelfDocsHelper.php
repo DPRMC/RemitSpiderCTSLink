@@ -196,7 +196,7 @@ class ShelfDocsHelper extends AbstractHelper {
                 if ( $anchorWithAdditionalHistoryLink ):
                     $additionalHistoryHref = $anchorWithAdditionalHistoryLink->getAttribute( 'href' );
                 else:
-                    $additionalHistoryHref = NULL;
+                    $additionalHistoryHref = '';
                 endif;
 
                 $docLinks[] = new DocLink( $nameOfFile,
