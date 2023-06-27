@@ -143,7 +143,7 @@ class CMBSRestrictedServicerReportFactory {
                                              $sheetName,
                                              NULL,
                                              NULL,
-                                             TRUE,
+                                             FALSE, // Was TRUE and was causing a #REF! date error. In Format.php line 139: Unsupported operand types: string + string
                                              FALSE );
 
                 //$headers = Excel::sheetHeaderToArray($pathToRestrictedServicerReportXlsx, $sheetName );
