@@ -45,6 +45,7 @@ class CMBSRestrictedServicerReportFactory {
             'Servicer Watch List',
             'Servicer Watch',
             'rptSvcWatchList',
+            'rptWServicerWatchlistIRP',
         ], // SERVICER WATCHLIST
         self::DLSR      => [
             'DLSR',
@@ -59,6 +60,7 @@ class CMBSRestrictedServicerReportFactory {
             'Comp Finan Status Report',
             'Comparative_Fin',
             'tCComparativeFinancialStatusIRP',
+            'Comparative Fin Status Report',
         ], // COMPARATIVE FINANCIAL STATUS REPORT
         self::HLMFCLR   => [
             'HLMFCLR',
@@ -70,7 +72,8 @@ class CMBSRestrictedServicerReportFactory {
             'LL Res, LOC',
             'LL Reserve Rpt',
             'LL_Res_LOC',
-            'LL Res LOC'
+            'LL Res LOC',
+            'rptRsvLOC',
         ], // LOAN LEVEL RESERVE/LOC REPORT
         self::TOTALLOAN => [
             'Total Loan',
