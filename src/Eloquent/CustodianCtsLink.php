@@ -33,7 +33,7 @@ class CustodianCtsLink extends Model {
         self::url             => 'string',
         self::name            => 'string',
         self::downloaded_at   => 'datetime',
-        self::downloaded_name => 'string ',
+        self::downloaded_name => 'string',
         self::date_of_file    => 'date',
         self::key             => 'string', // Could probably be an int, but I don't know if they zero pad lower IDs.
     ];
