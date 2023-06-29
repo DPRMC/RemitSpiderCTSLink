@@ -51,6 +51,8 @@ class CustodianCtsCmbsRestrictedServicerReportDlsr extends Model {
     const workout_strategy                                            = 'workout_strategy';
     const comments_dlsr                                               = 'comments_dlsr';
 
+    const dscr_noi_ncf = 'dscr_noi_ncf';
+
     protected $casts = [
         self::date                                                        => 'date',
         self::trans_id                                                    => 'string',
@@ -84,6 +86,7 @@ class CustodianCtsCmbsRestrictedServicerReportDlsr extends Model {
         self::date_asset_expected_to_be_resolved_or_foreclosed            => 'date',
         self::workout_strategy                                            => 'string',
         self::comments_dlsr                                               => 'string',
+        self::dscr_noi_ncf                                                => 'string',
     ];
 
     protected $guarded = [];
