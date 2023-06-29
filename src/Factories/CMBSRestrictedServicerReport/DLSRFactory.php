@@ -93,7 +93,9 @@ class DLSRFactory extends AbstractTabFactory {
         $numRows = count( $allRows );
 
         $possibleFirstRowOfData = $this->headerRowIndex + 1;
+
         for ( $i = $possibleFirstRowOfData; $i < $numRows; $i++ ):
+
             if ( $this->_isNinetyPlusIndex( $allRows[ $i ] ) ):
                 $this->delinquencyIndexes[ self::DEL_90_PLUS ] = $i;
 
@@ -110,11 +112,13 @@ class DLSRFactory extends AbstractTabFactory {
                 $this->delinquencyIndexes[ self::MAT_PERF ] = $i;
 
             elseif ( $this->_isMatureNonPerforming( $allRows[ $i ] ) ):
+
                 $this->delinquencyIndexes[ self::MAT_NON_PERF ] = $i;
 
-            elseif ( $this->_isLastRow( $allRows[ $i ], $numRows ) ):
+            elseif ( $this->_isLastRow( $allRows[ $i ], $numRows, $i ) ):
                 $this->delinquencyIndexes[ self::LAST_ROW ] = $i;
             endif;
+
         endfor;
     }
 
@@ -179,7 +183,7 @@ class DLSRFactory extends AbstractTabFactory {
         return $this->_isXPlusIndex( $row, '30' );
     }
 
-    protected function _isLastRow( $row, $numRows ): bool {
+    protected function _isLastRow( $row, $numRows, $rowIndex ): bool {
         if ( isset( $this->delinquencyIndexes[ self::LAST_ROW ] ) ):
             return FALSE;
         endif;
@@ -188,7 +192,7 @@ class DLSRFactory extends AbstractTabFactory {
             return TRUE;
         endif;
 
-        if ( $row >= $numRows ):
+        if ( $rowIndex >= $numRows ):
             return TRUE;
         endif;
 
