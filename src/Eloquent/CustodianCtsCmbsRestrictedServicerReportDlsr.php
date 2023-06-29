@@ -52,6 +52,7 @@ class CustodianCtsCmbsRestrictedServicerReportDlsr extends Model {
     const comments_dlsr                                               = 'comments_dlsr';
 
     const dscr_noi_ncf = 'dscr_noi_ncf';
+    const category     = 'category';
 
     protected $casts = [
         self::date                                                        => 'date',
@@ -87,6 +88,7 @@ class CustodianCtsCmbsRestrictedServicerReportDlsr extends Model {
         self::workout_strategy                                            => 'string',
         self::comments_dlsr                                               => 'string',
         self::dscr_noi_ncf                                                => 'string',
+        self::category                                                    => 'string',
     ];
 
     protected $guarded = [];
