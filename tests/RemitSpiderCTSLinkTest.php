@@ -470,8 +470,8 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $spider->disableDebug();
         $spider->Login->login();
         try {
-            $historyLinks = $spider->CMBSRestrictedServicerReportHelper->getAllRestrictedServicerReportLinkObjectsFromSeriesPage( $shelf,
-                                                                                                                                  $series );
+            $historyLinks = $spider->CMBSRestrictedServicerReportHelper->getAllRestrictedServicerReportLinkDataFromSeriesPage( $shelf,
+                                                                                                                               $series );
             dump( $historyLinks );
         } catch ( \DPRMC\RemitSpiderCTSLink\Exceptions\NoAccessToRestrictedServicerReportException $exception ) {
             echo "\n " . $exception->getMessage();

@@ -79,7 +79,7 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
      * This is almost exactly like the method above, but returns additional information like date of report.
      * I could add some error checking in here perhaps.
      */
-    public function getAllRestrictedServicerReportLinkObjectsFromSeriesPage( string $shelf, string $series ): array {
+    public function getAllRestrictedServicerReportLinkDataFromSeriesPage( string $shelf, string $series ): array {
         $documentLinks         = [];
         $additionalHistoryLink = self::HISTORY_URL . 'shelfId=' . $shelf . '&seriesId=' . $series . '&doc=' . $shelf . '_' . $series . '_RSRV';
         $this->Debug->_debug( " Navigating to: " . $additionalHistoryLink );
@@ -124,9 +124,13 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
             $href        = $firstAnchor->getAttribute( 'href' );
 
             $documentLinks[] = [
+                'shelf'       => $shelf,
+                'series'      => $series,
                 'date'        => $date,
                 'revisedDate' => $revisedDate,
                 'href'        => $href,
+                'key'         => $this->_parseOutKey( $href ),
+                'name'        => 'CREFC Restricted Servicer Report',
             ];
         endforeach;
 
@@ -144,9 +148,12 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
         endif;
 
         $textParts = explode( 'revised', $lowerText );
-        dump( $textParts );
-
         return trim( end( $textParts ) );
+    }
+
+    protected function _parseOutKey( string $href ): string {
+        $hrefParts = explode( '=', $href );
+        return end( $hrefParts );
     }
 
 
