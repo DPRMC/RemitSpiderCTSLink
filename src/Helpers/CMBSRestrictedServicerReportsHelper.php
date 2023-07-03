@@ -45,7 +45,7 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
 
         $html = $this->Page->getHtml();
 
-        if ( str_contains( strtolower($html), strtolower('Get Access') ) ):
+        if ( str_contains( strtolower( $html ), strtolower( 'Get Access' ) ) ):
             throw new NoAccessToRestrictedServicerReportException( "We do not have access to this Series: " . $additionalHistoryLink,
                                                                    0,
                                                                    NULL,
@@ -72,6 +72,81 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
         endforeach;
 
         return $documentLinks;
+    }
+
+
+    /**
+     * This is almost exactly like the method above, but returns additional information like date of report.
+     * I could add some error checking in here perhaps.
+     */
+    public function getAllRestrictedServicerReportLinkObjectsFromSeriesPage( string $shelf, string $series ): array {
+        $documentLinks         = [];
+        $additionalHistoryLink = self::HISTORY_URL . 'shelfId=' . $shelf . '&seriesId=' . $series . '&doc=' . $shelf . '_' . $series . '_RSRV';
+        $this->Debug->_debug( " Navigating to: " . $additionalHistoryLink );
+        $this->Page->navigate( $additionalHistoryLink )->waitForNavigation();
+        $this->Debug->_screenshot( urlencode( $additionalHistoryLink ) );
+        $this->Debug->_html( urlencode( $additionalHistoryLink ) );
+
+        $html = $this->Page->getHtml();
+
+        if ( str_contains( strtolower( $html ), strtolower( 'Get Access' ) ) ):
+            throw new NoAccessToRestrictedServicerReportException( "We do not have access to this Series: " . $additionalHistoryLink,
+                                                                   0,
+                                                                   NULL,
+                                                                   $shelf,
+                                                                   $series );
+        endif;
+
+        $dom = new \DOMDocument();
+        @$dom->loadHTML( $html );
+
+
+        $trs = $dom->getElementsByTagName( 'tr' );
+
+        /**
+         * @var \DOMElement $tr
+         */
+        foreach ( $trs as $tr ):
+            $tds = $tr->getElementsByTagName( 'td' );
+
+            if ( 3 != $tds->count() ):
+                continue;
+            endif;
+
+            $stringDate = trim( $tds->item( 1 )->textContent );
+
+            $date        = $this->_parseOutDate( $stringDate );
+            $revisedDate = $this->_parseOutRevisedDate( $stringDate );
+
+            $tdWithLink  = $tds->item( 2 );
+            $anchorTags  = $tdWithLink->getElementsByTagName( 'a' );
+            $firstAnchor = $anchorTags->item( 0 );
+            $href        = $firstAnchor->getAttribute( 'href' );
+
+            $documentLinks[] = [
+                'date'        => $date,
+                'revisedDate' => $revisedDate,
+                'href'        => $href,
+            ];
+        endforeach;
+
+        return $documentLinks;
+    }
+
+    protected function _parseOutDate( string $tdText ): string {
+        return trim( $tdText );
+    }
+
+    protected function _parseOutRevisedDate( string $tdText ): ?string {
+        $lowerText = strtolower( $tdText );
+        if ( ! str_contains( $lowerText, 'revised' ) ):
+            return NULL;
+        endif;
+
+        $textParts = explode( 'revised', $lowerText );
+        dump( $textParts );
+
+        return trim( end( $textParts ) );
     }
 
 

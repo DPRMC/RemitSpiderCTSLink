@@ -86,7 +86,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
         //$html = file_get_contents( '/Users/michaeldrennen/PhpstormProjects/RemitSpiderCTSLink/deleteme.html' );
         $html               = NULL;
         $ctsLinkShelfModels = $spider->GenericHelper->getCtsLinkShelfModels( $html );
-        dump("I found " . count($ctsLinkShelfModels) . " shelves to look at.");
+        dump( "I found " . count( $ctsLinkShelfModels ) . " shelves to look at." );
         //dump( end( $ctsLinkShelfModels ) );
 
         /**
@@ -104,7 +104,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
          * @var \DPRMC\RemitSpiderCTSLink\Models\CTSLinkShelf $ctsLinkShelfModel
          */
         foreach ( $ctsLinkShelfModels as $ctsLinkShelfModel ):
-            dump(" Getting series links for: " . $ctsLinkShelfModel->issuerName . " " . $ctsLinkShelfModel->shelf);
+            dump( " Getting series links for: " . $ctsLinkShelfModel->issuerName . " " . $ctsLinkShelfModel->shelf );
             $newLinks = $spider->GenericHelper->SeriesLinkHelper->getLinks( $ctsLinkShelfModel->seriesListHref,
                                                                             $debugSeriesHtml );
 
@@ -121,7 +121,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
                                                                                    $debugDocsHtml );
 
                     //
-                    dump("  Here are the doc links I found: ");
+                    dump( "  Here are the doc links I found: " );
                     dump( $docLinks );
                     //dd( 'short stop' );
                 } catch ( \DPRMC\RemitSpiderCTSLink\Helpers\Generic\Exceptions\NoAccessToDealException $exception ) {
@@ -457,5 +457,25 @@ class RemitSpiderCTSLinkTest extends TestCase {
         //dump($restrictedServicerReport->failedTables);
     }
 
+
+    /**
+     * @test
+     * @group rest2
+     */
+    public function testGetRestrictedServicerReportObjects() {
+
+        $shelf  = 'BAMLC';
+        $series = '2013C11';
+        $spider = $this->_getSpider();
+        $spider->disableDebug();
+        $spider->Login->login();
+        try {
+            $historyLinks = $spider->CMBSRestrictedServicerReportHelper->getAllRestrictedServicerReportLinkObjectsFromSeriesPage( $shelf,
+                                                                                                                                  $series );
+            dump( $historyLinks );
+        } catch ( \DPRMC\RemitSpiderCTSLink\Exceptions\NoAccessToRestrictedServicerReportException $exception ) {
+            echo "\n " . $exception->getMessage();
+        }
+    }
 
 }
