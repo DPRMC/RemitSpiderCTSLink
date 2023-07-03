@@ -146,6 +146,9 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
         if ( ! str_contains( $lowerText, 'revised' ) ):
             return NULL;
         endif;
+        $lowerText = str_replace("'",'', $lowerText);
+        $lowerText = str_replace('(','', $lowerText);
+        $lowerText = str_replace(')','', $lowerText);
 
         $textParts = explode( 'revised', $lowerText );
         return trim( end( $textParts ) );
