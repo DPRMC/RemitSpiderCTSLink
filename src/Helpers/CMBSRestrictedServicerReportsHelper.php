@@ -115,8 +115,7 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
 
             $stringDate = trim( $tds->item( 1 )->textContent );
 
-            $date        = $this->_parseOutDate( $stringDate );
-            $revisedDate = $this->_parseOutRevisedDate( $stringDate );
+            [ $date, $revisedDate ] = $this->_parseOutDates( $stringDate );
 
             $tdWithLink  = $tds->item( 2 );
             $anchorTags  = $tdWithLink->getElementsByTagName( 'a' );
@@ -137,8 +136,42 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
         return $documentLinks;
     }
 
+
+    /**
+     * @param string $tdText
+     * @return array|string[]
+     */
+    protected function _parseOutDates( string $tdText ): array {
+        $lowerText = strtolower( $tdText );
+        $lowerText = str_replace( "'", '', $lowerText );
+        $lowerText = str_replace( '(', '', $lowerText );
+        $lowerText = str_replace( ')', '', $lowerText );
+
+        $textParts = explode( 'revised', $lowerText );
+
+        if ( count( $textParts ) == 1 ):
+            return [
+                $this->_trimDateWithRegex( $textParts[ 0 ] ), // Date
+                NULL, // Revised Date
+            ];
+        endif;
+
+        return [
+            $this->_trimDateWithRegex( $textParts[ 0 ] ), // Date
+            $this->_trimDateWithRegex( $textParts[ 1 ] ), // Revised Date
+        ];
+    }
+
+
+    protected function _trimDateWithRegex(string $stringDate): string {
+        $pattern = '/[^\d\/]*/';
+
+        return preg_replace($pattern,'',$stringDate);
+    }
+
     protected function _parseOutDate( string $tdText ): string {
         return trim( $tdText );
+
     }
 
     protected function _parseOutRevisedDate( string $tdText ): ?string {
@@ -146,11 +179,13 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
         if ( ! str_contains( $lowerText, 'revised' ) ):
             return NULL;
         endif;
-        $lowerText = str_replace("'",'', $lowerText);
-        $lowerText = str_replace('(','', $lowerText);
-        $lowerText = str_replace(')','', $lowerText);
+
+        $lowerText = str_replace( "'", '', $lowerText );
+        $lowerText = str_replace( '(', '', $lowerText );
+        $lowerText = str_replace( ')', '', $lowerText );
 
         $textParts = explode( 'revised', $lowerText );
+
         return trim( end( $textParts ) );
     }
 
