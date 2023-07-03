@@ -25,6 +25,7 @@ class CustodianCtsLink extends Model {
     const downloaded_at   = 'downloaded_at';
     const downloaded_name = 'downloaded_name';
     const date_of_file    = 'date_of_file';
+    const revised_date    = 'revised_date';
     const key             = 'key';
 
     protected $casts = [
@@ -35,6 +36,7 @@ class CustodianCtsLink extends Model {
         self::downloaded_at   => 'datetime',
         self::downloaded_name => 'string',
         self::date_of_file    => 'date',
+        self::revised_date    => 'date',
         self::key             => 'string', // Could probably be an int, but I don't know if they zero pad lower IDs.
     ];
 
