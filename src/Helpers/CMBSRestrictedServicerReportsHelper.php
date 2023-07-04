@@ -137,6 +137,71 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
     }
 
 
+    public function getAllMonthlyAdministratorReportLinkDataFromSeriesPage( string $shelf, string $series ): array {
+        $documentLinks         = [];
+        $additionalHistoryLink = self::HISTORY_URL . 'shelfId=' . $shelf . '&seriesId=' . $series . '&doc=' . $shelf . '_' . $series . '_MADR';
+        $this->Debug->_debug( " Navigating to: " . $additionalHistoryLink );
+        $this->Page->navigate( $additionalHistoryLink )->waitForNavigation();
+        $this->Debug->_screenshot( urlencode( $additionalHistoryLink ) );
+        $this->Debug->_html( urlencode( $additionalHistoryLink ) );
+
+        $html = $this->Page->getHtml();
+
+        if ( str_contains( strtolower( $html ), strtolower( 'Get Access' ) ) ):
+            throw new NoAccessToRestrictedServicerReportException( "We do not have access to this Series: " . $additionalHistoryLink,
+                                                                   0,
+                                                                   NULL,
+                                                                   $shelf,
+                                                                   $series );
+        endif;
+
+        $dom = new \DOMDocument();
+        @$dom->loadHTML( $html );
+
+
+        $trs = $dom->getElementsByTagName( 'tr' );
+
+        /**
+         * @var \DOMElement $tr
+         */
+        foreach ( $trs as $tr ):
+            $tds = $tr->getElementsByTagName( 'td' );
+
+            if ( 3 != $tds->count() ):
+                continue;
+            endif;
+
+            $stringDate = trim( $tds->item( 1 )->textContent );
+
+            [ $date, $revisedDate ] = $this->_parseOutDates( $stringDate );
+
+            $tdWithLink  = $tds->item( 2 );
+            $anchorTags  = $tdWithLink->getElementsByTagName( 'a' );
+            $firstAnchor = $anchorTags->item( 0 );
+            $href        = $firstAnchor->getAttribute( 'href' );
+
+            $documentLinks[] = [
+                'shelf'       => $shelf,
+                'series'      => $series,
+                'date'        => $date,
+                'revisedDate' => $revisedDate,
+                'href'        => $href,
+                'key'         => $this->_parseOutKey( $href ),
+                'name'        => 'Monthly Administrator Report',
+            ];
+        endforeach;
+
+        return $documentLinks;
+    }
+
+
+
+
+
+
+
+
+
     /**
      * @param string $tdText
      * @return array|string[]
