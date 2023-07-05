@@ -80,88 +80,20 @@ class CMBSMonthlyAdministratorReportFactory {
                 $headers = $this->_combineTheHeaderRows( $topHeader, $bottomHeader );
                 $headers = $this->_cleanTheHeaders( $headers );
 
-                dd( $rows, $headers );
-
-                //$headers = Excel::sheetHeaderToArray($pathToRestrictedServicerReportXlsx, $sheetName );
-                if ( $this->_foundSheetName( self::LPU, $sheetName ) ):
-                    $this->tabsThatHaveBeenFound[ self::LPU ] = TRUE;
-                    $factory                                  = new WatchlistFactory( self::DEFAULT_TIMEZONE );
-                    $watchlist                                = $factory->parse( $rows,
-                                                                                 $cleanHeadersBySheetName,
-                                                                                 CMBSMonthlyAdministratorReport::watchlist );
-
-
-                endif;
+                $lpu = $this->_getLpuData( $headers, $rows );
             } catch ( \Carbon\Exceptions\InvalidFormatException $exception ) {
                 $newException = new ProbablyExcelDateException( $exception->getMessage(),
                                                                 $exception->getCode(),
                                                                 $exception->getPrevious(),
                                                                 $sheetName );
                 $exceptions[] = $newException;
-            } catch ( NoDataInTabException $exception ) {
-                $exception->sheetName = $sheetName;
-                $alerts[]             = $exception;
-                //$factory->getCleanHeaders(); // What was I doing with this?
-            }
-// I wrote this to be a show-stopper, but it should be an ALERT. See below.
-// Some HLM sheets will just not have certain categories.
-// This presents a unique problem.
-// - Am I unable to find a sub category that exists, or
-// - Does the sub category just not exist?
-// I am aggregating alerts/exceptions in the factory.
-// I need to review the alerts regularly and compare against the XLS sheets to see
-// If the parser needs to be updated or if its just a valid non-existent sub category.
-            catch ( HLMFLCRTabMissingSomeCategoriesException $exception ) {
-                // Let's make this a show-stopper, so the developer needs to edit the parser.
-                //throw $exception;
-                $alerts[] = $exception;
             } catch ( \Exception $exception ) {
                 $exceptions[] = $exception;
             }
         endforeach;
 
-        if ( $this->_atLeastOneTabNotFound() ):
-            throw new AtLeastOneTabNotFoundException( "Need to update the tabs array in CMBSRestrictedServicerReportFactory. CTS has a different spelling for one of their tabs. Update every FALSE tab attached to this exception.",
-                                                      0,
-                                                      NULL,
-                                                      $this->tabsThatHaveBeenFound,
-                                                      $pathToMonthlyAdministratorReportXlsx,
-                                                      $sheetNames );
-        endif;
 
-
-        $theDate = $this->_getTheDate( [ $watchlist,
-                                         $dlsr,
-                                         $reosr,
-                                         $hlmfclr,
-                                         $csfr,
-                                         $llResLOC,
-                                         $totalLoan,
-                                         $advanceRecovery,
-                                       ] );
-
-
-        $watchlist       = $this->_fillDateIfMissing( $watchlist, $theDate );
-        $dlsr            = $this->_fillDateIfMissing( $dlsr, $theDate );
-        $reosr           = $this->_fillDateIfMissing( $reosr, $theDate );
-        $hlmfclr         = $this->_fillDateIfMissing( $hlmfclr, $theDate );
-        $csfr            = $this->_fillDateIfMissing( $csfr, $theDate );
-        $llResLOC        = $this->_fillDateIfMissing( $llResLOC, $theDate );
-        $totalLoan       = $this->_fillDateIfMissing( $totalLoan, $theDate );
-        $advanceRecovery = $this->_fillDateIfMissing( $advanceRecovery, $theDate );
-
-
-        return new CMBSMonthlyAdministratorReport( $watchlist,
-                                                   $dlsr,
-                                                   $reosr,
-                                                   $hlmfclr,
-                                                   $csfr,
-                                                   $llResLOC,
-                                                   $totalLoan,
-                                                   $advanceRecovery,
-                                                   $cleanHeadersBySheetName,
-                                                   $alerts,
-                                                   $exceptions );
+        return new CMBSMonthlyAdministratorReport( $lpu );
     }
 
 
@@ -178,6 +110,21 @@ class CMBSMonthlyAdministratorReportFactory {
             $headers[ $i ] = $this->cleanHeaderValue( $header );
         endforeach;
         return $headers;
+    }
+
+    protected function _getLpuData( array $headers, array $rows ): array {
+        $parsedData = [];
+
+        foreach ( $rows as $i => $row ):
+            $newRow = [];
+
+            foreach ( $row as $j => $value ):
+                $newRow[ $headers[ $j ] ] = $value;
+            endforeach;
+            $parsedData[] = $newRow;
+        endforeach;
+
+        return $parsedData;
     }
 
 
