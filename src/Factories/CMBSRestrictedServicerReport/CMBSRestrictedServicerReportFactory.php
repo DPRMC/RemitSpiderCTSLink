@@ -24,7 +24,6 @@ class CMBSRestrictedServicerReportFactory {
     const LLRES     = 'LLRES';
     const TOTALLOAN = 'TOTALLOAN';
     const RECOVERY  = 'RECOVERY';
-    const LPU       = 'LPU';
 
     public array $tabsThatHaveBeenFound = [
         self::WATCHLIST => FALSE,
@@ -35,8 +34,8 @@ class CMBSRestrictedServicerReportFactory {
         self::LLRES     => FALSE,
         self::TOTALLOAN => FALSE,
         self::RECOVERY  => FALSE,
-        self::LPU       => FALSE,
     ];
+
 
     public array $tabs = [
         self::FOOTNOTES => [
@@ -247,7 +246,7 @@ class CMBSRestrictedServicerReportFactory {
                                          $llResLOC,
                                          $totalLoan,
                                          $advanceRecovery,
-                                         ] );
+                                       ] );
 
 
         $watchlist       = $this->_fillDateIfMissing( $watchlist, $theDate );
@@ -261,16 +260,16 @@ class CMBSRestrictedServicerReportFactory {
 
 
         return new CMBSRestrictedServicerReport( $watchlist,
-                                                   $dlsr,
-                                                   $reosr,
-                                                   $hlmfclr,
-                                                   $csfr,
-                                                   $llResLOC,
-                                                   $totalLoan,
-                                                   $advanceRecovery,
-                                                   $cleanHeadersBySheetName,
-                                                   $alerts,
-                                                   $exceptions );
+                                                 $dlsr,
+                                                 $reosr,
+                                                 $hlmfclr,
+                                                 $csfr,
+                                                 $llResLOC,
+                                                 $totalLoan,
+                                                 $advanceRecovery,
+                                                 $cleanHeadersBySheetName,
+                                                 $alerts,
+                                                 $exceptions );
     }
 
 
