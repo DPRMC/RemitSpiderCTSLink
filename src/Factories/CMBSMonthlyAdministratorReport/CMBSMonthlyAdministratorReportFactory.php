@@ -95,7 +95,7 @@ class CMBSMonthlyAdministratorReportFactory {
         endforeach;
 
 
-        return new CMBSMonthlyAdministratorReport( $lpu );
+        return new CMBSMonthlyAdministratorReport( $lpu, $exceptions, $alerts );
     }
 
 
