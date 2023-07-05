@@ -5,7 +5,7 @@ namespace DPRMC\RemitSpiderCTSLink\Laravel;
 
 use DPRMC\RemitSpiderCTSLink\Exceptions\UnableToCreateEloquentFileException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\UnableToGenerateCreateTableException;
-use DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport\CMBSRestrictedServicerReport;
+use DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport\CMBSMonthlyAdministratorReport;
 use Illuminate\Support\Str;
 
 class GenerateEloquentModelsFromCMBSRestrictedServicerReport {
@@ -18,7 +18,7 @@ class GenerateEloquentModelsFromCMBSRestrictedServicerReport {
     const CONNECTION = '<connection>';
 
 
-    public function __construct( public readonly CMBSRestrictedServicerReport $cmbsRestrictedServicerReport ) {
+    public function __construct( public readonly CMBSMonthlyAdministratorReport $cmbsRestrictedServicerReport ) {
     }
 
 
@@ -26,14 +26,14 @@ class GenerateEloquentModelsFromCMBSRestrictedServicerReport {
      * @var array|string[] Indexes are the property names in the CMBSRestrictedServicerReport, values are the table suffixes/names.
      */
     protected array $propertyToTableNames = [
-        CMBSRestrictedServicerReport::watchlist       => 'watchlists',
-        CMBSRestrictedServicerReport::reosr           => 'reosrs',
-        CMBSRestrictedServicerReport::csfr            => 'cfsrs',
-        CMBSRestrictedServicerReport::llResLOC        => 'll_res_locs',
-        CMBSRestrictedServicerReport::totalLoan       => 'total_loans',
-        CMBSRestrictedServicerReport::advanceRecovery => 'advance_recoveries',
-        CMBSRestrictedServicerReport::dlsr            => 'dlsrs',
-        CMBSRestrictedServicerReport::hlmfclr         => 'hlmfclrs',
+        CMBSMonthlyAdministratorReport::watchlist       => 'watchlists',
+        CMBSMonthlyAdministratorReport::reosr           => 'reosrs',
+        CMBSMonthlyAdministratorReport::csfr            => 'cfsrs',
+        CMBSMonthlyAdministratorReport::llResLOC        => 'll_res_locs',
+        CMBSMonthlyAdministratorReport::totalLoan       => 'total_loans',
+        CMBSMonthlyAdministratorReport::advanceRecovery => 'advance_recoveries',
+        CMBSMonthlyAdministratorReport::dlsr            => 'dlsrs',
+        CMBSMonthlyAdministratorReport::hlmfclr         => 'hlmfclrs',
     ];
 
 

@@ -397,61 +397,63 @@ class RemitSpiderCTSLinkTest extends TestCase {
 
     /**
      * @test
-     * @group rsrf
+     * @group mike
      */
     public function testRestrictedServicerReportFactory() {
         $filePath = getcwd() . '/tests/test_input/JPC_2022B32_RSRV.xls';
         //$filePath = getcwd() . '/tests/test_input/BOAMLLL_2012CKSV_RSRV.xls';
+        $filePath = getcwd() . '/tests/test_input/JMACFM_2015R1_6231196_JMACFM_2015R1_MADR.xlsx';
 
-        $factory                  = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\CMBSRestrictedServicerReportFactory( self::TIMEZONE );
+        //$factory                  = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\CMBSRestrictedServicerReportFactory( self::TIMEZONE );
+        $factory                  = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSMonthlyAdministratorReport\CMBSMonthlyAdministratorReportFactory( self::TIMEZONE );
         $restrictedServicerReport = $factory->make( $filePath );
 
 
         dump( $restrictedServicerReport->csfr );
         dd( 'done.dasdfasd' );
 
-        if ( $restrictedServicerReport->alerts ):
-            dump( "ALERTS" );
-            foreach ( $restrictedServicerReport->alerts as $alert ):
-                dump( $alert->getMessage() );
-            endforeach;
-        endif;
-
-        if ( $restrictedServicerReport->exceptions ):
-            dump( "EXCEPTIONS" );
-            foreach ( $restrictedServicerReport->exceptions as $exception ):
-
-
-                switch ( get_class( $exception ) ):
-                    case \DPRMC\RemitSpiderCTSLink\Exceptions\HeadersTooLongForMySQLException::class:
-                        dump( $exception->getTraceAsString() );
-                        dump( $exception->getMessage() );
-                        dump( $exception->headersThatAreTooLong );
-                        break;
-
-                    default:
-                        dump( get_class( $exception ) . ': ' . $exception->getMessage() );
-                endswitch;
-            endforeach;
-
-            die( "Done." );
-        endif;
-
+//        if ( $restrictedServicerReport->alerts ):
+//            dump( "ALERTS" );
+//            foreach ( $restrictedServicerReport->alerts as $alert ):
+//                dump( $alert->getMessage() );
+//            endforeach;
+//        endif;
+//
+//        if ( $restrictedServicerReport->exceptions ):
+//            dump( "EXCEPTIONS" );
+//            foreach ( $restrictedServicerReport->exceptions as $exception ):
 //
 //
-//        dd($restrictedServicerReport);
-
-        dump( $filePath );
-        dump( "Showing the toSQL output" );
-
-        $sqlGenerator = new \DPRMC\RemitSpiderCTSLink\SQL\GenerateSqlFromCMBSRestrictedServicerReport( $restrictedServicerReport );
-
-        $sql = $sqlGenerator->generateSQL();
-
-        dump( $sql );
-
-        $modelGenerator = new \DPRMC\RemitSpiderCTSLink\Laravel\GenerateEloquentModelsFromCMBSRestrictedServicerReport( $restrictedServicerReport );
-        $modelGenerator->generateModels();
+//                switch ( get_class( $exception ) ):
+//                    case \DPRMC\RemitSpiderCTSLink\Exceptions\HeadersTooLongForMySQLException::class:
+//                        dump( $exception->getTraceAsString() );
+//                        dump( $exception->getMessage() );
+//                        dump( $exception->headersThatAreTooLong );
+//                        break;
+//
+//                    default:
+//                        dump( get_class( $exception ) . ': ' . $exception->getMessage() );
+//                endswitch;
+//            endforeach;
+//
+//            die( "Done." );
+//        endif;
+//
+////
+////
+////        dd($restrictedServicerReport);
+//
+//        dump( $filePath );
+//        dump( "Showing the toSQL output" );
+//
+//        $sqlGenerator = new \DPRMC\RemitSpiderCTSLink\SQL\GenerateSqlFromCMBSRestrictedServicerReport( $restrictedServicerReport );
+//
+//        $sql = $sqlGenerator->generateSQL();
+//
+//        dump( $sql );
+//
+//        $modelGenerator = new \DPRMC\RemitSpiderCTSLink\Laravel\GenerateEloquentModelsFromCMBSRestrictedServicerReport( $restrictedServicerReport );
+//        $modelGenerator->generateModels();
 
 
         //dump($restrictedServicerReport->failedTables);

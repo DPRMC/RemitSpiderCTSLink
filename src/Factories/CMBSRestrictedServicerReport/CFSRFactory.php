@@ -100,7 +100,7 @@ class CFSRFactory extends AbstractTabFactory {
                 continue;
             endif;
 
-            $cleanHeaders[ $i ] = $this->_cleanHeaderValue( $header );
+            $cleanHeaders[ $i ] = $this->cleanHeaderValue( $header );
 
             if ( isset( $prefix[ $i ] ) ):
                 $cleanHeaders[ $i ] = $prefix[ $i ] . $cleanHeaders[ $i ];

@@ -1,6 +1,6 @@
 <?php
 
-namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
+namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSMonthlyAdministratorReport;
 
 use DPRMC\Excel\Excel;
 use DPRMC\RemitSpiderCTSLink\Exceptions\HLMFLCRTabMissingSomeCategoriesException;
@@ -8,88 +8,18 @@ use DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\AtLeastOneTabNotFoundException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\NoDatesInTabsException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\ProbablyExcelDateException;
-use DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport\CMBSRestrictedServicerReport;
+use DPRMC\RemitSpiderCTSLink\Factories\HeaderTrait;
+use DPRMC\RemitSpiderCTSLink\Models\CMBSMonthlyAdministratorReport\CMBSMonthlyAdministratorReport;
 
-class CMBSRestrictedServicerReportFactory {
+class CMBSMonthlyAdministratorReportFactory {
+
+    use HeaderTrait;
 
     const DEFAULT_TIMEZONE = 'America/New_York';
     public readonly string $timezone;
 
-    const FOOTNOTES = 'FOOTNOTES';
-    const WATCHLIST = 'WATCHLIST';
-    const DLSR      = 'DLSR';
-    const REOSR     = 'REOSR';
-    const CFSR      = 'CFSR';
-    const HLMFCLR   = 'HLMFCLR';
-    const LLRES     = 'LLRES';
-    const TOTALLOAN = 'TOTALLOAN';
-    const RECOVERY  = 'RECOVERY';
-    const LPU       = 'LPU';
+    const LPU = 'LPU';
 
-    public array $tabsThatHaveBeenFound = [
-        self::WATCHLIST => FALSE,
-        self::DLSR      => FALSE,
-        self::REOSR     => FALSE,
-        self::CFSR      => FALSE,
-        self::HLMFCLR   => FALSE,
-        self::LLRES     => FALSE,
-        self::TOTALLOAN => FALSE,
-        self::RECOVERY  => FALSE,
-        self::LPU       => FALSE,
-    ];
-
-    public array $tabs = [
-        self::FOOTNOTES => [
-            'FootNotes',
-        ],
-        self::WATCHLIST => [
-            'Watchlist',
-            'Servicer Watch List',
-            'Servicer Watch',
-            'rptSvcWatchList',
-            'rptWServicerWatchlistIRP',
-        ], // SERVICER WATCHLIST
-        self::DLSR      => [
-            'DLSR',
-            'Del Loan Status Report',
-        ], // Delinquent Loan Status Report
-        self::REOSR     => [
-            'REOSR',
-            'REO Status Report',
-        ], // REO STATUS REPORT
-        self::CFSR      => [
-            'CFSR',
-            'Comp Finan Status Report',
-            'Comparative_Fin',
-            'tCComparativeFinancialStatusIRP',
-            'Comparative Fin Status Report',
-        ], // COMPARATIVE FINANCIAL STATUS REPORT
-        self::HLMFCLR   => [
-            'HLMFCLR',
-            'Hist Mod-Corr Mtg ln',
-            'HistLoanModForbCMLR',
-            'Hist Mod-Corr Mtg Loan',
-        ], // HISTORICAL LOAN MODIFICATION/FORBEARANCE and CORRECTED MORTGAGE LOAN REPORT
-        self::LLRES     => [
-            'LL Res, LOC',
-            'LL Reserve Rpt',
-            'LL_Res_LOC',
-            'LL Res LOC',
-            'rptRsvLOC',
-        ], // LOAN LEVEL RESERVE/LOC REPORT
-        self::TOTALLOAN => [
-            'Total Loan',
-            'Total Loan Report',
-            'TLR',
-            'Total_Loan_Report',
-            'Total_Loan',
-        ], // TOTAL LOAN REPORT
-        self::RECOVERY  => [
-            'Advance Recovery',
-            'Recovery',
-            'Advance_Recovery',
-        ], // ADVANCE RECOVERY REPORT
-    ];
 
     /**
      * @param string|NULL $timezone
@@ -103,19 +33,18 @@ class CMBSRestrictedServicerReportFactory {
     }
 
 
+    /**
+     * @param string $pathToMonthlyAdministratorReportXlsx
+     * @return CMBSMonthlyAdministratorReport
+     * @throws AtLeastOneTabNotFoundException
+     * @throws NoDatesInTabsException
+     */
+    public function make( string $pathToMonthlyAdministratorReportXlsx ): CMBSMonthlyAdministratorReport {
+        $sheetNames = Excel::getSheetNames( $pathToMonthlyAdministratorReportXlsx );
 
-    public function make( string $pathToRestrictedServicerReportXlsx ): CMBSRestrictedServicerReport {
-        $sheetNames = Excel::getSheetNames( $pathToRestrictedServicerReportXlsx );
 
-        // Intialize these arrays that will get passed to the CMBSRestrictedServicerReport __constructor.
-        $watchlist       = [];
-        $dlsr            = [];
-        $reosr           = [];
-        $csfr            = [];
-        $hlmfclr         = [];
-        $llResLOC        = [];
-        $totalLoan       = [];
-        $advanceRecovery = [];
+        // Initialize these arrays that will get passed to the CMBSMonthlyAdministratorReport __constructor.
+        $lpu = [];
 
 
         /**
@@ -137,69 +66,31 @@ class CMBSRestrictedServicerReportFactory {
         foreach ( $sheetNames as $sheetName ):
 
             try {
-                $rows = Excel::sheetToArray( $pathToRestrictedServicerReportXlsx,
+                $rows = Excel::sheetToArray( $pathToMonthlyAdministratorReportXlsx,
                                              $sheetName,
                                              NULL,
                                              NULL,
-                                             FALSE, // Was TRUE and was causing a #REF! date error. In Format.php line 139: Unsupported operand types: string + string
+                                             TRUE, // Was TRUE and was causing a #REF! date error. In Format.php line 139: Unsupported operand types: string + string
                                              FALSE );
 
+                array_shift( $rows ); // Garbage row of integers
+                $topHeader    = array_shift( $rows );
+                $bottomHeader = array_shift( $rows );
+
+                $headers = $this->_combineTheHeaderRows( $topHeader, $bottomHeader );
+                $headers = $this->_cleanTheHeaders( $headers );
+
+                dd( $rows, $headers );
+
                 //$headers = Excel::sheetHeaderToArray($pathToRestrictedServicerReportXlsx, $sheetName );
-                if ( $this->_foundSheetName( self::WATCHLIST, $sheetName ) ):
-                    $this->tabsThatHaveBeenFound[ self::WATCHLIST ] = TRUE;
-                    $factory                                        = new WatchlistFactory( self::DEFAULT_TIMEZONE );
-                    $watchlist                                      = $factory->parse( $rows,
-                                                                                       $cleanHeadersBySheetName,
-                                                                                       CMBSRestrictedServicerReport::watchlist );
+                if ( $this->_foundSheetName( self::LPU, $sheetName ) ):
+                    $this->tabsThatHaveBeenFound[ self::LPU ] = TRUE;
+                    $factory                                  = new WatchlistFactory( self::DEFAULT_TIMEZONE );
+                    $watchlist                                = $factory->parse( $rows,
+                                                                                 $cleanHeadersBySheetName,
+                                                                                 CMBSMonthlyAdministratorReport::watchlist );
 
-                elseif ( $this->_foundSheetName( self::DLSR, $sheetName ) ):
-                    $this->tabsThatHaveBeenFound[ self::DLSR ] = TRUE;
-                    $factory                                   = new DLSRFactory( self::DEFAULT_TIMEZONE );
-                    $dlsr                                      = $factory->parse( $rows,
-                                                                                  $cleanHeadersBySheetName,
-                                                                                  CMBSRestrictedServicerReport::dlsr );
 
-                elseif ( $this->_foundSheetName( self::REOSR, $sheetName ) ):
-                    $this->tabsThatHaveBeenFound[ self::REOSR ] = TRUE;
-                    $factory                                    = new REOSRFactory( self::DEFAULT_TIMEZONE );
-                    $reosr                                      = $factory->parse( $rows,
-                                                                                   $cleanHeadersBySheetName,
-                                                                                   CMBSRestrictedServicerReport::reosr );
-
-                elseif ( $this->_foundSheetName( self::HLMFCLR, $sheetName ) ):
-                    $this->tabsThatHaveBeenFound[ self::HLMFCLR ] = TRUE;
-                    $factory                                      = new HLMFCLRFactory( self::DEFAULT_TIMEZONE );
-                    $hlmfclr                                      = $factory->parse( $rows,
-                                                                                     $cleanHeadersBySheetName,
-                                                                                     CMBSRestrictedServicerReport::hlmfclr );
-
-                elseif ( $this->_foundSheetName( self::CFSR, $sheetName ) ):
-                    $this->tabsThatHaveBeenFound[ self::CFSR ] = TRUE;
-                    $factory                                   = new CFSRFactory( self::DEFAULT_TIMEZONE );
-                    $csfr                                      = $factory->parse( $rows,
-                                                                                  $cleanHeadersBySheetName,
-                                                                                  CMBSRestrictedServicerReport::csfr );
-
-                elseif ( $this->_foundSheetName( self::LLRES, $sheetName ) ):
-                    $this->tabsThatHaveBeenFound[ self::LLRES ] = TRUE;
-                    $factory                                    = new LLResLOCFactory( self::DEFAULT_TIMEZONE );
-                    $llResLOC                                   = $factory->parse( $rows,
-                                                                                   $cleanHeadersBySheetName,
-                                                                                   CMBSRestrictedServicerReport::llResLOC );
-
-                elseif ( $this->_foundSheetName( self::TOTALLOAN, $sheetName ) ):
-                    $this->tabsThatHaveBeenFound[ self::TOTALLOAN ] = TRUE;
-                    $factory                                        = new TotalLoanFactory( self::DEFAULT_TIMEZONE );
-                    $totalLoan                                      = $factory->parse( $rows,
-                                                                                       $cleanHeadersBySheetName,
-                                                                                       CMBSRestrictedServicerReport::totalLoan );
-
-                elseif ( $this->_foundSheetName( self::RECOVERY, $sheetName ) ):
-                    $this->tabsThatHaveBeenFound[ self::RECOVERY ] = TRUE;
-                    $factory                                       = new AdvanceRecoveryFactory( self::DEFAULT_TIMEZONE );
-                    $advanceRecovery                               = $factory->parse( $rows,
-                                                                                      $cleanHeadersBySheetName,
-                                                                                      CMBSRestrictedServicerReport::advanceRecovery );
                 endif;
             } catch ( \Carbon\Exceptions\InvalidFormatException $exception ) {
                 $newException = new ProbablyExcelDateException( $exception->getMessage(),
@@ -234,7 +125,7 @@ class CMBSRestrictedServicerReportFactory {
                                                       0,
                                                       NULL,
                                                       $this->tabsThatHaveBeenFound,
-                                                      $pathToRestrictedServicerReportXlsx,
+                                                      $pathToMonthlyAdministratorReportXlsx,
                                                       $sheetNames );
         endif;
 
@@ -247,7 +138,7 @@ class CMBSRestrictedServicerReportFactory {
                                          $llResLOC,
                                          $totalLoan,
                                          $advanceRecovery,
-                                         ] );
+                                       ] );
 
 
         $watchlist       = $this->_fillDateIfMissing( $watchlist, $theDate );
@@ -260,7 +151,7 @@ class CMBSRestrictedServicerReportFactory {
         $advanceRecovery = $this->_fillDateIfMissing( $advanceRecovery, $theDate );
 
 
-        return new CMBSRestrictedServicerReport( $watchlist,
+        return new CMBSMonthlyAdministratorReport( $watchlist,
                                                    $dlsr,
                                                    $reosr,
                                                    $hlmfclr,
@@ -271,6 +162,22 @@ class CMBSRestrictedServicerReportFactory {
                                                    $cleanHeadersBySheetName,
                                                    $alerts,
                                                    $exceptions );
+    }
+
+
+    protected function _combineTheHeaderRows( array $topHeader, array $bottomHeader ): array {
+        $combinedHeaders = [];
+        foreach ( $topHeader as $i => $header ):
+            $combinedHeaders[ $i ] = trim( $header ) . ' ' . ( $bottomHeader[ $i ] );
+        endforeach;
+        return $combinedHeaders;
+    }
+
+    protected function _cleanTheHeaders( array $headers ): array {
+        foreach ( $headers as $i => $header ):
+            $headers[ $i ] = $this->cleanHeaderValue( $header );
+        endforeach;
+        return $headers;
     }
 
 
