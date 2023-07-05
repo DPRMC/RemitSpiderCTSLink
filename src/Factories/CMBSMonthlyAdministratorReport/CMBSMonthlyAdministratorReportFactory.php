@@ -20,6 +20,8 @@ class CMBSMonthlyAdministratorReportFactory {
 
     const LPU = 'LPU';
 
+    public array $exceptions = [];
+    public array $alerts     = [];
 
     /**
      * @param string|NULL $timezone
@@ -134,48 +136,48 @@ class CMBSMonthlyAdministratorReportFactory {
      * @return string
      * @throws NoDatesInTabsException
      */
-    protected function _getTheDate( array $tabs ): string {
-        $dates = [];
-        foreach ( $tabs as $tab ):
-            foreach ( $tab as $i => $row ):
-                if ( isset( $row[ 'date' ] ) ):
-                    $dates[] = $row[ 'date' ];
-                endif;
-            endforeach;
-        endforeach;
-
-        $uniqueDates = array_unique( $dates );
-
-        if ( count( $uniqueDates ) > 1 ):
-            $dateCount = [];
-            foreach ( $dates as $date ):
-                if ( ! isset( $dateCount[ $date ] ) ):
-                    $dateCount[ $date ] = 0;
-                endif;
-                $dateCount[ $date ]++;
-            endforeach;
-
-            arsort( $dateCount );
-
-            return array_key_first( $dateCount );
-
-            // Eh...
-            // Examples have shown that IF there is more than one date... The other(s) are one-offs that can be ignored.
-            // Just go with the date that appears the most times.
-            //throw new \Exception( "There is more than one date among the tabs. " . implode( '|', $uniqueDates ) );
-        endif;
-
-        if ( count( $uniqueDates ) < 1 ):
-            throw new NoDatesInTabsException( "There are NO dates in any of the tabs. Which is suuuuuper weird.",
-                                              0,
-                                              NULL,
-                                              $tabs );
-        endif;
-
-        $date = reset( $uniqueDates ); // THE date
-
-        return $date;
-    }
+//    protected function _getTheDate( array $tabs ): string {
+//        $dates = [];
+//        foreach ( $tabs as $tab ):
+//            foreach ( $tab as $i => $row ):
+//                if ( isset( $row[ 'date' ] ) ):
+//                    $dates[] = $row[ 'date' ];
+//                endif;
+//            endforeach;
+//        endforeach;
+//
+//        $uniqueDates = array_unique( $dates );
+//
+//        if ( count( $uniqueDates ) > 1 ):
+//            $dateCount = [];
+//            foreach ( $dates as $date ):
+//                if ( ! isset( $dateCount[ $date ] ) ):
+//                    $dateCount[ $date ] = 0;
+//                endif;
+//                $dateCount[ $date ]++;
+//            endforeach;
+//
+//            arsort( $dateCount );
+//
+//            return array_key_first( $dateCount );
+//
+//            // Eh...
+//            // Examples have shown that IF there is more than one date... The other(s) are one-offs that can be ignored.
+//            // Just go with the date that appears the most times.
+//            //throw new \Exception( "There is more than one date among the tabs. " . implode( '|', $uniqueDates ) );
+//        endif;
+//
+//        if ( count( $uniqueDates ) < 1 ):
+//            throw new NoDatesInTabsException( "There are NO dates in any of the tabs. Which is suuuuuper weird.",
+//                                              0,
+//                                              NULL,
+//                                              $tabs );
+//        endif;
+//
+//        $date = reset( $uniqueDates ); // THE date
+//
+//        return $date;
+//    }
 
 
     /**
@@ -183,29 +185,29 @@ class CMBSMonthlyAdministratorReportFactory {
      * @param string $date
      * @return array
      */
-    protected function _fillDateIfMissing( array $rows, string $date ): array {
-        foreach ( $rows as $i => $row ):
-
-            if ( array_key_exists( 'date', $row ) && empty( $row[ 'date' ] ) ):
-                $rows[ $i ][ 'date' ] = $date;
-            endif;
-        endforeach;
-        return $rows;
-    }
+//    protected function _fillDateIfMissing( array $rows, string $date ): array {
+//        foreach ( $rows as $i => $row ):
+//
+//            if ( array_key_exists( 'date', $row ) && empty( $row[ 'date' ] ) ):
+//                $rows[ $i ][ 'date' ] = $date;
+//            endif;
+//        endforeach;
+//        return $rows;
+//    }
 
 
     /**
      * A little encapsulated logic to make the above method cleaner.
      * @return bool
      */
-    protected function _atLeastOneTabNotFound(): bool {
-        foreach ( $this->tabsThatHaveBeenFound as $tabName => $found ):
-            if ( FALSE === $found ):
-                return TRUE;
-            endif;
-        endforeach;
-        return FALSE;
-    }
+//    protected function _atLeastOneTabNotFound(): bool {
+//        foreach ( $this->tabsThatHaveBeenFound as $tabName => $found ):
+//            if ( FALSE === $found ):
+//                return TRUE;
+//            endif;
+//        endforeach;
+//        return FALSE;
+//    }
 
 
     /**
@@ -213,12 +215,12 @@ class CMBSMonthlyAdministratorReportFactory {
      * @param string $sheetName
      * @return bool
      */
-    protected function _foundSheetName( string $index, string $sheetName ): bool {
-        foreach ( $this->tabs[ $index ] as $tabName ):
-            if ( $sheetName == $tabName ):
-                return TRUE;
-            endif;
-        endforeach;
-        return FALSE;
-    }
+//    protected function _foundSheetName( string $index, string $sheetName ): bool {
+//        foreach ( $this->tabs[ $index ] as $tabName ):
+//            if ( $sheetName == $tabName ):
+//                return TRUE;
+//            endif;
+//        endforeach;
+//        return FALSE;
+//    }
 }
