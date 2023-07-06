@@ -28,16 +28,21 @@ class CustodianCtsLink extends Model {
     const revised_date    = 'revised_date';
     const key             = 'key';
 
+    const parsed_at                    = 'parsed_at';
+    const records_saved_to_database_at = 'records_saved_to_database_at';
+
     protected $casts = [
-        self::shelf           => 'string',
-        self::series          => 'string',
-        self::url             => 'string',
-        self::name            => 'string',
-        self::downloaded_at   => 'datetime',
-        self::downloaded_name => 'string',
-        self::date_of_file    => 'date',
-        self::revised_date    => 'date',
-        self::key             => 'string', // Could probably be an int, but I don't know if they zero pad lower IDs.
+        self::shelf                        => 'string',
+        self::series                       => 'string',
+        self::url                          => 'string',
+        self::name                         => 'string',
+        self::downloaded_at                => 'datetime',
+        self::downloaded_name              => 'string',
+        self::date_of_file                 => 'date',
+        self::revised_date                 => 'date',
+        self::key                          => 'string', // Could probably be an int, but I don't know if they zero pad lower IDs.
+        self::parsed_at                    => 'datetime',
+        self::records_saved_to_database_at => 'datetime',
     ];
 
     protected $guarded = [];
