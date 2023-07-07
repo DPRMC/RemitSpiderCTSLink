@@ -121,9 +121,9 @@ class CMBSMonthlyAdministratorReportFactory {
             $newRow = [];
 
             if ( isset( $ctsLink->{CustodianCtsLink::revised_date} ) ):
-                $newRow[ 'date' ] = $ctsLink->{CustodianCtsLink::revised_date};
+                $newRow[ 'date' ] = $ctsLink->{CustodianCtsLink::revised_date}->toDateString();
             else:
-                $newRow[ 'date' ] = $ctsLink->{CustodianCtsLink::date_of_file};
+                $newRow[ 'date' ] = $ctsLink->{CustodianCtsLink::date_of_file}->toDateString();
             endif;
 
 
