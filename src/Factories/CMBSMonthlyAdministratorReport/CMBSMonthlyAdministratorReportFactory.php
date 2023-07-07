@@ -3,6 +3,7 @@
 namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSMonthlyAdministratorReport;
 
 use DPRMC\Excel\Excel;
+use DPRMC\RemitSpiderCTSLink\Eloquent\CustodianCtsLink;
 use DPRMC\RemitSpiderCTSLink\Exceptions\HLMFLCRTabMissingSomeCategoriesException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\AtLeastOneTabNotFoundException;
@@ -37,11 +38,10 @@ class CMBSMonthlyAdministratorReportFactory {
 
     /**
      * @param string $pathToMonthlyAdministratorReportXlsx
+     * @param CustodianCtsLink $ctsLink
      * @return CMBSMonthlyAdministratorReport
-     * @throws AtLeastOneTabNotFoundException
-     * @throws NoDatesInTabsException
      */
-    public function make( string $pathToMonthlyAdministratorReportXlsx ): CMBSMonthlyAdministratorReport {
+    public function make( string $pathToMonthlyAdministratorReportXlsx, CustodianCtsLink $ctsLink ): CMBSMonthlyAdministratorReport {
         $sheetNames = Excel::getSheetNames( $pathToMonthlyAdministratorReportXlsx );
 
 
@@ -82,7 +82,7 @@ class CMBSMonthlyAdministratorReportFactory {
                 $headers = $this->_combineTheHeaderRows( $topHeader, $bottomHeader );
                 $headers = $this->_cleanTheHeaders( $headers );
 
-                $lpu = $this->_getLpuData( $headers, $rows );
+                $lpu = $this->_getLpuData( $headers, $rows, $ctsLink );
             } catch ( \Carbon\Exceptions\InvalidFormatException $exception ) {
                 $newException = new ProbablyExcelDateException( $exception->getMessage(),
                                                                 $exception->getCode(),
@@ -114,11 +114,18 @@ class CMBSMonthlyAdministratorReportFactory {
         return $headers;
     }
 
-    protected function _getLpuData( array $headers, array $rows ): array {
+    protected function _getLpuData( array $headers, array $rows, CustodianCtsLink $ctsLink ): array {
         $parsedData = [];
 
         foreach ( $rows as $i => $row ):
             $newRow = [];
+
+            if ( isset( $ctsLink->{CustodianCtsLink::revised_date} ) ):
+                $newRow[ 'date' ] = $ctsLink->{CustodianCtsLink::revised_date};
+            else:
+                $newRow[ 'date' ] = $ctsLink->{CustodianCtsLink::date_of_file};
+            endif;
+
 
             foreach ( $row as $j => $value ):
                 $newRow[ $headers[ $j ] ] = $value;

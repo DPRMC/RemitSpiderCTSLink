@@ -3,6 +3,7 @@
 namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 
 use DPRMC\Excel\Excel;
+use DPRMC\RemitSpiderCTSLink\Eloquent\CustodianCtsLink;
 use DPRMC\RemitSpiderCTSLink\Exceptions\HLMFLCRTabMissingSomeCategoriesException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\AtLeastOneTabNotFoundException;
@@ -103,7 +104,7 @@ class CMBSRestrictedServicerReportFactory {
 
 
 
-    public function make( string $pathToRestrictedServicerReportXlsx ): CMBSRestrictedServicerReport {
+    public function make( string $pathToRestrictedServicerReportXlsx, CustodianCtsLink $ctsLink ): CMBSRestrictedServicerReport {
         $sheetNames = Excel::getSheetNames( $pathToRestrictedServicerReportXlsx );
 
         // Intialize these arrays that will get passed to the CMBSRestrictedServicerReport __constructor.
