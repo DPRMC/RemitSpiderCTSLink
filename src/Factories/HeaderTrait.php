@@ -70,6 +70,16 @@ trait HeaderTrait {
                                   'financial',
                                   $newHeader );
 
+        $newHeader = str_replace( "_&_",
+                                  '_and_',
+                                  $newHeader );
+
+        $newHeader = str_replace( "_t&i_",
+                                  '_t_and_i_',
+                                  $newHeader );
+
+
+
 
 
 
