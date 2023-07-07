@@ -103,7 +103,14 @@ class CMBSRestrictedServicerReportFactory {
     }
 
 
-
+    /**
+     * TODO I should create an INTERFACE that this and the CMBSMonthlyAdministratorReportFactory both implement.
+     * @param string $pathToRestrictedServicerReportXlsx
+     * @param CustodianCtsLink $ctsLink Not used in this particular make method()
+     * @return CMBSRestrictedServicerReport
+     * @throws AtLeastOneTabNotFoundException
+     * @throws NoDatesInTabsException
+     */
     public function make( string $pathToRestrictedServicerReportXlsx, CustodianCtsLink $ctsLink ): CMBSRestrictedServicerReport {
         $sheetNames = Excel::getSheetNames( $pathToRestrictedServicerReportXlsx );
 
