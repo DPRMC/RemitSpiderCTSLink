@@ -70,6 +70,10 @@ trait HeaderTrait {
                                   'additional',
                                   $newHeader );
 
+        $newHeader = str_replace( "fin'l",
+                                  'financial',
+                                  $newHeader );
+
         $newHeader = str_replace( "_&_",
                                   '_and_',
                                   $newHeader );
