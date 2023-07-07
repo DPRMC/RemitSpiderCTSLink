@@ -82,6 +82,12 @@ trait HeaderTrait {
                                   '_t_and_i_',
                                   $newHeader );
 
+        $newHeader = str_replace( "non-cash_",
+                                  'non_cash_',
+                                  $newHeader );
+
+
+
 
 
 
