@@ -66,8 +66,8 @@ trait HeaderTrait {
                                   'occupancy',
                                   $newHeader );
 
-        $newHeader = str_replace( "fin'l",
-                                  'financial',
+        $newHeader = str_replace( "add'l",
+                                  'additional',
                                   $newHeader );
 
         $newHeader = str_replace( "_&_",
