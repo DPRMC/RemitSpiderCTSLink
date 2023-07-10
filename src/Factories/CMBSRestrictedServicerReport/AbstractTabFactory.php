@@ -159,6 +159,12 @@ abstract class AbstractTabFactory {
             if ( in_array( $trimmedValue, $firstColumnValidTextValues ) ):
                 $this->headerRowIndex = $i; // Used in other methods of this class.
                 $headerRow            = $row;
+
+                if ( $this->_isSecondRowAlsoHeader( $this->headerRowIndex, $allRows ) ):
+                    $headerRow = $this->_consolidateMultipleHeaderRows( $allRows[ $this->headerRowIndex ], $allRows[ $this->headerRowIndex + 1 ] );
+                    $this->headerRowIndex++;
+                endif;
+
                 break;
             endif;
         endforeach;
@@ -178,7 +184,58 @@ abstract class AbstractTabFactory {
     }
 
 
+    /**
+     * There are instances where the header is actually split among the top two rows.
+     * Combine those values into consistent headers, and increment the header row index down one.
+     * @param int $headerRowIndex
+     * @param array $allRows
+     * @return bool
+     */
+    protected function _isSecondRowAlsoHeader( int $headerRowIndex, array $allRows = [] ): bool {
+        $potentialSecondHeaderRowIndex = $headerRowIndex + 1;
+        if ( ! isset( $allRows[ $potentialSecondHeaderRowIndex ] ) ):
+            return FALSE;
+        endif;
 
+        if ( ! isset( $allRows[ $potentialSecondHeaderRowIndex ][ 0 ] ) ):
+            return FALSE;
+        endif;
+
+        $trimmedValue   = trim( $allRows[ $potentialSecondHeaderRowIndex ][ 0 ] );
+        $lowercaseValue = strtolower( $trimmedValue );
+
+        if ( 'id' == $lowercaseValue ):
+            return TRUE;
+        endif;
+
+        return FALSE;
+    }
+
+
+    /**
+     * @param array $topHeaderRow
+     * @param array $bottomHeaderRow
+     * @return array
+     */
+    protected function _consolidateMultipleHeaderRows( array $topHeaderRow = [], array $bottomHeaderRow = [] ): array {
+        $headerRow = [];
+        foreach ( $topHeaderRow as $i => $topName ):
+            $topName = trim( $topName );
+            if ( isset( $bottomHeaderRow[ $i ] ) ):
+                $bottomName = trim( $bottomHeaderRow[ $i ] );
+            else:
+                $bottomName = NULL;
+            endif;
+
+            if ( $bottomName ):
+                $headerRow[] = $topName . ' ' . $bottomName;
+            else:
+                $headerRow[] = $topName;
+            endif;
+        endforeach;
+
+        return $headerRow;
+    }
 
 
     /**

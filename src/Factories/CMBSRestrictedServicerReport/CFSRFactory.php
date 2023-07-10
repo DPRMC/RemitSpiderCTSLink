@@ -4,7 +4,7 @@ namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 
 class CFSRFactory extends AbstractTabFactory {
 
-    protected array $firstColumnValidTextValues = [ 'Trans ID' ];
+    protected array $firstColumnValidTextValues = [ 'Trans ID', 'Trans' ];
 
 
     protected array $replacementHeaders = [

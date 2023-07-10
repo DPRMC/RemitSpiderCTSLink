@@ -6,7 +6,7 @@ use DPRMC\RemitSpiderCTSLink\Exceptions\HLMFLCRTabMissingSomeCategoriesException
 
 class HLMFCLRFactory extends AbstractTabFactory {
 
-    protected array $firstColumnValidTextValues = [ 'Trans ID' ];
+    protected array $firstColumnValidTextValues = [ 'Trans ID', 'Trans' ];
 
     const LOAN_MOD_FORBEAR     = 'loan_modifications_forbearance';   // Loan Modifications/Forbearance
     const CORRECTED_MORT_LOANS = 'corrected_mortgage_loans';         // Corrected Mortgage Loans:
