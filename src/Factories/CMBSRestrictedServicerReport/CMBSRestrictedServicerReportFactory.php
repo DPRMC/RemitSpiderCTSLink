@@ -48,6 +48,7 @@ class CMBSRestrictedServicerReportFactory {
             'Servicer Watch',
             'rptSvcWatchList',
             'rptWServicerWatchlistIRP',
+            'Servicer_Watchlist'
         ], // SERVICER WATCHLIST
         self::DLSR      => [
             'DLSR',
