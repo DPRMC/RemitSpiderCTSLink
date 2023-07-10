@@ -48,7 +48,7 @@ class CMBSRestrictedServicerReportFactory {
             'Servicer Watch',
             'rptSvcWatchList',
             'rptWServicerWatchlistIRP',
-            'Servicer_Watchlist'
+            'Servicer_Watchlist',
         ], // SERVICER WATCHLIST
         self::DLSR      => [
             'DLSR',
@@ -159,7 +159,6 @@ class CMBSRestrictedServicerReportFactory {
                     $watchlist                                      = $factory->parse( $rows,
                                                                                        $cleanHeadersBySheetName,
                                                                                        CMBSRestrictedServicerReport::watchlist );
-
                 elseif ( $this->_foundSheetName( self::DLSR, $sheetName ) ):
                     $this->tabsThatHaveBeenFound[ self::DLSR ] = TRUE;
                     $factory                                   = new DLSRFactory( self::DEFAULT_TIMEZONE );
@@ -238,12 +237,12 @@ class CMBSRestrictedServicerReportFactory {
         endforeach;
 
         if ( $this->_atLeastOneTabNotFound() ):
-            throw new AtLeastOneTabNotFoundException( "Need to update the tabs array in CMBSRestrictedServicerReportFactory. CTS has a different spelling for one of their tabs. Update every FALSE tab attached to this exception.",
-                                                      0,
-                                                      NULL,
-                                                      $this->tabsThatHaveBeenFound,
-                                                      $pathToRestrictedServicerReportXlsx,
-                                                      $sheetNames );
+            $exceptions[] = new AtLeastOneTabNotFoundException( "Need to update the tabs array in CMBSRestrictedServicerReportFactory. CTS has a different spelling for one of their tabs. Update every FALSE tab attached to this exception.",
+                                                                0,
+                                                                NULL,
+                                                                $this->tabsThatHaveBeenFound,
+                                                                $pathToRestrictedServicerReportXlsx,
+                                                                $sheetNames );
         endif;
 
 
@@ -256,7 +255,9 @@ class CMBSRestrictedServicerReportFactory {
                                          $totalLoan,
                                          $advanceRecovery,
                                        ] );
-
+// BAD
+//        dump( $watchlist );
+//        dd('this was the watchlist BEFORE into the constructor of the report.');
 
         $watchlist       = $this->_fillDateIfMissing( $watchlist, $theDate );
         $dlsr            = $this->_fillDateIfMissing( $dlsr, $theDate );
@@ -267,6 +268,9 @@ class CMBSRestrictedServicerReportFactory {
         $totalLoan       = $this->_fillDateIfMissing( $totalLoan, $theDate );
         $advanceRecovery = $this->_fillDateIfMissing( $advanceRecovery, $theDate );
 
+// BAD
+//        dump( $watchlist );
+//        dd('this was the watchlist passed into the constructor of the report.');
 
         return new CMBSRestrictedServicerReport( $watchlist,
                                                  $dlsr,
@@ -374,5 +378,13 @@ class CMBSRestrictedServicerReportFactory {
             endif;
         endforeach;
         return FALSE;
+    }
+
+    public function hasExceptions(): bool {
+        return ! empty( $this->exceptions );
+    }
+
+    public function getExceptions(): array {
+        return $this->exceptions;
     }
 }

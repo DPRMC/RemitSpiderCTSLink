@@ -26,7 +26,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
     ];
 
 
-    protected function _setParsedRows( array $allRows ): void {
+    protected function _setParsedRows( array $allRows, string $sheetName = null ): void {
         $this->_setCategoryIndexes( $allRows );
 
 // I wrote this, but in fact some of the HLM sheets just WON'T have these indexes.

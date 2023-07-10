@@ -7,6 +7,7 @@ use DPRMC\RemitSpiderCTSLink\Exceptions\DateNotFoundInHeaderException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\HeadersTooLongForMySQLException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException;
 use DPRMC\RemitSpiderCTSLink\Factories\HeaderTrait;
+use DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport\CMBSRestrictedServicerReport;
 
 abstract class AbstractTabFactory {
 
@@ -64,7 +65,8 @@ abstract class AbstractTabFactory {
 
         $this->_setCleanHeaders( $rows, $this->firstColumnValidTextValues );
         $cleanHeadersByProperty[ $sheetName ] = $this->getCleanHeaders();
-        $this->_setParsedRows( $rows );
+
+        $this->_setParsedRows( $rows, $sheetName );
 
         return $this->cleanRows;
     }
@@ -160,6 +162,7 @@ abstract class AbstractTabFactory {
                 $this->headerRowIndex = $i; // Used in other methods of this class.
                 $headerRow            = $row;
 
+                // Some of the sheets have the header split between 2 rows, because that's fun.
                 if ( $this->_isSecondRowAlsoHeader( $this->headerRowIndex, $allRows ) ):
                     $headerRow = $this->_consolidateMultipleHeaderRows( $allRows[ $this->headerRowIndex ], $allRows[ $this->headerRowIndex + 1 ] );
                     $this->headerRowIndex++;
@@ -213,6 +216,7 @@ abstract class AbstractTabFactory {
 
 
     /**
+     * If the header is split among multiple rows, then this method will concatenate the header values into one row.
      * @param array $topHeaderRow
      * @param array $bottomHeaderRow
      * @return array
@@ -243,13 +247,13 @@ abstract class AbstractTabFactory {
      * @return void
      * @throws NoDataInTabException
      */
-    protected function _setParsedRows( array $allRows ): void {
-        $cleanRows = [];
+    protected function _setParsedRows( array $allRows, string $sheetName = NULL ): void {
+        $this->cleanRows = [];
+
         $validRows = $this->_getRowsToBeParsed( $allRows );
 
         foreach ( $validRows as $i => $validRow ):
             $newCleanRow = [];
-
 
             // Some tabs leave the date off.
             // So set a placeholder of NULL for now, and I will "borrow" the date from another tab.
@@ -259,21 +263,25 @@ abstract class AbstractTabFactory {
                 $newCleanRow[ 'date' ] = NULL;
             endif;
 
-
             foreach ( $this->cleanHeaders as $j => $header ):
                 $data                   = trim( $validRow[ $j ] ?? '' );
                 $newCleanRow[ $header ] = $data;
             endforeach;
 
-            // Cut off the total row.
-            if ( isset( $newCleanRow[ 'trans_id' ] ) && str_contains( $newCleanRow[ 'trans_id' ], 'Total' ) ):
-                continue;
-            endif;
-
-            $cleanRows[] = $newCleanRow;
+            $this->cleanRows[] = $newCleanRow;
         endforeach;
 
-        $this->cleanRows = $cleanRows;
+        // REMOVE THE TOTAL ROW
+        foreach ( $this->cleanRows as $k => $cleanRow ):
+            if (
+                isset( $cleanRow[ 'trans_id' ] ) &&
+                str_contains( strtolower( $cleanRow[ 'trans_id' ] ), 'total' )
+            ):
+                unset( $this->cleanRows[ $k ] );
+            endif;
+        endforeach;
+
+        $this->cleanRows = array_values( $this->cleanRows ); // Reindex the array so the indexes are sequential again.
     }
 
 
