@@ -2,8 +2,6 @@
 
 namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 
-use DPRMC\RemitSpiderCTSLink\Exceptions\HLMFLCRTabMissingSomeCategoriesException;
-
 class HLMFCLRFactory extends AbstractTabFactory {
 
     protected array $firstColumnValidTextValues = [ 'Trans ID', 'Trans' ];
@@ -26,7 +24,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
     ];
 
 
-    protected function _setParsedRows( array $allRows, string $sheetName = null ): void {
+    protected function _setParsedRows( array $allRows, string $sheetName = null, array $existingRows = [] ): void {
         $this->_setCategoryIndexes( $allRows );
 
 // I wrote this, but in fact some of the HLM sheets just WON'T have these indexes.
@@ -39,7 +37,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
 
         $this->_setRowCategoryIndexes();
 
-        $this->_setCleanRows( $allRows );
+        $this->_setCleanRows( $allRows, $existingRows );
     }
 
 
@@ -175,8 +173,8 @@ class HLMFCLRFactory extends AbstractTabFactory {
         endforeach;
     }
 
-    protected function _setCleanRows( array $allRows ): void {
-        $cleanRows = [];
+    protected function _setCleanRows( array $allRows, array $existingRows = [] ): void {
+        $cleanRows = $existingRows;
 
         foreach ( $this->rowCategoryIndexes as $name => $bookends ):
             $cleanRows[ $name ] = [];

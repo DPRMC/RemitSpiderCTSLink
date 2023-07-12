@@ -46,12 +46,12 @@ abstract class AbstractTabFactory {
      * @param array $rows
      * @param array $cleanHeadersByProperty
      * @param string $sheetName
+     * @param array $existingCleanRows I found that in a given sheet there can be multiple tabs with "the same" name. I need to consolidate those.
      * @return array
-     * @throws DateNotFoundInHeaderException
      * @throws HeadersTooLongForMySQLException
      * @throws NoDataInTabException
      */
-    public function parse( array $rows, array &$cleanHeadersByProperty, string $sheetName ): array {
+    public function parse( array $rows, array &$cleanHeadersByProperty, string $sheetName, array $existingCleanRows = [] ): array {
 
         $this->sheetName = $sheetName;
         try {
@@ -62,11 +62,10 @@ abstract class AbstractTabFactory {
             // "borrow" the date from another tab in the sheet.
         }
 
-
         $this->_setCleanHeaders( $rows, $this->firstColumnValidTextValues );
         $cleanHeadersByProperty[ $sheetName ] = $this->getCleanHeaders();
 
-        $this->_setParsedRows( $rows, $sheetName );
+        $this->_setParsedRows( $rows, $sheetName, $existingCleanRows );
 
         return $this->cleanRows;
     }
@@ -247,8 +246,8 @@ abstract class AbstractTabFactory {
      * @return void
      * @throws NoDataInTabException
      */
-    protected function _setParsedRows( array $allRows, string $sheetName = NULL ): void {
-        $this->cleanRows = [];
+    protected function _setParsedRows( array $allRows, string $sheetName = NULL, array $existingRows = [] ): void {
+        $this->cleanRows = $existingRows;
 
         $validRows = $this->_getRowsToBeParsed( $allRows );
 

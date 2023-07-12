@@ -43,7 +43,7 @@ class DLSRFactory extends AbstractTabFactory {
      * @return void
      * @throws DLSRTabMissingSomeDelinquencyCategoriesException
      */
-    protected function _setParsedRows( array $allRows, string $sheetName = null ): void {
+    protected function _setParsedRows( array $allRows, string $sheetName = null, array $existingRows = [] ): void {
 
         $this->_setDelinquencyIndexes( $allRows );
 
@@ -55,7 +55,7 @@ class DLSRFactory extends AbstractTabFactory {
         endif;
 
         $this->_setRowCategoryIndexes();
-        $this->_setCleanRows( $allRows );
+        $this->_setCleanRows( $allRows, $existingRows );
     }
 
 
@@ -296,8 +296,8 @@ class DLSRFactory extends AbstractTabFactory {
         endforeach;
     }
 
-    protected function _setCleanRows( array $allRows ): void {
-        $cleanRows = [];
+    protected function _setCleanRows( array $allRows, array $existingRows = [] ): void {
+        $cleanRows = $existingRows;
 
         foreach ( $this->rowCategoryIndexes as $name => $bookends ):
             $cleanRows[ $name ] = [];
