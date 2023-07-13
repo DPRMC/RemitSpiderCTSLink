@@ -154,6 +154,13 @@ class CMBSRestrictedServicerReportFactory {
 
                 //$headers = Excel::sheetHeaderToArray($pathToRestrictedServicerReportXlsx, $sheetName );
                 if ( $this->_foundSheetName( self::WATCHLIST, $sheetName ) ):
+
+                    if( !empty($watchlist)){
+                        dump("---------------------------- in the second iteration of WATCHLIST");
+
+                    }else {
+                        dump("++++++++++++++++++++++++++++++++++++ in the FIRST iteration of WATCHLIST");
+                    }
                     dump( self::WATCHLIST . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::WATCHLIST ] = TRUE;
                     $factory                                        = new WatchlistFactory( self::DEFAULT_TIMEZONE );
@@ -162,8 +169,9 @@ class CMBSRestrictedServicerReportFactory {
                                                                                        CMBSRestrictedServicerReport::watchlist,
                                                                                        $watchlist );
                     unset( $factory );
+                    dump('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ending iteration of WATClihst.');
                 elseif ( $this->_foundSheetName( self::DLSR, $sheetName ) ):
-                    dump( self::DLSR . " " . $sheetName );
+                    //dump( self::DLSR . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::DLSR ] = TRUE;
                     $factory                                   = new DLSRFactory( self::DEFAULT_TIMEZONE );
                     $dlsr                                      = $factory->parse( $rows,
@@ -172,7 +180,7 @@ class CMBSRestrictedServicerReportFactory {
                                                                                   $dlsr );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::REOSR, $sheetName ) ):
-                    dump( self::REOSR . " " . $sheetName );
+                    //dump( self::REOSR . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::REOSR ] = TRUE;
                     $factory                                    = new REOSRFactory( self::DEFAULT_TIMEZONE );
                     $reosr                                      = $factory->parse( $rows,
@@ -181,7 +189,7 @@ class CMBSRestrictedServicerReportFactory {
                                                                                    $reosr );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::HLMFCLR, $sheetName ) ):
-                    dump( self::HLMFCLR . " " . $sheetName );
+                    //dump( self::HLMFCLR . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::HLMFCLR ] = TRUE;
                     $factory                                      = new HLMFCLRFactory( self::DEFAULT_TIMEZONE );
                     $hlmfclr                                      = $factory->parse( $rows,
@@ -190,7 +198,7 @@ class CMBSRestrictedServicerReportFactory {
                                                                                      $hlmfclr );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::CFSR, $sheetName ) ):
-                    dump( self::CFSR . " " . $sheetName );
+                    //dump( self::CFSR . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::CFSR ] = TRUE;
                     $factory                                   = new CFSRFactory( self::DEFAULT_TIMEZONE );
                     $csfr                                      = $factory->parse( $rows,
@@ -199,7 +207,7 @@ class CMBSRestrictedServicerReportFactory {
                                                                                   $csfr );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::LLRES, $sheetName ) ):
-                    dump( self::LLRES . " " . $sheetName );
+                    //dump( self::LLRES . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::LLRES ] = TRUE;
                     $factory                                    = new LLResLOCFactory( self::DEFAULT_TIMEZONE );
                     $llResLOC                                   = $factory->parse( $rows,
@@ -217,7 +225,7 @@ class CMBSRestrictedServicerReportFactory {
                                                                                        $totalLoan );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::RECOVERY, $sheetName ) ):
-                    dump( self::RECOVERY . " " . $sheetName );
+                    //dump( self::RECOVERY . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::RECOVERY ] = TRUE;
                     $factory                                       = new AdvanceRecoveryFactory( self::DEFAULT_TIMEZONE );
                     $advanceRecovery                               = $factory->parse( $rows,
@@ -226,7 +234,7 @@ class CMBSRestrictedServicerReportFactory {
                                                                                       $advanceRecovery );
                     unset( $factory );
                 else:
-                    dump( "doing nothing with " . $sheetName );
+                    //dump( "doing nothing with " . $sheetName );
                 endif;
             } catch ( \Carbon\Exceptions\InvalidFormatException $exception ) {
                 $newException = new ProbablyExcelDateException( $exception->getMessage(),
@@ -265,8 +273,8 @@ class CMBSRestrictedServicerReportFactory {
                                                                 $sheetNames );
         endif;
 
-
         dump( $watchlist );
+        dd('dis was the watchlist.');
 
         $theDate = $this->_getTheDate( [ $watchlist,
                                          $dlsr,

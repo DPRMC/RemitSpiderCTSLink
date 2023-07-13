@@ -26,7 +26,7 @@ class CFSRFactory extends AbstractTabFactory {
      * @param array $firstColumnValidTextValues
      * @return void
      */
-    protected function _setCleanHeaders( array $allRows, array $firstColumnValidTextValues = [] ): void {
+    protected function _setCleanHeaders( array $allRows, array $firstColumnValidTextValues = [], string $debugSheetname=null ): void {
         $headerRow = [];
         foreach ( $allRows as $i => $row ):
             if ( empty( $row[ 0 ] ) ):

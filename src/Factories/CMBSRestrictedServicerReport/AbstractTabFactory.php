@@ -53,6 +53,15 @@ abstract class AbstractTabFactory {
      */
     public function parse( array $rows, array &$cleanHeadersByProperty, string $sheetName, array $existingCleanRows = [] ): array {
 
+        if($sheetName == 'watchlist'){
+//            dump($rows);
+//            dump('these were the raw rows.');
+
+            if(!empty($existingCleanRows)){
+                dump("parse DOING THE SECOND TAGB NOWWWWWW");
+            }
+        }
+
         $this->sheetName = $sheetName;
         try {
             $this->_setDate( $rows );
@@ -62,8 +71,13 @@ abstract class AbstractTabFactory {
             // "borrow" the date from another tab in the sheet.
         }
 
-        $this->_setCleanHeaders( $rows, $this->firstColumnValidTextValues );
+        $this->_setCleanHeaders( $rows, $this->firstColumnValidTextValues, $sheetName );
         $cleanHeadersByProperty[ $sheetName ] = $this->getCleanHeaders();
+
+        if($sheetName == 'watchlist'){
+            dump($cleanHeadersByProperty[ $sheetName ]);
+            dump('$cleanHeadersByProperty[ $sheetName ]');
+        }
 
         $this->_setParsedRows( $rows, $sheetName, $existingCleanRows );
 
@@ -144,9 +158,10 @@ abstract class AbstractTabFactory {
     /**
      * @param array $allRows
      * @param array $firstColumnValidTextValues
+     * @param string|NULL $debugSheetname
      * @return void
      */
-    protected function _setCleanHeaders( array $allRows, array $firstColumnValidTextValues = [] ): void {
+    protected function _setCleanHeaders( array $allRows, array $firstColumnValidTextValues = [], string $debugSheetname=null ): void {
         $headerRow = [];
         foreach ( $allRows as $i => $row ):
 
@@ -160,6 +175,12 @@ abstract class AbstractTabFactory {
             if ( in_array( $trimmedValue, $firstColumnValidTextValues ) ):
                 $this->headerRowIndex = $i; // Used in other methods of this class.
                 $headerRow            = $row;
+
+                if($debugSheetname == 'watchlist'){
+                    dump($headerRow);
+                    dump($trimmedValue);
+                    dump('was the header row');
+                }
 
                 // Some of the sheets have the header split between 2 rows, because that's fun.
                 if ( $this->_isSecondRowAlsoHeader( $this->headerRowIndex, $allRows ) ):
