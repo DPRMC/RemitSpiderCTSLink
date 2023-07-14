@@ -26,7 +26,7 @@ class CFSRFactory extends AbstractTabFactory {
      * @param array $firstColumnValidTextValues
      * @return void
      */
-    protected function _setCleanHeaders( array $allRows, array $firstColumnValidTextValues = [], string $debugSheetname=null ): void {
+    protected function _setLocalHeaders( array $allRows, array $firstColumnValidTextValues = [], string $debugSheetName=null ): void {
         $headerRow = [];
         foreach ( $allRows as $i => $row ):
             if ( empty( $row[ 0 ] ) ):
@@ -111,6 +111,10 @@ class CFSRFactory extends AbstractTabFactory {
         $cleanHeaders = $this->_applyReplacementHeaders( $cleanHeaders );
 
 
-        $this->cleanHeaders = $cleanHeaders;
+        $this->localHeaders = $cleanHeaders;
+    }
+
+    protected function _removeInvalidRows( array $rows = [] ): array {
+        return $rows;
     }
 }

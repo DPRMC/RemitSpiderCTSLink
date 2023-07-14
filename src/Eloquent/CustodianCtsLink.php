@@ -50,7 +50,13 @@ class CustodianCtsLink extends Model {
 
     public function __construct( array $attributes = [] ) {
         parent::__construct( $attributes );
-        $this->connection = env( 'DB_CONNECTION_CUSTODIAN_CTS' );
+
+//        TODO UNCOMMENT BELOW
+//        if ( function_exists( 'env' ) ):
+//            $this->connection = env( 'DB_CONNECTION_CUSTODIAN_CTS', NULL );
+//        endif;
+
+
     }
 
 

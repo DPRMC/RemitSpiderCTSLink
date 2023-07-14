@@ -9,6 +9,7 @@ use DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\AtLeastOneTabNotFoundException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\NoDatesInTabsException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\ProbablyExcelDateException;
+use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\TabWithSimilarNameAndDifferentHeaders;
 use DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport\CMBSRestrictedServicerReport;
 
 class CMBSRestrictedServicerReportFactory {
@@ -154,14 +155,14 @@ class CMBSRestrictedServicerReportFactory {
 
                 //$headers = Excel::sheetHeaderToArray($pathToRestrictedServicerReportXlsx, $sheetName );
                 if ( $this->_foundSheetName( self::WATCHLIST, $sheetName ) ):
-
-                    if( !empty($watchlist)){
-                        dump("---------------------------- in the second iteration of WATCHLIST");
-
-                    }else {
-                        dump("++++++++++++++++++++++++++++++++++++ in the FIRST iteration of WATCHLIST");
-                    }
                     dump( self::WATCHLIST . " " . $sheetName );
+                    if ( empty( $watchlist ) ) {
+                        dump( "++++++++++++++++++++++++++++++++++++ in the FIRST iteration of WATCHLIST" );
+                    }
+                    else {
+                        dump( "---------------------------- in the second iteration of WATCHLIST" );
+                    }
+
                     $this->tabsThatHaveBeenFound[ self::WATCHLIST ] = TRUE;
                     $factory                                        = new WatchlistFactory( self::DEFAULT_TIMEZONE );
                     $watchlist                                      = $factory->parse( $rows,
@@ -169,7 +170,7 @@ class CMBSRestrictedServicerReportFactory {
                                                                                        CMBSRestrictedServicerReport::watchlist,
                                                                                        $watchlist );
                     unset( $factory );
-                    dump('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ending iteration of WATClihst.');
+                    dump( '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ending iteration of WATClihst.' );
                 elseif ( $this->_foundSheetName( self::DLSR, $sheetName ) ):
                     //dump( self::DLSR . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::DLSR ] = TRUE;
@@ -216,7 +217,7 @@ class CMBSRestrictedServicerReportFactory {
                                                                                    $llResLOC );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::TOTALLOAN, $sheetName ) ):
-                    dump( self::TOTALLOAN . " " . $sheetName );
+                    //dump( self::TOTALLOAN . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::TOTALLOAN ] = TRUE;
                     $factory                                        = new TotalLoanFactory( self::DEFAULT_TIMEZONE );
                     $totalLoan                                      = $factory->parse( $rows,
@@ -259,7 +260,9 @@ class CMBSRestrictedServicerReportFactory {
                 // Let's make this a show-stopper, so the developer needs to edit the parser.
                 //throw $exception;
                 $alerts[] = $exception;
-            } catch ( \Exception $exception ) {
+            } catch(TabWithSimilarNameAndDifferentHeaders $exception){
+                $exceptions[] = $exception;
+            }catch ( \Exception $exception ) {
                 $exceptions[] = $exception;
             }
         endforeach;
@@ -273,8 +276,9 @@ class CMBSRestrictedServicerReportFactory {
                                                                 $sheetNames );
         endif;
 
+        dump('starrrrrrrrt watchlist----------------------------------->>>>>>>>>>>>>');
         dump( $watchlist );
-        dd('dis was the watchlist.');
+        dd( 'dis was the watchlist.' );
 
         $theDate = $this->_getTheDate( [ $watchlist,
                                          $dlsr,

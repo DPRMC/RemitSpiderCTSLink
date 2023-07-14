@@ -195,7 +195,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
                 $newCleanRow               = [];
                 $newCleanRow[ 'date' ]     = empty( $this->date ) ? NULL : $this->date->toDateString();
                 $newCleanRow[ 'category' ] = $name;
-                foreach ( $this->cleanHeaders as $j => $header ):
+                foreach ( $this->localHeaders as $j => $header ):
                     $newCleanRow[ $header ] = trim( $validRow[ $j ] ?? '' );
                 endforeach;
                 $cleanRows[ $name ][] = $newCleanRow;
@@ -203,5 +203,9 @@ class HLMFCLRFactory extends AbstractTabFactory {
         endforeach;
 
         $this->cleanRows = $cleanRows;
+    }
+
+    protected function _removeInvalidRows( array $rows = [] ): array {
+        return $rows;
     }
 }

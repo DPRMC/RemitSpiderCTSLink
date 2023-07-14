@@ -1,5 +1,6 @@
 <?php
 
+use DPRMC\RemitSpiderCTSLink\Eloquent\CustodianCtsLink;
 use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
 use PHPUnit\Framework\TestCase;
 
@@ -403,11 +404,17 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $filePath = getcwd() . '/tests/test_input/JPC_2022B32_RSRV.xls';
         //$filePath = getcwd() . '/tests/test_input/BOAMLLL_2012CKSV_RSRV.xls';
         $filePath = getcwd() . '/tests/test_input/JMACFM_2015R1_6231196_JMACFM_2015R1_MADR.xlsx';
+        $filePath = getcwd() . '/tests/test_input/WFCM_2020BNK28_6216732_WFCM_2020BNK28_RSRV.xls';
 
-        //$factory                  = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\CMBSRestrictedServicerReportFactory( self::TIMEZONE );
-        $factory                  = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSMonthlyAdministratorReport\CMBSMonthlyAdministratorReportFactory( self::TIMEZONE );
-        $mar = $factory->make( $filePath );
-        dd($mar);
+
+        $factory                  = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\CMBSRestrictedServicerReportFactory( self::TIMEZONE );
+        //$factory = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSMonthlyAdministratorReport\CMBSMonthlyAdministratorReportFactory( self::TIMEZONE );
+        //$mar     = $factory->make( $filePath );
+
+        $ctsLink = new CustodianCtsLink();
+        $mar = $factory->make($filePath, $ctsLink);
+
+        dd( $mar );
 
         dump( $restrictedServicerReport->csfr );
         dd( 'done.dasdfasd' );

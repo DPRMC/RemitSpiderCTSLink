@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use DPRMC\RemitSpiderCTSLink\Exceptions\DateNotFoundInHeaderException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\HeadersTooLongForMySQLException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException;
+use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\TabWithSimilarNameAndDifferentHeaders;
 use DPRMC\RemitSpiderCTSLink\Factories\HeaderTrait;
 use DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport\CMBSRestrictedServicerReport;
 
@@ -16,9 +17,21 @@ abstract class AbstractTabFactory {
     const DEFAULT_TIMEZONE = 'America/New_York';
     protected string $timezone;
 
-    protected int   $headerRowIndex = 0;
-    protected array $cleanHeaders   = [];
-    protected array $cleanRows      = [];
+    protected int $headerRowIndex = 0;
+
+    /**
+     * @var array These are the headers that were parsed out of the XLS that was passed in.
+     */
+    protected array $localHeaders = [];
+
+    /**
+     * @var array Index of the array are sheetnames (ex: watchlist) under those are the headers that have been found in every sheet of that type.
+     * I came to find out that certain sheets contained multiple "watchlist" sheets, for example. Those records need to be parsed
+     * and aggregated from each of the separate lists of each type.
+     */
+    protected array $globalHeadersBySheetName = [];
+
+    protected array $cleanRows = [];
 
     protected ?Carbon $date;
 
@@ -41,6 +54,8 @@ abstract class AbstractTabFactory {
         endif;
     }
 
+    abstract protected function _removeInvalidRows(array $rows=[]): array;
+
 
     /**
      * @param array $rows
@@ -53,14 +68,8 @@ abstract class AbstractTabFactory {
      */
     public function parse( array $rows, array &$cleanHeadersByProperty, string $sheetName, array $existingCleanRows = [] ): array {
 
-        if($sheetName == 'watchlist'){
-//            dump($rows);
-//            dump('these were the raw rows.');
-
-            if(!empty($existingCleanRows)){
-                dump("parse DOING THE SECOND TAGB NOWWWWWW");
-            }
-        }
+        // Empty first time through, if there is only one tab.
+        $this->globalHeadersBySheetName = $cleanHeadersByProperty;
 
         $this->sheetName = $sheetName;
         try {
@@ -71,13 +80,11 @@ abstract class AbstractTabFactory {
             // "borrow" the date from another tab in the sheet.
         }
 
-        $this->_setCleanHeaders( $rows, $this->firstColumnValidTextValues, $sheetName );
-        $cleanHeadersByProperty[ $sheetName ] = $this->getCleanHeaders();
 
-        if($sheetName == 'watchlist'){
-            dump($cleanHeadersByProperty[ $sheetName ]);
-            dump('$cleanHeadersByProperty[ $sheetName ]');
-        }
+        $this->_setLocalHeaders( $rows, $this->firstColumnValidTextValues, $sheetName );
+
+        $cleanHeadersByProperty[ $sheetName ] = $this->_integrateLocalHeadersWithGlobalHeaders( $cleanHeadersByProperty[ $sheetName ] ?? [],
+                                                                                                $sheetName );
 
         $this->_setParsedRows( $rows, $sheetName, $existingCleanRows );
 
@@ -124,7 +131,6 @@ abstract class AbstractTabFactory {
                 $parts = array_map( 'trim', $parts );
 
                 foreach ( $parts as $part ):
-//                    var_dump( $part );
                     if ( 1 === preg_match( $pattern, $part ) ):
                         return Carbon::parse( $part, $this->timezone );
                     endif;
@@ -158,10 +164,10 @@ abstract class AbstractTabFactory {
     /**
      * @param array $allRows
      * @param array $firstColumnValidTextValues
-     * @param string|NULL $debugSheetname
+     * @param string|NULL $debugSheetName
      * @return void
      */
-    protected function _setCleanHeaders( array $allRows, array $firstColumnValidTextValues = [], string $debugSheetname=null ): void {
+    protected function _setLocalHeaders( array $allRows, array $firstColumnValidTextValues = [], string $debugSheetName = NULL ): void {
         $headerRow = [];
         foreach ( $allRows as $i => $row ):
 
@@ -176,13 +182,7 @@ abstract class AbstractTabFactory {
                 $this->headerRowIndex = $i; // Used in other methods of this class.
                 $headerRow            = $row;
 
-                if($debugSheetname == 'watchlist'){
-                    dump($headerRow);
-                    dump($trimmedValue);
-                    dump('was the header row');
-                }
-
-                // Some of the sheets have the header split between 2 rows, because that's fun.
+                // Some sheets have the header split between 2 rows, because that's fun.
                 if ( $this->_isSecondRowAlsoHeader( $this->headerRowIndex, $allRows ) ):
                     $headerRow = $this->_consolidateMultipleHeaderRows( $allRows[ $this->headerRowIndex ], $allRows[ $this->headerRowIndex + 1 ] );
                     $this->headerRowIndex++;
@@ -203,7 +203,7 @@ abstract class AbstractTabFactory {
 
             $cleanHeaders[ $i ] = $this->cleanHeaderValue( $header );
         endforeach;
-        $this->cleanHeaders = $cleanHeaders;
+        $this->localHeaders = $cleanHeaders;
     }
 
 
@@ -264,6 +264,8 @@ abstract class AbstractTabFactory {
 
     /**
      * @param array $allRows
+     * @param string|NULL $sheetName
+     * @param array $existingRows
      * @return void
      * @throws NoDataInTabException
      */
@@ -272,7 +274,12 @@ abstract class AbstractTabFactory {
 
         $validRows = $this->_getRowsToBeParsed( $allRows );
 
+        $validRows = $this->_removeInvalidRows($validRows);
+
         foreach ( $validRows as $i => $validRow ):
+
+
+
             $newCleanRow = [];
 
             // Some tabs leave the date off.
@@ -283,7 +290,7 @@ abstract class AbstractTabFactory {
                 $newCleanRow[ 'date' ] = NULL;
             endif;
 
-            foreach ( $this->cleanHeaders as $j => $header ):
+            foreach ( $this->localHeaders as $j => $header ):
                 $data                   = trim( $validRow[ $j ] ?? '' );
                 $newCleanRow[ $header ] = $data;
             endforeach;
@@ -322,6 +329,8 @@ abstract class AbstractTabFactory {
                 $firstBlankRowIndex = $i;
                 break;
             endif;
+
+
         endfor;
 
         $numRows = $firstBlankRowIndex - $firstRowOfDataIndex;
@@ -331,6 +340,9 @@ abstract class AbstractTabFactory {
 
 
     /**
+     * I had thought about disqualifying rows in the if/elseif clause below, but that
+     * logic should get pushed into each of the child tab factories, since the code
+     * appears to be bespoke for each. Super duper.
      * @param array $allRows
      * @return int
      * @throws NoDataInTabException
@@ -344,7 +356,7 @@ abstract class AbstractTabFactory {
         for ( $i = $possibleFirstRowOfData; $i <= $lastIndexToCheck; $i++ ):
             $data = trim( $allRows[ $i ][ 0 ] ?? '' );
 
-            if ( $data ):
+           if ( $data ):
                 return $firstRowOfDataIndex;
             else:
                 $firstRowOfDataIndex++;
@@ -355,7 +367,7 @@ abstract class AbstractTabFactory {
                                         0,
                                         NULL,
                                         array_slice( $allRows, $this->headerRowIndex, $maxBlankRowsBeforeData ),
-                                        $this->getCleanHeaders(),
+                                        $this->_getLocalHeaders(),
                                         $this->sheetName );
     }
 
@@ -364,13 +376,13 @@ abstract class AbstractTabFactory {
      * @return array
      * @throws HeadersTooLongForMySQLException
      */
-    public function getCleanHeaders(): array {
+    public function _getLocalHeaders(): array {
 
-        // Some of the headers from the XLS are too long to create MySQL headers from.
+        // Some headers from the XLS are too long to create MySQL headers from.
         // When this happens, I need to add a new str_replace translator into the munge code.
         $tooLongHeadersForMySQL = [];
 
-        foreach ( $this->cleanHeaders as $i => $cleanHeader ):
+        foreach ( $this->localHeaders as $i => $cleanHeader ):
             if ( strlen( $cleanHeader ) > 64 ):
                 $tooLongHeadersForMySQL[ $i ] = $cleanHeader;
             endif;
@@ -384,7 +396,54 @@ abstract class AbstractTabFactory {
         endif;
 
 
-        return $this->cleanHeaders;
+        return $this->localHeaders;
+    }
+
+
+    /**
+     * @param array $globalHeaders
+     * @param string|NULL $debugSheetName
+     * @return array
+     * @throws HeadersTooLongForMySQLException
+     * @throws TabWithSimilarNameAndDifferentHeaders
+     */
+    public function _integrateLocalHeadersWithGlobalHeaders( array $globalHeaders, string $debugSheetName = NULL ): array {
+        // Some headers from the XLS are too long to create MySQL headers from.
+        // When this happens, I need to add a new str_replace translator into the munge code.
+        $tooLongHeadersForMySQL = [];
+
+
+        foreach ( $this->localHeaders as $i => $cleanHeader ):
+            if ( strlen( $cleanHeader ) > 64 ):
+                $tooLongHeadersForMySQL[ $i ] = $cleanHeader;
+            endif;
+        endforeach;
+
+        if ( ! empty( $tooLongHeadersForMySQL ) ):
+            $exception = new HeadersTooLongForMySQLException( "At least one header from XLSX was too long to create an MySQL column name.",
+                                                              0,
+                                                              NULL,
+                                                              $tooLongHeadersForMySQL );
+            // Placeholder to dump the Exception message for debugging.
+            throw $exception;
+        endif;
+
+        if ( empty( $globalHeaders ) ):
+            return $this->localHeaders;
+        endif;
+
+
+        // Else we are on TAB 2 (or n) and already have some global headers set.
+        foreach ( $this->localHeaders as $localHeader ):
+            if ( in_array( $localHeader, $globalHeaders ) ):
+                continue;
+            else:
+                // Do I add to the list of headers?
+                throw new TabWithSimilarNameAndDifferentHeaders( "This is the case I wanted to punt on " . $localHeader, 0, NULL, $localHeader, $globalHeaders );
+            endif;
+        endforeach;
+
+        return $this->localHeaders;
     }
 
 
