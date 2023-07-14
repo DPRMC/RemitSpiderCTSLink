@@ -412,7 +412,8 @@ class RemitSpiderCTSLinkTest extends TestCase {
         //$mar     = $factory->make( $filePath );
 
         $ctsLink = new CustodianCtsLink();
-        $mar = $factory->make($filePath, $ctsLink);
+        $dateOfFile= \Carbon\Carbon::today('America/New_York');
+        $mar = $factory->make($filePath, $ctsLink, $dateOfFile);
 
         dd( $mar );
 

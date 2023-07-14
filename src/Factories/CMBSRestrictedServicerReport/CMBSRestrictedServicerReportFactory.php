@@ -2,6 +2,7 @@
 
 namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 
+use Carbon\Carbon;
 use DPRMC\Excel\Excel;
 use DPRMC\RemitSpiderCTSLink\Eloquent\CustodianCtsLink;
 use DPRMC\RemitSpiderCTSLink\Exceptions\HLMFLCRTabMissingSomeCategoriesException;
@@ -93,6 +94,9 @@ class CMBSRestrictedServicerReportFactory {
         ], // ADVANCE RECOVERY REPORT
     ];
 
+    protected CustodianCtsLink $custodianCtsLink;
+    protected Carbon           $dateOfFile;
+
     /**
      * @param string|NULL $timezone
      */
@@ -108,13 +112,15 @@ class CMBSRestrictedServicerReportFactory {
     /**
      * TODO I should create an INTERFACE that this and the CMBSMonthlyAdministratorReportFactory both implement.
      * @param string $pathToRestrictedServicerReportXlsx
-     * @param CustodianCtsLink $ctsLink Not used in this particular make method()
+     * @param CustodianCtsLink|NULL $ctsLink Not used in this particular make method()
+     * @param Carbon|NULL $dateOfFile
      * @return CMBSRestrictedServicerReport
-     * @throws AtLeastOneTabNotFoundException
      * @throws NoDatesInTabsException
      */
-    public function make( string $pathToRestrictedServicerReportXlsx, CustodianCtsLink $ctsLink ): CMBSRestrictedServicerReport {
-        $sheetNames = Excel::getSheetNames( $pathToRestrictedServicerReportXlsx );
+    public function make( string $pathToRestrictedServicerReportXlsx, CustodianCtsLink $ctsLink = NULL, Carbon $dateOfFile = NULL ): CMBSRestrictedServicerReport {
+        $this->custodianCtsLink = $ctsLink;
+        $this->dateOfFile       = $dateOfFile;
+        $sheetNames             = Excel::getSheetNames( $pathToRestrictedServicerReportXlsx );
 
         // Intialize these arrays that will get passed to the CMBSRestrictedServicerReport __constructor.
         $watchlist       = [];
@@ -252,9 +258,9 @@ class CMBSRestrictedServicerReportFactory {
                 // Let's make this a show-stopper, so the developer needs to edit the parser.
                 //throw $exception;
                 $alerts[] = $exception;
-            } catch(TabWithSimilarNameAndDifferentHeaders $exception){
+            } catch ( TabWithSimilarNameAndDifferentHeaders $exception ) {
                 $exceptions[] = $exception;
-            }catch ( \Exception $exception ) {
+            } catch ( \Exception $exception ) {
                 $exceptions[] = $exception;
             }
         endforeach;
@@ -310,6 +316,11 @@ class CMBSRestrictedServicerReportFactory {
      * @throws NoDatesInTabsException
      */
     protected function _getTheDate( array $tabs ): string {
+
+        if ( ! is_null( $this->dateOfFile ) ):
+            return $this->dateOfFile->toDateString();
+        endif;
+
         $dates = [];
         foreach ( $tabs as $tab ):
             foreach ( $tab as $i => $row ):
