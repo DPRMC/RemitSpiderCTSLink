@@ -155,13 +155,6 @@ class CMBSRestrictedServicerReportFactory {
 
                 //$headers = Excel::sheetHeaderToArray($pathToRestrictedServicerReportXlsx, $sheetName );
                 if ( $this->_foundSheetName( self::WATCHLIST, $sheetName ) ):
-                    dump( self::WATCHLIST . " " . $sheetName );
-                    if ( empty( $watchlist ) ) {
-                        dump( "++++++++++++++++++++++++++++++++++++ in the FIRST iteration of WATCHLIST" );
-                    }
-                    else {
-                        dump( "---------------------------- in the second iteration of WATCHLIST" );
-                    }
 
                     $this->tabsThatHaveBeenFound[ self::WATCHLIST ] = TRUE;
                     $factory                                        = new WatchlistFactory( self::DEFAULT_TIMEZONE );
@@ -170,7 +163,6 @@ class CMBSRestrictedServicerReportFactory {
                                                                                        CMBSRestrictedServicerReport::watchlist,
                                                                                        $watchlist );
                     unset( $factory );
-                    dump( '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ending iteration of WATClihst.' );
                 elseif ( $this->_foundSheetName( self::DLSR, $sheetName ) ):
                     //dump( self::DLSR . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::DLSR ] = TRUE;
@@ -276,10 +268,6 @@ class CMBSRestrictedServicerReportFactory {
                                                                 $sheetNames );
         endif;
 
-        dump('starrrrrrrrt watchlist----------------------------------->>>>>>>>>>>>>');
-        dump( $watchlist );
-        dd( 'dis was the watchlist.' );
-
         $theDate = $this->_getTheDate( [ $watchlist,
                                          $dlsr,
                                          $reosr,
@@ -290,13 +278,6 @@ class CMBSRestrictedServicerReportFactory {
                                          $advanceRecovery,
                                        ] );
 
-        dump( $watchlist );
-        dump( $theDate );
-
-        dd( 'this was the watch list and datea fter get date' );
-// BAD
-//        dump( $watchlist );
-//        dd('this was the watchlist BEFORE into the constructor of the report.');
 
         $watchlist       = $this->_fillDateIfMissing( $watchlist, $theDate );
         $dlsr            = $this->_fillDateIfMissing( $dlsr, $theDate );
@@ -307,9 +288,6 @@ class CMBSRestrictedServicerReportFactory {
         $totalLoan       = $this->_fillDateIfMissing( $totalLoan, $theDate );
         $advanceRecovery = $this->_fillDateIfMissing( $advanceRecovery, $theDate );
 
-// BAD
-//        dump( $watchlist );
-//        dd('this was the watchlist passed into the constructor of the report.');
 
         return new CMBSRestrictedServicerReport( $watchlist,
                                                  $dlsr,

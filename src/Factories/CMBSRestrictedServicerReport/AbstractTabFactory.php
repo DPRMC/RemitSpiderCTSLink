@@ -295,6 +295,13 @@ abstract class AbstractTabFactory {
                 $newCleanRow[ $header ] = $data;
             endforeach;
 
+            // KLUDGE
+            // I have empty rows coming in, and I dont want to bother finding out why.
+            // Only the date is showing up since I added it above.
+            if(sizeof($newCleanRow) == 1):
+                continue;
+            endif;
+
             $this->cleanRows[] = $newCleanRow;
         endforeach;
 
@@ -329,8 +336,6 @@ abstract class AbstractTabFactory {
                 $firstBlankRowIndex = $i;
                 break;
             endif;
-
-
         endfor;
 
         $numRows = $firstBlankRowIndex - $firstRowOfDataIndex;
