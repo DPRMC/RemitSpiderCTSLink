@@ -31,6 +31,8 @@ class CustodianCtsLink extends Model {
     const parsed_at                    = 'parsed_at';
     const records_saved_to_database_at = 'records_saved_to_database_at';
 
+    const parse_exceptions_to_ignore = 'parse_exceptions_to_ignore';
+
     protected $casts = [
         self::shelf                        => 'string',
         self::series                       => 'string',
@@ -43,6 +45,7 @@ class CustodianCtsLink extends Model {
         self::key                          => 'string', // Could probably be an int, but I don't know if they zero pad lower IDs.
         self::parsed_at                    => 'datetime',
         self::records_saved_to_database_at => 'datetime',
+        self::parse_exceptions_to_ignore   => 'array',
     ];
 
     protected $guarded = [];
