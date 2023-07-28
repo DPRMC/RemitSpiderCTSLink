@@ -7,6 +7,8 @@ use DPRMC\RemitSpiderCTSLink\Exceptions\DateNotFoundInHeaderException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\HeadersTooLongForMySQLException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\TabWithSimilarNameAndDifferentHeaders;
+use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\FactoryToModelMaps\AbstractFactoryToModelMap;
+use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\FactoryToModelMaps\InterfaceFactoryToModelMap;
 use DPRMC\RemitSpiderCTSLink\Factories\HeaderTrait;
 use DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport\CMBSRestrictedServicerReport;
 
@@ -44,17 +46,24 @@ abstract class AbstractTabFactory {
     protected string $sheetName = '';
 
     /**
+     * @var string|null The class name of the Factory Model Map. The map is a static array.
+     */
+    protected ?string $factoryToModelMapName = NULL;
+
+    /**
      * @param string|NULL $timezone
      */
-    public function __construct( string $timezone = NULL ) {
+    public function __construct( string $timezone = NULL, string $factoryToModelMapName = NULL ) {
         if ( $timezone ):
             $this->timezone = $timezone;
         else:
             $this->timezone = self::DEFAULT_TIMEZONE;
         endif;
+
+        $this->factoryToModelMapName = $factoryToModelMapName;
     }
 
-    abstract protected function _removeInvalidRows(array $rows=[]): array;
+    abstract protected function _removeInvalidRows( array $rows = [] ): array;
 
 
     /**
@@ -274,10 +283,9 @@ abstract class AbstractTabFactory {
 
         $validRows = $this->_getRowsToBeParsed( $allRows );
 
-        $validRows = $this->_removeInvalidRows($validRows);
+        $validRows = $this->_removeInvalidRows( $validRows );
 
         foreach ( $validRows as $i => $validRow ):
-
 
 
             $newCleanRow = [];
@@ -298,7 +306,7 @@ abstract class AbstractTabFactory {
             // KLUDGE
             // I have empty rows coming in, and I dont want to bother finding out why.
             // Only the date is showing up since I added it above.
-            if(sizeof($newCleanRow) == 1):
+            if ( sizeof( $newCleanRow ) == 1 ):
                 continue;
             endif;
 
@@ -361,7 +369,7 @@ abstract class AbstractTabFactory {
         for ( $i = $possibleFirstRowOfData; $i <= $lastIndexToCheck; $i++ ):
             $data = trim( $allRows[ $i ][ 0 ] ?? '' );
 
-           if ( $data ):
+            if ( $data ):
                 return $firstRowOfDataIndex;
             else:
                 $firstRowOfDataIndex++;
@@ -443,6 +451,10 @@ abstract class AbstractTabFactory {
             if ( in_array( $localHeader, $globalHeaders ) ):
                 continue;
             else:
+
+
+                $field = AbstractFactoryToModelMap::getField( $this->factoryToModelMapName::$map, $localHeader );
+
                 // Do I add to the list of headers?
                 throw new TabWithSimilarNameAndDifferentHeaders( "This is the case I wanted to punt on " . $localHeader, 0, NULL, $localHeader, $globalHeaders );
             endif;
