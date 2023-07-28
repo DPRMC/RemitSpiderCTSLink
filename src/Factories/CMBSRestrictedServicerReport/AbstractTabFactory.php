@@ -446,17 +446,21 @@ abstract class AbstractTabFactory {
         endif;
 
 
+
         // Else we are on TAB 2 (or n) and already have some global headers set.
         foreach ( $this->localHeaders as $localHeader ):
             if ( in_array( $localHeader, $globalHeaders ) ):
                 continue;
             else:
 
-
-                $field = AbstractFactoryToModelMap::getField( $this->factoryToModelMapName::$map, $localHeader );
-
-                // Do I add to the list of headers?
-                throw new TabWithSimilarNameAndDifferentHeaders( "This is the case I wanted to punt on " . $localHeader, 0, NULL, $localHeader, $globalHeaders );
+//                // TODO determine if I actually need to match the header with the different name to what is in global headers.
+//                // I believe this is already being done in the SaveToDatabase() method.
+//                if ( $this->factoryToModelMapName ):
+//                    $field = AbstractFactoryToModelMap::getField( $this->factoryToModelMapName::$map, $localHeader );
+//                endif;
+//
+//                // Do I add to the list of headers?
+//                throw new TabWithSimilarNameAndDifferentHeaders( "This is the case I wanted to punt on " . $localHeader, 0, NULL, $localHeader, $globalHeaders );
             endif;
         endforeach;
 
