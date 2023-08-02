@@ -11,6 +11,7 @@ use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\FactoryToMod
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\FactoryToModelMaps\InterfaceFactoryToModelMap;
 use DPRMC\RemitSpiderCTSLink\Factories\HeaderTrait;
 use DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport\CMBSRestrictedServicerReport;
+use Illuminate\Support\Facades\Log;
 
 abstract class AbstractTabFactory {
 
@@ -126,9 +127,10 @@ abstract class AbstractTabFactory {
     protected function _searchForDate( array $allRows, int $numRowsToCheck = 6 ): Carbon {
 
         $this->date = NULL;
-        $pattern    = '/^\d{1,2}\/\d{1,2}\/\d{4}$/'; // Will match dates like 1/1/2023 or 12/31/2023
-        $pattern_2  = '/^\d{8}$/';                   // Matches 20230311
-        $pattern_3  = '/^4\d{4}$/';                  // Matches an Excel date. Will DEFINITELY BREAK IN THE FUTURE.
+        $pattern    = '/^\d{1,2}\/\d{1,2}\/\d{4}$/';                                             // Will match dates like 1/1/2023 or 12/31/2023
+        //$pattern_2  = '/^\d{8}$/';                                                               // Matches 20230311, but also matches 28010338, so I replaced it with the pattern below.
+        $pattern_2  = '/^(\d{4,5}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01]))$/';                    //
+        $pattern_3  = '/^4\d{4}$/';                                                              // Matches an Excel date. Will DEFINITELY BREAK IN THE FUTURE.
 
         $columnsToCheck = [ 0, 1 ]; // Now I need to check the 2nd column too.... thanks CTS!
 
@@ -444,7 +446,6 @@ abstract class AbstractTabFactory {
         if ( empty( $globalHeaders ) ):
             return $this->localHeaders;
         endif;
-
 
 
         // Else we are on TAB 2 (or n) and already have some global headers set.
