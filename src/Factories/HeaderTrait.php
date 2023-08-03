@@ -43,6 +43,7 @@ trait HeaderTrait {
         $newHeader = str_replace( ',_', '_', $newHeader );   // if_nonrecoverable_advances_reimbursed_from_principal,_realized_loss_amount
 
         $newHeader = str_replace( 'non-recoverable', 'non_recoverable', $newHeader ); // wodra_deemed_non-recoverable_date
+        $newHeader = str_replace( 'wodra_deemed_non-_recoverable_date', 'wodra_deemed_non_recoverable_date', $newHeader ); //
 
         $newHeader = str_replace( 'workout_strategy*', 'workout_strategy', $newHeader ); // workout_strategy*
 
