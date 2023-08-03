@@ -129,8 +129,8 @@ abstract class AbstractTabFactory {
         $this->date = NULL;
         $pattern    = '/^\d{1,2}\/\d{1,2}\/\d{4}$/';                                             // Will match dates like 1/1/2023 or 12/31/2023
         //$pattern_2  = '/^\d{8}$/';                                                               // Matches 20230311, but also matches 28010338, so I replaced it with the pattern below.
-        $pattern_2  = '/^(\d{4,5}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01]))$/';                    //
-        $pattern_3  = '/^4\d{4}$/';                                                              // Matches an Excel date. Will DEFINITELY BREAK IN THE FUTURE.
+        $pattern_2 = '/^(\d{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01]))$/';                       //
+        $pattern_3 = '/^4\d{4}$/';                                                               // Matches an Excel date. Will DEFINITELY BREAK IN THE FUTURE.
 
         $columnsToCheck = [ 0, 1 ]; // Now I need to check the 2nd column too.... thanks CTS!
 
