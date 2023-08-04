@@ -43,7 +43,7 @@ class DLSRFactory extends AbstractTabFactory {
      * @return void
      * @throws DLSRTabMissingSomeDelinquencyCategoriesException
      */
-    protected function _setParsedRows( array $allRows, string $sheetName = null, array $existingRows = [] ): void {
+    protected function _setParsedRows( array $allRows, string $sheetName = NULL, array $existingRows = [] ): void {
 
         $this->_setDelinquencyIndexes( $allRows );
 
@@ -120,6 +120,10 @@ class DLSRFactory extends AbstractTabFactory {
             endif;
 
         endfor;
+
+        if ( is_null( $this->delinquencyIndexes[ self::LAST_ROW ] ) ):
+            $this->delinquencyIndexes[ self::LAST_ROW ] = $numRows;
+        endif;
     }
 
 
