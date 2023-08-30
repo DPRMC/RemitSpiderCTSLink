@@ -22,7 +22,7 @@ class Login {
     const URL_LOGOUT = 'https://wca.www.ctslink.com/wcaapi/login/auth/logout?appId=appcts&brandId=CTSLink&isWidget=true&sId=';
 
     const LOGIN_BUTTON_X = 50;
-    const LOGIN_BUTTON_Y = 350;
+    const LOGIN_BUTTON_Y = 370;
 
     const LOGOUT_BUTTON_X = 570;
     const LOGOUT_BUTTON_Y = 25;
