@@ -7,6 +7,7 @@ use DPRMC\CUSIP;
 use DPRMC\RemitSpiderCTSLink\Exceptions\DistributionFileExceptions\NewSectionNameFoundException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\DistributionFileExceptions\UnableToFindIndexOfLabelException;
 use DPRMC\RemitSpiderCTSLink\Models\CMBSDistributionFile;
+use DPRMC\UnfixableCusipException;
 use Smalot\PdfParser\Page;
 
 
@@ -133,7 +134,7 @@ class CMBSDistributionFileFactory {
 
     public function getCUSIPList( string $pathToDistributionFilePDF ): array {
 
-        $cusipList = [];
+        $cusipList     = [];
         $fileContents  = file_get_contents( $pathToDistributionFilePDF );
         $parser        = new \Smalot\PdfParser\Parser();
         $pdf           = $parser->parseContent( $fileContents );
@@ -141,16 +142,51 @@ class CMBSDistributionFileFactory {
         $pagesAsArrays = $this->_getPagesAsArrays( $pages );
         $numberOfPages = count( $pages );
 
-        foreach($pagesAsArrays as $i => $page):
-            foreach($page as $j => $value):
-                if(CUSIP::isCUSIP($value)):
-                    $cusipList[] = trim($value);
+        foreach ( $pagesAsArrays as $i => $page ):
+            foreach ( $page as $j => $value ):
+                if ( CUSIP::isCUSIP( $value ) ):
+                    $cusipList[] = trim( $value );
                 endif;
             endforeach;
         endforeach;
 
 
-        $uniqueCUSIPList = array_unique($cusipList);
+        $uniqueCUSIPList = array_unique( $cusipList );
+
+        return $uniqueCUSIPList;
+    }
+
+
+    /**
+     * @param string $fileContents
+     * @return array
+     * @throws \Exception
+     */
+    public function getCUSIPListFromFileContents( string $fileContents ): array {
+        $cusipList     = [];
+        $parser        = new \Smalot\PdfParser\Parser();
+        $pdf           = $parser->parseContent( $fileContents );
+        $pages         = $pdf->getPages();
+        $pagesAsArrays = $this->_getPagesAsArrays( $pages );
+        $numberOfPages = count( $pages );
+
+        foreach ( $pagesAsArrays as $i => $page ):
+            foreach ( $page as $j => $value ):
+
+                try {
+                    $value = CUSIP::fixCusip( $value );
+                } catch ( UnfixableCusipException $exception ) {
+
+                }
+
+                if ( CUSIP::isCUSIP( $value ) ):
+                    $cusipList[] = trim( $value );
+                endif;
+            endforeach;
+        endforeach;
+
+
+        $uniqueCUSIPList = array_unique( $cusipList );
 
         return $uniqueCUSIPList;
     }
@@ -996,15 +1032,15 @@ class CMBSDistributionFileFactory {
 
         $newRow[ self::security_class ]                 = $row[ 0 ];
         $newRow[ self::cusip ]                          = $row[ 1 ];
-        $newRow[ self::beginning_balance ]              = isset($row[ 2 ] ) ? $this->_formatNumber( $row[ 2 ] ) : null;
-        $newRow[ self::principal_distribution ]         = isset($row[ 3 ] ) ? $this->_formatNumber( $row[ 3 ] ) : null;
-        $newRow[ self::interest_distribution ]          = isset($row[ 4 ] ) ? $this->_formatNumber( $row[ 4 ] ) : null;
-        $newRow[ self::interest_shortfalls ]            = isset($row[ 5 ] ) ? $this->_formatNumber( $row[ 5 ] ) : null;
-        $newRow[ self::cumulative_interest_shortfalls ] = isset($row[ 6 ] ) ? $this->_formatNumber( $row[ 6 ] ) : null;
-        $newRow[ self::prepayment_penalties ]           = isset($row[ 7 ] ) ? $this->_formatNumber( $row[ 7 ] ) : null;
-        $newRow[ self::losses ]                         = isset($row[ 8 ] ) ? $this->_formatNumber( $row[ 8 ] ) : null;
-        $newRow[ self::total_distribution ]             = isset($row[ 9 ] ) ? $this->_formatNumber( $row[ 9 ] ) : null;
-        $newRow[ self::ending_balance ]                 = isset($row[ 10 ] ) ? $this->_formatNumber( $row[ 10 ] ) : null;
+        $newRow[ self::beginning_balance ]              = isset( $row[ 2 ] ) ? $this->_formatNumber( $row[ 2 ] ) : NULL;
+        $newRow[ self::principal_distribution ]         = isset( $row[ 3 ] ) ? $this->_formatNumber( $row[ 3 ] ) : NULL;
+        $newRow[ self::interest_distribution ]          = isset( $row[ 4 ] ) ? $this->_formatNumber( $row[ 4 ] ) : NULL;
+        $newRow[ self::interest_shortfalls ]            = isset( $row[ 5 ] ) ? $this->_formatNumber( $row[ 5 ] ) : NULL;
+        $newRow[ self::cumulative_interest_shortfalls ] = isset( $row[ 6 ] ) ? $this->_formatNumber( $row[ 6 ] ) : NULL;
+        $newRow[ self::prepayment_penalties ]           = isset( $row[ 7 ] ) ? $this->_formatNumber( $row[ 7 ] ) : NULL;
+        $newRow[ self::losses ]                         = isset( $row[ 8 ] ) ? $this->_formatNumber( $row[ 8 ] ) : NULL;
+        $newRow[ self::total_distribution ]             = isset( $row[ 9 ] ) ? $this->_formatNumber( $row[ 9 ] ) : NULL;
+        $newRow[ self::ending_balance ]                 = isset( $row[ 10 ] ) ? $this->_formatNumber( $row[ 10 ] ) : NULL;
 
         return $newRow;
     }
