@@ -118,6 +118,7 @@ class CMBSRestrictedServicerReportFactory {
      * @param Carbon|NULL $dateOfFile
      * @return CMBSRestrictedServicerReport
      * @throws NoDatesInTabsException
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     public function make( string $pathToRestrictedServicerReportXlsx, CustodianCtsLink $ctsLink = NULL, Carbon $dateOfFile = NULL ): CMBSRestrictedServicerReport {
         $this->custodianCtsLink = $ctsLink;
