@@ -12,9 +12,9 @@ use HeadlessChromium\Page;
  */
 class CTSLinkBrowser {
 
-    protected CookiesCollection   $cookies;
-    protected string              $chromePath;
-    protected ProcessAwareBrowser $browser;
+    protected CookiesCollection $cookies;
+    protected string            $chromePath;
+    public ProcessAwareBrowser  $browser;
 
     public Page $page;
     const NETWORK_IDLE_MS_TO_WAIT    = 4000;
@@ -45,6 +45,18 @@ class CTSLinkBrowser {
                                                          ] );
 
         $this->createPage();
+    }
+
+
+    public function __destruct(){
+        try {
+            // This is absolutely critical to avoid having zombie chrome processes.
+            $this->browser->close();
+        } catch (\Exception $exception){
+            // I believe the only Exception thrown from here is \HeadlessChromium\Exception\OperationTimedOut
+            // I am going to suppress this exception in __destruct.
+            // If I let the exception get thrown from __destruct() it will cause a fatal error.
+        }
     }
 
     /**
