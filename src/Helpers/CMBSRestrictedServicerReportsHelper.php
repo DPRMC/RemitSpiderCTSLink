@@ -75,6 +75,47 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
     }
 
 
+
+    public function getAllRemittanceReportLinksFromSeriesPage( string $shelf, string $series ): array {
+        $documentLinks         = [];
+        $additionalHistoryLink = self::HISTORY_URL . 'shelfId=' . $shelf . '&seriesId=' . $series . '&doc=' . $shelf . '_' . $series . '_RMT';
+        $this->Debug->_debug( " Navigating to: " . $additionalHistoryLink );
+        $this->Page->navigate( $additionalHistoryLink )->waitForNavigation();
+        $this->Debug->_screenshot( urlencode( $additionalHistoryLink ) );
+        $this->Debug->_html( urlencode( $additionalHistoryLink ) );
+
+        $html = $this->Page->getHtml();
+
+        if ( str_contains( strtolower( $html ), strtolower( 'Get Access' ) ) ):
+            throw new NoAccessToRestrictedServicerReportException( "We do not have access to this Series: " . $additionalHistoryLink,
+                                                                   0,
+                                                                   NULL,
+                                                                   $shelf,
+                                                                   $series );
+        endif;
+
+        $dom = new \DOMDocument();
+        @$dom->loadHTML( $html );
+
+        /**
+         * @var \DOMNodeList $links
+         */
+        $links = $dom->getElementsByTagName( 'a' );
+
+        /**
+         * @var \DOMElement $link
+         */
+        foreach ( $links as $link ):
+            $href = $link->getAttribute( 'href' );
+            if ( str_contains( $href, '/a/document.html?key=' ) ):
+                $documentLinks[] = CMBSHelper::BASE_URL . $href;
+            endif;
+        endforeach;
+
+        return $documentLinks;
+    }
+
+
     /**
      * This is almost exactly like the method above, but returns additional information like date of report.
      * I could add some error checking in here perhaps.
