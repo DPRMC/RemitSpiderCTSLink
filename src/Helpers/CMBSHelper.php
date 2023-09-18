@@ -11,6 +11,8 @@ class CMBSHelper extends AbstractHelper {
     const BASE_URL       = 'https://www.ctslink.com';
     const CMBS_MAIN_PAGE = 'https://www.ctslink.com/a/shelflist.html?shelfType=CMBS';
 
+    const ALL_SECURITIES_MAIN_PAGE  ='https://www.ctslink.com/a/shelflist.html';
+
     // EX: https://www.ctslink.com/a/history.html?shelfId=JPC&seriesId=2007CIBC20&doc=JPC_2007CIBC20_RSRV
     const HISTORY_URL     = self::BASE_URL . '/a/history.html?';
 
@@ -40,7 +42,11 @@ class CMBSHelper extends AbstractHelper {
      * @throws \HeadlessChromium\Exception\OperationTimedOut
      */
     public function getShelfLinks(): array {
-        $this->Page->navigate( self::CMBS_MAIN_PAGE )->waitForNavigation();
+        //$this->Page->navigate( self::CMBS_MAIN_PAGE )->waitForNavigation();
+
+        $this->Page->navigate( self::ALL_SECURITIES_MAIN_PAGE )->waitForNavigation();
+
+
         $cmbsHTML   = $this->Page->getHtml();
         $shelfLinks = [];
 
@@ -80,7 +86,8 @@ class CMBSHelper extends AbstractHelper {
 
         $this->Debug->_debug( "Navigating to " . $potentialShelfLink );
 
-        $this->Page->navigate( self::CMBS_MAIN_PAGE )->waitForNavigation();
+        //$this->Page->navigate( self::CMBS_MAIN_PAGE )->waitForNavigation();
+        $this->Page->navigate( self::ALL_SECURITIES_MAIN_PAGE )->waitForNavigation();
 
         $this->Page->navigate( $potentialShelfLink )->waitForNavigation();
         $html = $this->Page->getHtml();
