@@ -13,11 +13,13 @@ class WatchlistFactory extends AbstractTabFactory {
         $validRows = [];
         foreach ( $rows as $i => $row ):
 
+            $row = array_slice($row,0,count($this->localHeaders));
+
             $numNullCells           = 0;
             $nonIntegerFound        = FALSE;
             $numStartingWithLetterL = 0;
             foreach ( $row as $j => $value ):
-
+                $value = trim($value);
                 if ( empty( $value ) ):
                     $numNullCells++;
                 endif;
