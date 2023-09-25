@@ -40,4 +40,27 @@ abstract class AbstractFactoryToModelMap implements InterfaceFactoryToModelMap {
                                           $filePath );
     }
 
+
+    /**
+     * @param array $map Ex: DlsrMap::$map
+     * @param string $fieldNameVariation Ex: num_rentable_sq_ft_or_rooms
+     * @return string
+     * @throws FieldNotFoundException
+     */
+    public static function getCommonFieldName( array $map, string $fieldNameVariation ): string {
+        foreach ( $map as $field => $spellings ):
+            foreach ( $spellings as $spelling ):
+                if ( $fieldNameVariation == $spelling ):
+                    return $field;
+                endif;
+            endforeach;
+        endforeach;
+
+        throw new FieldNotFoundException( "CTS Problem Parsing: Add to MAP array. The json field did not have a mapping to a property in the eloquent model: " . $fieldNameVariation . " so search for something spelled like this field.",
+                                          0,
+                                          NULL,
+                                          $map,
+                                          $fieldNameVariation,
+                                          null );
+    }
 }

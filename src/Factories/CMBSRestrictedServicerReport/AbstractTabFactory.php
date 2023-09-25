@@ -485,4 +485,5 @@ abstract class AbstractTabFactory {
         return $cleanHeaders;
     }
 
+
 }

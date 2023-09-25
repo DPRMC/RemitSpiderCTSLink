@@ -3,6 +3,8 @@
 namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 
 use DPRMC\RemitSpiderCTSLink\Exceptions\DLSRTabMissingSomeDelinquencyCategoriesException;
+use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\FactoryToModelMaps\AbstractFactoryToModelMap;
+use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\FactoryToModelMaps\DlsrMap;
 
 class DLSRFactory extends AbstractTabFactory {
 
@@ -300,6 +302,13 @@ class DLSRFactory extends AbstractTabFactory {
         endforeach;
     }
 
+
+    /**
+     * @param array $allRows
+     * @param array $existingRows
+     * @return void
+     * @throws FactoryToModelMaps\FieldNotFoundException
+     */
     protected function _setCleanRows( array $allRows, array $existingRows = [] ): void {
         $cleanRows = $existingRows;
 
@@ -317,6 +326,10 @@ class DLSRFactory extends AbstractTabFactory {
                 $newCleanRow[ 'date' ]     = empty( $this->date ) ? NULL : $this->date->toDateString();
                 $newCleanRow[ 'category' ] = $name;
                 foreach ( $this->localHeaders as $j => $header ):
+
+                    // Let's just make sure we have consistent header/field values.
+                    $header = AbstractFactoryToModelMap::getCommonFieldName(DlsrMap::$map,$header);
+
                     $newCleanRow[ $header ] = trim( $validRow[ $j ] ?? '' );
                 endforeach;
                 $cleanRows[ $name ][] = $newCleanRow;
