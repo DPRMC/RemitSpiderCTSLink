@@ -93,6 +93,7 @@ class CMBSRestrictedServicerReportFactory {
             'Advance Recovery',
             'Recovery',
             'Advance_Recovery',
+            'Adv Recovery',
         ], // ADVANCE RECOVERY REPORT
     ];
 
