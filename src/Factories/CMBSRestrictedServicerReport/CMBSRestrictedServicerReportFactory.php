@@ -51,10 +51,12 @@ class CMBSRestrictedServicerReportFactory {
             'rptSvcWatchList',
             'rptWServicerWatchlistIRP',
             'Servicer_Watchlist',
+            'Watch List Report',
         ], // SERVICER WATCHLIST
         self::DLSR      => [
             'DLSR',
             'Del Loan Status Report',
+            'Delinquent Loan Status',
         ], // Delinquent Loan Status Report
         self::REOSR     => [
             'REOSR',
@@ -66,12 +68,14 @@ class CMBSRestrictedServicerReportFactory {
             'Comparative_Fin',
             'tCComparativeFinancialStatusIRP',
             'Comparative Fin Status Report',
+            'Comparative Financial Report',
         ], // COMPARATIVE FINANCIAL STATUS REPORT
         self::HLMFCLR   => [
             'HLMFCLR',
             'Hist Mod-Corr Mtg ln',
             'HistLoanModForbCMLR',
             'Hist Mod-Corr Mtg Loan',
+            'Historical Modification Report',
         ], // HISTORICAL LOAN MODIFICATION/FORBEARANCE and CORRECTED MORTGAGE LOAN REPORT
         self::LLRES     => [
             'LL Res, LOC',
@@ -79,6 +83,7 @@ class CMBSRestrictedServicerReportFactory {
             'LL_Res_LOC',
             'LL Res LOC',
             'rptRsvLOC',
+            'Loan Level Reserve  LOC Report',
         ], // LOAN LEVEL RESERVE/LOC REPORT
         self::TOTALLOAN => [
             'Total Loan',
