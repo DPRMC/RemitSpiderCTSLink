@@ -94,6 +94,7 @@ class CMBSRestrictedServicerReportFactory {
             'rptTotalLoan',
             'TotalLoan',
             'rptTTotalLoan',
+            'Total_Loan_Report',
         ], // TOTAL LOAN REPORT
         self::RECOVERY  => [
             'Advance Recovery',
