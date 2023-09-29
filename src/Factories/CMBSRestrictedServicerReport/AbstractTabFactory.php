@@ -113,6 +113,7 @@ abstract class AbstractTabFactory {
 //        $stringDate = end( $parts );
 //        $this->date = Carbon::parse( $stringDate, $this->timezone );
 
+        dump($allRows);
         $this->date = $this->_searchForDate( $allRows );
     }
 
@@ -127,7 +128,8 @@ abstract class AbstractTabFactory {
     protected function _searchForDate( array $allRows, int $numRowsToCheck = 6 ): Carbon {
 
         $this->date = NULL;
-        $pattern    = '/^\d{1,2}\/\d{1,2}\/\d{4}$/';                                             // Will match dates like 1/1/2023 or 12/31/2023
+        //$pattern    = '/^\d{1,2}\/\d{1,2}\/\d{4}$/';                                             // Will match dates like 1/1/2023 or 12/31/2023
+        $pattern    = '/\d{1,2}\/\d{1,2}\/\d{4}/';                                             // Will match dates like 1/1/2023 or 12/31/2023 even when wrapped in other text.
         //$pattern_2  = '/^\d{8}$/';                                                               // Matches 20230311, but also matches 28010338, so I replaced it with the pattern below.
         $pattern_2 = '/^(\d{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01]))$/';                       //
         $pattern_3 = '/^4\d{4}$/';                                                               // Matches an Excel date. Will DEFINITELY BREAK IN THE FUTURE.
