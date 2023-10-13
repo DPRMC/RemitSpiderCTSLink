@@ -4,16 +4,16 @@ namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Factor
 
 class FieldNotFoundException extends \Exception {
 
-    public array  $map       = [];
-    public string $jsonField = '';
-    public string $filePath  = '';
+    public array   $map       = [];
+    public string  $jsonField = '';
+    public ?string $filePath  = NULL;
 
     public function __construct( string      $message = "",
                                  int         $code = 0,
                                  ?\Throwable $previous = NULL,
                                  array       $map = [],
                                  string      $jsonField = '',
-                                 string      $filePath = NULL ) {
+                                 ?string     $filePath = NULL ) {
         parent::__construct( $message, $code, $previous );
 
         $this->map       = $map;

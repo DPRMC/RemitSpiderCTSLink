@@ -113,7 +113,7 @@ abstract class AbstractTabFactory {
 //        $stringDate = end( $parts );
 //        $this->date = Carbon::parse( $stringDate, $this->timezone );
 
-        dump($allRows);
+        //dump($allRows);
         $this->date = $this->_searchForDate( $allRows );
     }
 
