@@ -8,7 +8,12 @@ class FieldNotFoundException extends \Exception {
     public string $jsonField = '';
     public string $filePath  = '';
 
-    public function __construct( string $message = "", int $code = 0, ?\Throwable $previous = NULL, array $map = [], string $jsonField = '', string $filePath = '' ) {
+    public function __construct( string      $message = "",
+                                 int         $code = 0,
+                                 ?\Throwable $previous = NULL,
+                                 array       $map = [],
+                                 string      $jsonField = '',
+                                 string      $filePath = NULL ) {
         parent::__construct( $message, $code, $previous );
 
         $this->map       = $map;
