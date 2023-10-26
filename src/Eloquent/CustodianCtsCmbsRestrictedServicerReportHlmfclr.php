@@ -16,9 +16,10 @@ class CustodianCtsCmbsRestrictedServicerReportHlmfclr extends Model {
     public $incrementing = TRUE;
 
     const id                                                     = 'id';
-    const date                                                          = 'date';
+    const date                                                   = 'date';
     const created_at                                             = 'created_at';
     const updated_at                                             = 'updated_at';
+    const category                                               = 'category';
     const trans_id                                               = 'trans_id';
     const group_id                                               = 'group_id';
     const loan_id                                                = 'loan_id';
@@ -45,10 +46,11 @@ class CustodianCtsCmbsRestrictedServicerReportHlmfclr extends Model {
     const modification_booking_date                              = 'modification_booking_date';
 
     protected $casts = [
-        self::date => 'date',
+        self::date                                                    => 'date',
         self:: trans_id                                               => 'string',
         self:: group_id                                               => 'string',
         self:: loan_id                                                => 'string',
+        self:: category                                               => 'string',
         self:: prospectus_loan_id                                     => 'string',
         self:: property_city                                          => 'string',
         self:: property_state                                         => 'string',
@@ -72,33 +74,7 @@ class CustodianCtsCmbsRestrictedServicerReportHlmfclr extends Model {
         self:: modification_booking_date                              => 'string',
     ];
 
-    protected $fillable = [
-        self::date,
-        self:: trans_id,
-        self:: group_id,
-        self:: loan_id,
-        self:: prospectus_loan_id,
-        self:: property_city,
-        self:: property_state,
-        self:: modification_code,
-        self:: most_recent_master_servicer_return_date,
-        self:: date_of_last_modification,
-        self:: balance_when_sent_to_special_servicer,
-        self:: balance_at_the_effective_date_of_modification,
-        self:: old_note_rate,
-        self:: number_of_months_for_rate_change,
-        self:: modified_note_rate,
-        self:: old_p_and_i,
-        self:: modified_payment_amount,
-        self:: old_maturity_date,
-        self:: maturity_date,
-        self:: total_months_for_change_of_modification,
-        self:: realized_loss_to_trust,
-        self:: estimated_future_interest_loss_to_trust_rate_reduction,
-        self:: comments_hlmr_cml,
-        self:: modification_execution_date,
-        self:: modification_booking_date,
-    ];
+    protected $guarded = [ 'id' ];
 
 
     public function __construct( array $attributes = [] ) {
