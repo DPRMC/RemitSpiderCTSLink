@@ -18,6 +18,8 @@ class CMBSRestrictedServicerReportFactory {
     const DEFAULT_TIMEZONE = 'America/New_York';
     public readonly string $timezone;
 
+    public array $exceptions = [];
+
     const FOOTNOTES = 'FOOTNOTES';
     const WATCHLIST = 'WATCHLIST';
     const DLSR      = 'DLSR';
@@ -52,6 +54,7 @@ class CMBSRestrictedServicerReportFactory {
             'rptWServicerWatchlistIRP',
             'Servicer_Watchlist',
             'Watch List Report',
+            'WATCHLIST',
         ], // SERVICER WATCHLIST
         self::DLSR      => [
             'DLSR',
@@ -85,6 +88,7 @@ class CMBSRestrictedServicerReportFactory {
             'LL Res LOC',
             'rptRsvLOC',
             'Loan Level Reserve  LOC Report',
+            'Reserve_LOC'
         ], // LOAN LEVEL RESERVE/LOC REPORT
         self::TOTALLOAN => [
             'Total Loan',
