@@ -8,6 +8,7 @@ use DPRMC\RemitSpiderCTSLink\Helpers\Debug;
 use DPRMC\RemitSpiderCTSLink\Models\CTSLinkShelf;
 use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
 use HeadlessChromium\Page;
+use Illuminate\Support\Collection;
 
 
 class DocLink {
@@ -29,27 +30,34 @@ class DocLink {
         // If the word "revised" appears in the current cycle string, then there are most likely two dates present in the field.
         // I can use regex to pull them out.
         if ( str_contains( $lowercaseCurrentCycle, 'revised' ) ):
-            $found = preg_match( self::REGEX_DATE_PATTERN, $lowercaseCurrentCycle, $datesFound );
+            $found = preg_match_all( self::REGEX_DATE_PATTERN, $lowercaseCurrentCycle, $matches );
             if ( 1 !== $found ):
                 $this->currentCycle        = '';
                 $this->revisedCurrentCycle = '';
             endif;
 
-            if ( count( $datesFound ) > 2 ):
+            if ( count( $matches[0] ) > 2 ):
                 throw new \Exception( "There were more than two dates found in the REVISED current cycle field. I have never seen more than 2 dates there." );
             endif;
 
             $collection = collect( [] );
+            $datesFound = $matches[0];
             foreach ( $datesFound as $stringDate ):
                 $collection->push( Carbon::parse( $stringDate ) );
             endforeach;
 
-            $sorted = $collection->sortBy( function ( $carbonDate, $key ) {
-                return $carbonDate->timestamp();
+            $sortedDates = $collection->sortBy( function ( $carbonDate, $key ) {
+                return $carbonDate->timestamp;
             } );
 
-            $this->currentCycle        = $sorted->shift()->format( 'n/j/Y' );
-            $this->revisedCurrentCycle = $sorted->shift()->format( 'n/j/Y' );
+            /**
+             * @var Collection $sortedDates;
+             */
+            $this->currentCycle        = $sortedDates->shift()->format( 'n/j/Y' );
+
+            if($sortedDates->isNotEmpty()):
+                $this->revisedCurrentCycle = $sortedDates->shift()->format( 'n/j/Y' );
+            endif;
         endif;
     }
 }

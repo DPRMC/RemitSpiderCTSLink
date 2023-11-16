@@ -407,13 +407,13 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $filePath = getcwd() . '/tests/test_input/WFCM_2020BNK28_6216732_WFCM_2020BNK28_RSRV.xls';
 
 
-        $factory                  = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\CMBSRestrictedServicerReportFactory( self::TIMEZONE );
+        $factory = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\CMBSRestrictedServicerReportFactory( self::TIMEZONE );
         //$factory = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSMonthlyAdministratorReport\CMBSMonthlyAdministratorReportFactory( self::TIMEZONE );
         //$mar     = $factory->make( $filePath );
 
-        $ctsLink = new CustodianCtsLink();
-        $dateOfFile= \Carbon\Carbon::today('America/New_York');
-        $mar = $factory->make($filePath, $ctsLink, $dateOfFile);
+        $ctsLink    = new CustodianCtsLink();
+        $dateOfFile = \Carbon\Carbon::today( 'America/New_York' );
+        $mar        = $factory->make( $filePath, $ctsLink, $dateOfFile );
 
         dd( $mar );
 
@@ -486,6 +486,25 @@ class RemitSpiderCTSLinkTest extends TestCase {
         } catch ( \DPRMC\RemitSpiderCTSLink\Exceptions\NoAccessToRestrictedServicerReportException $exception ) {
             echo "\n " . $exception->getMessage();
         }
+    }
+
+
+    /**
+     * @test
+     * @group revised
+     */
+    public function testDocLinkShouldParseRevisedDates() {
+        $nameOfFile   = 'testfile.xls';
+        $currentCycle = '11/15/2023
+
+
+										 REVISED 11/16/2023';
+        $docLink      = new \DPRMC\RemitSpiderCTSLink\Helpers\Generic\DocLink( $nameOfFile, $currentCycle );
+
+        $this->assertNotEmpty($docLink->currentCycle);
+        $this->assertNotEmpty($docLink->revisedCurrentCycle);
+
+        var_dump($docLink);
     }
 
 }
