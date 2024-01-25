@@ -117,6 +117,8 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
                 // Now grab the date...
                 $date = trim( $link->parentNode->parentNode->textContent );
 
+                $hrefParts = explode( '=', $href );
+                $key       = $hrefParts[ 1 ];
 
                 [ $date, $revisedDate ] = $this->_parseOutDates( $date );
 
@@ -126,6 +128,7 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
                     'link'        => CMBSHelper::BASE_URL . $href,
                     'date'        => $date,
                     'revisedDate' => $revisedDate,
+                    'key'         => $key,
                 ];
             endif;
         endforeach;
