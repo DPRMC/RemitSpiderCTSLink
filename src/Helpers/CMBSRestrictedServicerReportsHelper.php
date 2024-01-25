@@ -2,6 +2,7 @@
 
 namespace DPRMC\RemitSpiderCTSLink\Helpers;
 
+use Carbon\Carbon;
 use DPRMC\RemitSpiderCTSLink\Exceptions\NoAccessToRestrictedServicerReportException;
 use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
 use HeadlessChromium\Page;
@@ -56,6 +57,7 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
         $dom = new \DOMDocument();
         @$dom->loadHTML( $html );
 
+
         /**
          * @var \DOMNodeList $links
          */
@@ -74,6 +76,62 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
         return $documentLinks;
     }
 
+
+    public function getAllRestrictedServicerReportLinkInformationFromSeriesPage( string $shelf, string $series ): array {
+        $documentLinks         = [];
+        $additionalHistoryLink = self::HISTORY_URL . 'shelfId=' . $shelf . '&seriesId=' . $series . '&doc=' . $shelf . '_' . $series . '_RSRV';
+        $this->Debug->_debug( " Navigating to: " . $additionalHistoryLink );
+        $this->Page->navigate( $additionalHistoryLink )->waitForNavigation();
+        $this->Debug->_screenshot( urlencode( $additionalHistoryLink ) );
+        $this->Debug->_html( urlencode( $additionalHistoryLink ) );
+
+        $html = $this->Page->getHtml();
+
+        if ( str_contains( strtolower( $html ), strtolower( 'Get Access' ) ) ):
+            throw new NoAccessToRestrictedServicerReportException( "We do not have access to this Series: " . $additionalHistoryLink,
+                                                                   0,
+                                                                   NULL,
+                                                                   $shelf,
+                                                                   $series );
+        endif;
+
+        $dom = new \DOMDocument();
+        @$dom->loadHTML( $html );
+
+
+        /**
+         * @var \DOMNodeList $links
+         */
+        $links = $dom->getElementsByTagName( 'a' );
+
+        /**
+         * @var \DOMElement $link
+         */
+        foreach ( $links as $link ):
+            $href = $link->getAttribute( 'href' );
+
+            // This is a link.
+            if ( str_contains( $href, '/a/document.html?key=' ) ):
+
+
+                // Now grab the date...
+                $date = trim( $link->parentNode->parentNode->textContent );
+
+
+                [ $date, $revisedDate ] = $this->_parseOutDates( $date );
+
+                $documentLinks[] = [
+                    'shelf'       => $shelf,
+                    'series'      => $series,
+                    'link'        => CMBSHelper::BASE_URL . $href,
+                    'date'        => $date,
+                    'revisedDate' => $revisedDate,
+                ];
+            endif;
+        endforeach;
+
+        return $documentLinks;
+    }
 
 
     public function getAllRemittanceReportLinksFromSeriesPage( string $shelf, string $series ): array {
@@ -236,13 +294,6 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
     }
 
 
-
-
-
-
-
-
-
     /**
      * @param string $tdText
      * @return array|string[]
@@ -269,10 +320,10 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
     }
 
 
-    protected function _trimDateWithRegex(string $stringDate): string {
+    protected function _trimDateWithRegex( string $stringDate ): string {
         $pattern = '/[^\d\/]*/';
 
-        return preg_replace($pattern,'',$stringDate);
+        return preg_replace( $pattern, '', $stringDate );
     }
 
     protected function _parseOutDate( string $tdText ): string {
