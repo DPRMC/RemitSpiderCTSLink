@@ -110,7 +110,7 @@ class CMBSRestrictedServicerReportFactory {
     ];
 
     protected CustodianCtsLink $custodianCtsLink;
-    protected Carbon           $dateOfFile;
+    protected ?Carbon           $dateOfFile;
 
     /**
      * @param string|NULL $timezone
