@@ -79,7 +79,13 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
 
     public function getAllRestrictedServicerReportLinkInformationFromSeriesPage( string $shelf, string $series ): array {
         $documentLinks         = [];
-        $additionalHistoryLink = self::HISTORY_URL . 'shelfId=' . $shelf . '&seriesId=' . $series . '&doc=' . $shelf . '_' . $series . '_RSRV';
+
+        try {
+            $additionalHistoryLink = $this->getLinkToRestrictedServicerReportHistoryPage($shelf, $series);
+        } catch (\Exception $exception){
+            $additionalHistoryLink = self::HISTORY_URL . 'shelfId=' . $shelf . '&seriesId=' . $series . '&doc=' . $shelf . '_' . $series . '_RSRV';
+        }
+
         $this->Debug->_debug( " Navigating to: " . $additionalHistoryLink );
         $this->Page->navigate( $additionalHistoryLink )->waitForNavigation();
         $this->Debug->_screenshot( urlencode( $additionalHistoryLink ) );
@@ -449,8 +455,6 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
      * @throws \Exception
      */
     public function getLinkToRestrictedServicerReportHistoryPage( string $shelf, string $series ): string {
-        $link = '';
-
         $seriesPage = CMBSHelper::SERIES_DOCS_URL . 'shelfId=' . $shelf . '&seriesId=' . $series;
         $this->Debug->_debug( " Navigating to: " . $seriesPage );
         $this->Page->navigate( $seriesPage )->waitForNavigation();
@@ -471,7 +475,7 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
         foreach ( $links as $link ):
             $href = $link->getAttribute( 'href' );
             if ( str_ends_with( $href, '_RSRV' ) ):
-                return $href;
+                return CMBSHelper::BASE_URL . $href;
             endif;
         endforeach;
 
