@@ -436,6 +436,49 @@ class CMBSRestrictedServicerReportsHelper extends CMBSHelper {
     }
 
 
+    /**
+     * Start here: https://www.ctslink.com/a/seriesdocs.html?shelfId=CSCMSC&seriesId=2016C7&tab=PERIODICRPT
+     * Or here maybe: https://www.ctslink.com/a/seriesdocs.html?shelfId=CSCMSC&seriesId=2016C7
+     * Then get all the links
+     * Then return the one that ends with: '_RSRV'
+     * https://www.ctslink.com/a/history.html?shelfId=CSCMSC&seriesId=2016C7&doc=CSMSC_2016C7_RSRV
+     *
+     * @param string $shelf
+     * @param string $series
+     * @return string
+     * @throws \Exception
+     */
+    public function getLinkToRestrictedServicerReportHistoryPage( string $shelf, string $series ): string {
+        $link = '';
+
+        $seriesPage = CMBSHelper::SERIES_DOCS_URL . 'shelfId=' . $shelf . '&seriesId=' . $series;
+        $this->Debug->_debug( " Navigating to: " . $seriesPage );
+        $this->Page->navigate( $seriesPage )->waitForNavigation();
+        $this->Debug->_screenshot( urlencode( $seriesPage ) );
+        $this->Debug->_html( urlencode( $seriesPage ) );
+        $html = $this->Page->getHtml();
+        $dom = new \DOMDocument();
+        @$dom->loadHTML( $html );
+
+        /**
+         * @var \DOMNodeList $links
+         */
+        $links = $dom->getElementsByTagName( 'a' );
+
+        /**
+         * @var \DOMElement $link
+         */
+        foreach ( $links as $link ):
+            $href = $link->getAttribute( 'href' );
+            if ( str_ends_with( $href, '_RSRV' ) ):
+                return $href;
+            endif;
+        endforeach;
+
+        throw new \Exception("Unable to find link ending in _RSRV on " . $seriesPage);
+    }
+
+
 
 //
 //    const href                       = 'href'; // The URL of the page with this data.
