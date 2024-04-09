@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  *
  */
-class CustodianCtsCmbsRestrictedServicerReportTotalLoan extends Model {
+class CustodianCtsCmbsRestrictedServicerReportTotalLoan extends AbstractCustodianCtsCmbsRestrictedServicerReportTab {
 
     public $table        = 'custodian_cts_cmbs_restricted_servicer_report_total_loans';
     public $primaryKey   = self::id;
@@ -16,8 +16,8 @@ class CustodianCtsCmbsRestrictedServicerReportTotalLoan extends Model {
     public $incrementing = TRUE;
 
     const id                                              = 'id';
-    const date                                            = 'date';
-    const document_id                                     = 'document_id';
+//    const date                                            = 'date';
+//    const document_id                                     = 'document_id';
     const created_at                                      = 'created_at';
     const updated_at                                      = 'updated_at';
     const transaction_id                                  = 'transaction_id';

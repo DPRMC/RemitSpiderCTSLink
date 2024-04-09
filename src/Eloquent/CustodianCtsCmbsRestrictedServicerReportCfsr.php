@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  *
  */
-class CustodianCtsCmbsRestrictedServicerReportCfsr extends Model {
+class CustodianCtsCmbsRestrictedServicerReportCfsr extends AbstractCustodianCtsCmbsRestrictedServicerReportTab {
 
     public $table        = 'custodian_cts_cmbs_restricted_servicer_report_cfsrs';
     public $primaryKey   = self::id;
@@ -16,12 +16,13 @@ class CustodianCtsCmbsRestrictedServicerReportCfsr extends Model {
     public $incrementing = TRUE;
 
     // Pulled from the filename of the parsed json file.1
-    const shelf       = 'shelf';
-    const series      = 'series';
-    const document_id = 'document_id';
+    const shelf  = 'shelf';
+    const series = 'series';
+
 
     const id                                                           = 'id';
-    const date                                                         = 'date';
+//    const date                                                         = 'date';
+//    const document_id                                                  = 'document_id';
     const created_at                                                   = 'created_at';
     const updated_at                                                   = 'updated_at';
     const trans_id                                                     = 'trans_id';
