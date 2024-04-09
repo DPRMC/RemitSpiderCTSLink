@@ -91,7 +91,7 @@ class CMBSRestrictedServicerReportFactory {
             'LL Res LOC',
             'rptRsvLOC',
             'Loan Level Reserve  LOC Report',
-            'Reserve_LOC'
+            'Reserve_LOC',
         ], // LOAN LEVEL RESERVE/LOC REPORT
         self::TOTALLOAN => [
             'Total Loan',
@@ -114,17 +114,21 @@ class CMBSRestrictedServicerReportFactory {
     ];
 
     protected CustodianCtsLink $custodianCtsLink;
-    protected ?Carbon           $dateOfFile;
+    protected ?Carbon          $dateOfFile;
+    protected ?int             $documentId;
 
     /**
      * @param string|NULL $timezone
      */
-    public function __construct( string $timezone = NULL ) {
+    public function __construct( string $timezone = NULL, Carbon $dateOfFile = NULL, int $documentId = NULL ) {
         if ( $timezone ):
             $this->timezone = $timezone;
         else:
             $this->timezone = self::DEFAULT_TIMEZONE;
         endif;
+
+        $this->dateOfFile = $dateOfFile;
+        $this->documentId = $documentId;
     }
 
 
@@ -139,7 +143,7 @@ class CMBSRestrictedServicerReportFactory {
      */
     public function make( string $pathToRestrictedServicerReportXlsx, CustodianCtsLink $ctsLink = NULL, Carbon $dateOfFile = NULL ): CMBSRestrictedServicerReport {
         $this->custodianCtsLink = $ctsLink;
-        $this->dateOfFile       = $dateOfFile;
+        $this->dateOfFile       = $dateOfFile ?? $this->dateOfFile;
         $sheetNames             = Excel::getSheetNames( $pathToRestrictedServicerReportXlsx );
 
         // Intialize these arrays that will get passed to the CMBSRestrictedServicerReport __constructor.
@@ -183,7 +187,10 @@ class CMBSRestrictedServicerReportFactory {
                 if ( $this->_foundSheetName( self::WATCHLIST, $sheetName ) ):
 
                     $this->tabsThatHaveBeenFound[ self::WATCHLIST ] = TRUE;
-                    $factory                                        = new WatchlistFactory( self::DEFAULT_TIMEZONE );
+                    $factory                                        = new WatchlistFactory( self::DEFAULT_TIMEZONE,
+                                                                                            NULL,
+                                                                                            $this->dateOfFile,
+                                                                                            $this->documentId );
                     $watchlist                                      = $factory->parse( $rows,
                                                                                        $cleanHeadersBySheetName,
                                                                                        CMBSRestrictedServicerReport::watchlist,
@@ -192,7 +199,10 @@ class CMBSRestrictedServicerReportFactory {
                 elseif ( $this->_foundSheetName( self::DLSR, $sheetName ) ):
                     //dump( self::DLSR . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::DLSR ] = TRUE;
-                    $factory                                   = new DLSRFactory( self::DEFAULT_TIMEZONE );
+                    $factory                                   = new DLSRFactory( self::DEFAULT_TIMEZONE,
+                                                                                  NULL,
+                                                                                  $this->dateOfFile,
+                                                                                  $this->documentId );
                     $dlsr                                      = $factory->parse( $rows,
                                                                                   $cleanHeadersBySheetName,
                                                                                   CMBSRestrictedServicerReport::dlsr,
@@ -201,7 +211,10 @@ class CMBSRestrictedServicerReportFactory {
                 elseif ( $this->_foundSheetName( self::REOSR, $sheetName ) ):
                     //dump( self::REOSR . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::REOSR ] = TRUE;
-                    $factory                                    = new REOSRFactory( self::DEFAULT_TIMEZONE );
+                    $factory                                    = new REOSRFactory( self::DEFAULT_TIMEZONE,
+                                                                                    NULL,
+                                                                                    $this->dateOfFile,
+                                                                                    $this->documentId );
                     $reosr                                      = $factory->parse( $rows,
                                                                                    $cleanHeadersBySheetName,
                                                                                    CMBSRestrictedServicerReport::reosr,
@@ -210,7 +223,10 @@ class CMBSRestrictedServicerReportFactory {
                 elseif ( $this->_foundSheetName( self::HLMFCLR, $sheetName ) ):
                     //dump( self::HLMFCLR . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::HLMFCLR ] = TRUE;
-                    $factory                                      = new HLMFCLRFactory( self::DEFAULT_TIMEZONE );
+                    $factory                                      = new HLMFCLRFactory( self::DEFAULT_TIMEZONE,
+                                                                                        NULL,
+                                                                                        $this->dateOfFile,
+                                                                                        $this->documentId );
                     $hlmfclr                                      = $factory->parse( $rows,
                                                                                      $cleanHeadersBySheetName,
                                                                                      CMBSRestrictedServicerReport::hlmfclr,
@@ -219,7 +235,10 @@ class CMBSRestrictedServicerReportFactory {
                 elseif ( $this->_foundSheetName( self::CFSR, $sheetName ) ):
                     //dump( self::CFSR . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::CFSR ] = TRUE;
-                    $factory                                   = new CFSRFactory( self::DEFAULT_TIMEZONE );
+                    $factory                                   = new CFSRFactory( self::DEFAULT_TIMEZONE,
+                                                                                  NULL,
+                                                                                  $this->dateOfFile,
+                                                                                  $this->documentId );
                     $csfr                                      = $factory->parse( $rows,
                                                                                   $cleanHeadersBySheetName,
                                                                                   CMBSRestrictedServicerReport::csfr,
@@ -228,7 +247,10 @@ class CMBSRestrictedServicerReportFactory {
                 elseif ( $this->_foundSheetName( self::LLRES, $sheetName ) ):
                     //dump( self::LLRES . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::LLRES ] = TRUE;
-                    $factory                                    = new LLResLOCFactory( self::DEFAULT_TIMEZONE );
+                    $factory                                    = new LLResLOCFactory( self::DEFAULT_TIMEZONE,
+                                                                                       NULL,
+                                                                                       $this->dateOfFile,
+                                                                                       $this->documentId );
                     $llResLOC                                   = $factory->parse( $rows,
                                                                                    $cleanHeadersBySheetName,
                                                                                    CMBSRestrictedServicerReport::llResLOC,
@@ -237,7 +259,10 @@ class CMBSRestrictedServicerReportFactory {
                 elseif ( $this->_foundSheetName( self::TOTALLOAN, $sheetName ) ):
                     //dump( self::TOTALLOAN . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::TOTALLOAN ] = TRUE;
-                    $factory                                        = new TotalLoanFactory( self::DEFAULT_TIMEZONE );
+                    $factory                                        = new TotalLoanFactory( self::DEFAULT_TIMEZONE,
+                                                                                            NULL,
+                                                                                            $this->dateOfFile,
+                                                                                            $this->documentId );
                     $totalLoan                                      = $factory->parse( $rows,
                                                                                        $cleanHeadersBySheetName,
                                                                                        CMBSRestrictedServicerReport::totalLoan,
@@ -246,7 +271,10 @@ class CMBSRestrictedServicerReportFactory {
                 elseif ( $this->_foundSheetName( self::RECOVERY, $sheetName ) ):
                     //dump( self::RECOVERY . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::RECOVERY ] = TRUE;
-                    $factory                                       = new AdvanceRecoveryFactory( self::DEFAULT_TIMEZONE );
+                    $factory                                       = new AdvanceRecoveryFactory( self::DEFAULT_TIMEZONE,
+                                                                                                 NULL,
+                                                                                                 $this->dateOfFile,
+                                                                                                 $this->documentId );
                     $advanceRecovery                               = $factory->parse( $rows,
                                                                                       $cleanHeadersBySheetName,
                                                                                       CMBSRestrictedServicerReport::advanceRecovery,
