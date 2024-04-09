@@ -52,6 +52,7 @@ class HLMFCLRMap extends AbstractFactoryToModelMap {
      */
     public static array $map = [
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::date                                                   => [ 'date' ],
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::document_id                                            => [ 'document_id' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::category                                               => [ 'category' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::trans_id                                               => [ 'trans_id' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::group_id                                               => [ 'group_id' ],

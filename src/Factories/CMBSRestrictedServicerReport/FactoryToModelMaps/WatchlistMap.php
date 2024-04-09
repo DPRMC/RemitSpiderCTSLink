@@ -40,6 +40,7 @@ class WatchlistMap extends AbstractFactoryToModelMap {
 
     public static array $map = [
         CustodianCtsCmbsRestrictedServicerReportWatchlist::date                                       => [ 'date' ],
+        CustodianCtsCmbsRestrictedServicerReportWatchlist::document_id                                => [ 'document_id' ],
         CustodianCtsCmbsRestrictedServicerReportWatchlist::trans_id                                   => [ 'trans_id',
                                                                                                            'transaction_id', ],
         CustodianCtsCmbsRestrictedServicerReportWatchlist::group_id                                   => [ 'group_id' ],
@@ -71,7 +72,7 @@ class WatchlistMap extends AbstractFactoryToModelMap {
                                                                                                            'watchlist_code' ],
         CustodianCtsCmbsRestrictedServicerReportWatchlist::comments_servicer_watchlist                => [ 'comments_servicer_watchlist',
                                                                                                            'servicer_watchlist',
-                                                                                                           'watchlist_comments'],
+                                                                                                           'watchlist_comments' ],
         CustodianCtsCmbsRestrictedServicerReportWatchlist::informational_or_credit                    => [ 'informational_or_credit',
                                                                                                            'or_credit' ],
         CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_physical_occupancy             => [ 'most_recent_physical_occupancy',

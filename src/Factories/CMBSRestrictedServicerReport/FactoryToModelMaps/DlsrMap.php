@@ -41,6 +41,7 @@ class DlsrMap extends AbstractFactoryToModelMap {
 
     public static array $map = [
         CustodianCtsCmbsRestrictedServicerReportDlsr::date                                                    => [ 'date' ],
+        CustodianCtsCmbsRestrictedServicerReportDlsr::document_id                                             => [ 'document_id' ],
         CustodianCtsCmbsRestrictedServicerReportDlsr::category                                                => [ 'category' ],
         CustodianCtsCmbsRestrictedServicerReportDlsr::trans_id                                                => [ 'trans_id',
                                                                                                                    'transaction_id', ],

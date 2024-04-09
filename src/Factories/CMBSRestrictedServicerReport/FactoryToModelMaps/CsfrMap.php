@@ -8,6 +8,7 @@ class CsfrMap extends AbstractFactoryToModelMap {
 
     public static array $map = [
         CustodianCtsCmbsRestrictedServicerReportCfsr::date                                                         => [ 'date' ],
+        CustodianCtsCmbsRestrictedServicerReportCfsr::document_id                                                  => [ 'document_id' ],
         CustodianCtsCmbsRestrictedServicerReportCfsr::trans_id                                                     => [ 'trans_id',
                                                                                                                         'transaction_id', ],
         CustodianCtsCmbsRestrictedServicerReportCfsr::loan_id                                                      => [ 'loan_id' ],
