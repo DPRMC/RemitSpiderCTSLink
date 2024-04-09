@@ -317,6 +317,8 @@ abstract class AbstractTabFactory {
                 $newCleanRow[ 'date' ] = NULL;
             endif;
 
+            $newCleanRow['document_id'] = $this->documentId;
+
             foreach ( $this->localHeaders as $j => $header ):
                 $data                   = trim( $validRow[ $j ] ?? '' );
                 $newCleanRow[ $header ] = $data;
