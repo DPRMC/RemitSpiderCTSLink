@@ -38,6 +38,7 @@ class CustodianCtsSeries extends Model {
     // And more specifically, how up to date our data is.
     const last_checked = 'last_checked';
 
+
     protected $casts = [
         self::shelf      => 'string',
         self::series     => 'string',
@@ -65,6 +66,5 @@ class CustodianCtsSeries extends Model {
         parent::__construct( $attributes );
         $this->connection = env( 'DB_CONNECTION_CUSTODIAN_CTS' );
     }
-
 
 }
