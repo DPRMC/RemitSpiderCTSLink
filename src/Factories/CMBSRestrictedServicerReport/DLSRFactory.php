@@ -322,13 +322,14 @@ class DLSRFactory extends AbstractTabFactory {
                 if ( empty( $firstCell ) ):
                     continue;
                 endif;
-                $newCleanRow               = [];
-                $newCleanRow[ 'date' ]     = empty( $this->date ) ? NULL : $this->date->toDateString();
-                $newCleanRow[ 'category' ] = $name;
+                $newCleanRow                  = [];
+                $newCleanRow[ 'date' ]        = empty( $this->date ) ? NULL : $this->date->toDateString();
+                $newCleanRow[ 'document_id' ] = $this->documentId;
+                $newCleanRow[ 'category' ]    = $name;
                 foreach ( $this->localHeaders as $j => $header ):
 
                     // Let's just make sure we have consistent header/field values.
-                    $header = AbstractFactoryToModelMap::getCommonFieldName(DlsrMap::$map,$header);
+                    $header = AbstractFactoryToModelMap::getCommonFieldName( DlsrMap::$map, $header );
 
                     $newCleanRow[ $header ] = trim( $validRow[ $j ] ?? '' );
                 endforeach;
