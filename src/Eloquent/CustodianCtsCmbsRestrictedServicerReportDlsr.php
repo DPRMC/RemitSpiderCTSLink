@@ -17,6 +17,7 @@ class CustodianCtsCmbsRestrictedServicerReportDlsr extends Model {
 
     const id                                                      = 'id';
     const date                                                    = 'date';
+    const document_id                                             = 'document_id';
     const created_at                                              = 'created_at';
     const updated_at                                              = 'updated_at';
     const trans_id                                                = 'trans_id';
@@ -58,6 +59,7 @@ class CustodianCtsCmbsRestrictedServicerReportDlsr extends Model {
 
     protected $casts = [
         self::date                                                    => 'date',
+        self::document_id                                             => 'integer',
         self::trans_id                                                => 'string',
         self::group_id                                                => 'string',
         self::loan_id                                                 => 'string',

@@ -63,7 +63,8 @@ class CustodianCtsCmbsRestrictedServicerReportCfsr extends Model {
     const net_change_preceding_and_base_year_dscr                      = 'net_change_preceding_and_base_year_dscr';
 
     protected $casts = [
-        self::date                                                          => 'date',
+        self::date                                                         => 'date',
+        self::document_id                                                  => 'integer',
         self::trans_id                                                     => 'string',
         self::loan_id                                                      => 'string',
         self::prospectus_loan_id                                           => 'string',
