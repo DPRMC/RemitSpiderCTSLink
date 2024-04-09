@@ -322,25 +322,43 @@ class CMBSRestrictedServicerReportFactory {
                                                                 $sheetNames );
         endif;
 
-        $theDate = $this->_getTheDate( [ $watchlist,
-                                         $dlsr,
-                                         $reosr,
-                                         $hlmfclr,
-                                         $csfr,
-                                         $llResLOC,
-                                         $totalLoan,
-                                         $advanceRecovery,
-                                       ] );
+//        $theDate = $this->_getTheDate( [ $watchlist,
+//                                         $dlsr,
+//                                         $reosr,
+//                                         $hlmfclr,
+//                                         $csfr,
+//                                         $llResLOC,
+//                                         $totalLoan,
+//                                         $advanceRecovery,
+//                                       ] );
+//
+//
+//        $watchlist       = $this->_fillDateIfMissing( $watchlist, $theDate );
+//        $dlsr            = $this->_fillDateIfMissing( $dlsr, $theDate );
+//        $reosr           = $this->_fillDateIfMissing( $reosr, $theDate );
+//        $hlmfclr         = $this->_fillDateIfMissing( $hlmfclr, $theDate );
+//        $csfr            = $this->_fillDateIfMissing( $csfr, $theDate );
+//        $llResLOC        = $this->_fillDateIfMissing( $llResLOC, $theDate );
+//        $totalLoan       = $this->_fillDateIfMissing( $totalLoan, $theDate );
+//        $advanceRecovery = $this->_fillDateIfMissing( $advanceRecovery, $theDate );
 
+        $watchlist       = $this->_fillDateIfMissing( $watchlist, $this->dateOfFile );
+        $dlsr            = $this->_fillDateIfMissing( $dlsr, $this->dateOfFile );
+        $reosr           = $this->_fillDateIfMissing( $reosr, $this->dateOfFile );
+        $hlmfclr         = $this->_fillDateIfMissing( $hlmfclr, $this->dateOfFile );
+        $csfr            = $this->_fillDateIfMissing( $csfr, $this->dateOfFile );
+        $llResLOC        = $this->_fillDateIfMissing( $llResLOC, $this->dateOfFile );
+        $totalLoan       = $this->_fillDateIfMissing( $totalLoan, $this->dateOfFile );
+        $advanceRecovery = $this->_fillDateIfMissing( $advanceRecovery, $this->dateOfFile );
 
-        $watchlist       = $this->_fillDateIfMissing( $watchlist, $theDate );
-        $dlsr            = $this->_fillDateIfMissing( $dlsr, $theDate );
-        $reosr           = $this->_fillDateIfMissing( $reosr, $theDate );
-        $hlmfclr         = $this->_fillDateIfMissing( $hlmfclr, $theDate );
-        $csfr            = $this->_fillDateIfMissing( $csfr, $theDate );
-        $llResLOC        = $this->_fillDateIfMissing( $llResLOC, $theDate );
-        $totalLoan       = $this->_fillDateIfMissing( $totalLoan, $theDate );
-        $advanceRecovery = $this->_fillDateIfMissing( $advanceRecovery, $theDate );
+        $watchlist       = $this->_fillDocumentIdIfMissing( $watchlist, $this->documentId );
+        $dlsr            = $this->_fillDocumentIdIfMissing( $dlsr, $this->documentId );
+        $reosr           = $this->_fillDocumentIdIfMissing( $reosr, $this->documentId );
+        $hlmfclr         = $this->_fillDocumentIdIfMissing( $hlmfclr, $this->documentId );
+        $csfr            = $this->_fillDocumentIdIfMissing( $csfr, $this->documentId );
+        $llResLOC        = $this->_fillDocumentIdIfMissing( $llResLOC, $this->documentId );
+        $totalLoan       = $this->_fillDocumentIdIfMissing( $totalLoan, $this->documentId );
+        $advanceRecovery = $this->_fillDocumentIdIfMissing( $advanceRecovery, $this->documentId );
 
 
         return new CMBSRestrictedServicerReport( $watchlist,
@@ -353,7 +371,9 @@ class CMBSRestrictedServicerReportFactory {
                                                  $advanceRecovery,
                                                  $cleanHeadersBySheetName,
                                                  $alerts,
-                                                 $exceptions );
+                                                 $exceptions,
+                                                 $this->dateOfFile,
+                                                 $this->documentId );
     }
 
 
@@ -422,6 +442,17 @@ class CMBSRestrictedServicerReportFactory {
 
             if ( array_key_exists( 'date', $row ) && empty( $row[ 'date' ] ) ):
                 $rows[ $i ][ 'date' ] = $date;
+            endif;
+        endforeach;
+        return $rows;
+    }
+
+
+    protected function _fillDocumentIdIfMissing( array $rows, int $documentId ): array {
+        foreach ( $rows as $i => $row ):
+
+            if ( array_key_exists( 'document_id', $row ) && empty( $row[ 'document_id' ] ) ):
+                $rows[ $i ][ 'document_id' ] = $documentId;
             endif;
         endforeach;
         return $rows;
