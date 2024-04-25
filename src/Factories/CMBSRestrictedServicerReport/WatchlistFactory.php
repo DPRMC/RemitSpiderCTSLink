@@ -7,9 +7,16 @@ namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
  * FYI, the parse function works perfectly. 2023-07-12:mdd
  */
 class WatchlistFactory extends AbstractTabFactory {
-    protected array $firstColumnValidTextValues = [ 'Trans ID', 'Trans Id', 'Trans' ];
+    protected array $firstColumnValidTextValues = [ 'Trans ID', 'Trans Id', 'Trans', 'Tran ID' ];
 
     protected function _removeInvalidRows( array $rows = [] ): array {
+
+        // TODO add this code to the other Factories as well.
+        if ( empty( $this->localHeaders ) ):
+            throw new \Exception( "The localHeaders property is empty. That is going to have this method return zero valid rows. So check that property. You might need to add a new value to the firstColumnValidTextValues property." );
+        endif;
+
+
         $validRows = [];
         foreach ( $rows as $i => $row ):
 
