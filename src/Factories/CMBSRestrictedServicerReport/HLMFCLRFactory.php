@@ -4,11 +4,19 @@ namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 
 class HLMFCLRFactory extends AbstractTabFactory {
 
-    protected array $firstColumnValidTextValues = [ 'Trans ID', 'Trans' ];
+    protected array $firstColumnValidTextValues = [ 'Trans ID',
+                                                    'Trans',
+                                                    "Trans\nID"
+    ];
+
+
 
     const LOAN_MOD_FORBEAR     = 'loan_modifications_forbearance';   // Loan Modifications/Forbearance
     const CORRECTED_MORT_LOANS = 'corrected_mortgage_loans';         // Corrected Mortgage Loans:
     const LAST_ROW             = 'last_row';                         // Total For All Loans:
+
+
+
 
     protected array $indexes = [
         self::LOAN_MOD_FORBEAR     => NULL,
@@ -16,15 +24,20 @@ class HLMFCLRFactory extends AbstractTabFactory {
         self::LAST_ROW             => NULL,
     ];
 
+
+
+
     const START = 'start';
     const END   = 'end';
+
+
     protected array $rowCategoryIndexes = [
         self::LOAN_MOD_FORBEAR     => [ self::START => NULL, self::END => NULL ],
         self::CORRECTED_MORT_LOANS => [ self::START => NULL, self::END => NULL ],
     ];
 
 
-    protected function _setParsedRows( array $allRows, string $sheetName = null, array $existingRows = [] ): void {
+    protected function _setParsedRows( array $allRows, string $sheetName = NULL, array $existingRows = [] ): void {
         $this->_setCategoryIndexes( $allRows );
 
 // I wrote this, but in fact some of the HLM sheets just WON'T have these indexes.
