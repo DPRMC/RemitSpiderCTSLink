@@ -6,9 +6,8 @@ class HLMFCLRFactory extends AbstractTabFactory {
 
     protected array $firstColumnValidTextValues = [ 'Trans ID',
                                                     'Trans',
-                                                    "Trans\nID"
+                                                    "Trans\nID",
     ];
-
 
 
     const LOAN_MOD_FORBEAR     = 'loan_modifications_forbearance';   // Loan Modifications/Forbearance
@@ -16,15 +15,11 @@ class HLMFCLRFactory extends AbstractTabFactory {
     const LAST_ROW             = 'last_row';                         // Total For All Loans:
 
 
-
-
     protected array $indexes = [
         self::LOAN_MOD_FORBEAR     => NULL,
         self::CORRECTED_MORT_LOANS => NULL,
         self::LAST_ROW             => NULL,
     ];
-
-
 
 
     const START = 'start';
@@ -136,7 +131,20 @@ class HLMFCLRFactory extends AbstractTabFactory {
         if ( isset( $this->indexes[ self::LOAN_MOD_FORBEAR ] ) ):
             return FALSE;
         endif;
-        return $this->_catStartsWith( $row, 'loan modif' );
+
+        if ( $this->_catStartsWith( $row, 'loan modif' ) ):
+            return TRUE;
+        endif;
+
+        foreach ( $row as $i => $cell ):
+            $haystack = strtolower( $cell );
+            $needle   = 'forbearance';
+            if ( str_contains( $haystack, $needle ) ):
+                return TRUE;
+            endif;
+        endforeach;
+
+        return FALSE;
     }
 
     protected function _isCorrectedMortgageLoans( $row ): bool {
@@ -153,7 +161,19 @@ class HLMFCLRFactory extends AbstractTabFactory {
             return FALSE;
         endif;
 
-        return $this->_catStartsWith( $row, 'total for' );
+        if ( $this->_catStartsWith( $row, 'total for' ) ):
+            return TRUE;
+        endif;
+
+        $needle = strtolower( 'THIS REPORT IS HISTORICAL' );
+        foreach ( $row as $i => $cell ):
+            $haystack = strtolower( $cell );
+            if ( str_contains( $haystack, $needle ) ):
+                return TRUE;
+            endif;
+        endforeach;
+
+        return FALSE;
     }
 
 
@@ -161,6 +181,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
      * @return void
      */
     protected function _setRowCategoryIndexes(): void {
+
         foreach ( $this->indexes as $name => $subHeaderIndex ):
             if ( self::LAST_ROW == $name ):
                 return;
