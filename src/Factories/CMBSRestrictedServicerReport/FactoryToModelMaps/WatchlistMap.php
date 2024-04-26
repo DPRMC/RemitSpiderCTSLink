@@ -43,7 +43,7 @@ class WatchlistMap extends AbstractFactoryToModelMap {
         CustodianCtsCmbsRestrictedServicerReportWatchlist::document_id                                => [ 'document_id' ],
         CustodianCtsCmbsRestrictedServicerReportWatchlist::trans_id                                   => [ 'trans_id',
                                                                                                            'transaction_id',
-                                                                                                           'trans_id', ],
+                                                                                                           'tran_id', ],
         CustodianCtsCmbsRestrictedServicerReportWatchlist::group_id                                   => [ 'group_id' ],
         CustodianCtsCmbsRestrictedServicerReportWatchlist::loan_id                                    => [ 'loan_id' ],
         CustodianCtsCmbsRestrictedServicerReportWatchlist::prospectus_loan_id                         => [ 'prospectus_loan_id' ],
