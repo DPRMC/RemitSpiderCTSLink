@@ -87,20 +87,17 @@ trait HeaderTrait {
                                   'non_cash_',
                                   $newHeader );
 
-
-
-
-
-
-
-
-
         // Too long.
         // if_nonrecoverable_advances_reimbursed_from_principal_realized_loss_amount
         $newHeader = str_replace( 'if_nonrecoverable_advances_reimbursed_from_principal_realized_loss_amount',
                                   'if_nonrec_adv_reimb_from_prin_realized_loss_amount',
                                   $newHeader ); //if_nonrecoverable_advances_reimbursed_from_principal_realized_loss_amount
 
+
+        // 2024-04-26:mdd
+        $newHeader = str_replace( "comments-_hlmfclr",
+                                  'comments_hlmfclr',
+                                  $newHeader );
 
         //
         return $newHeader;
