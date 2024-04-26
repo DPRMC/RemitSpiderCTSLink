@@ -42,7 +42,7 @@ class CustodianCtsCmbsRestrictedServicerReportHlmfclr extends AbstractCustodianC
     const total_months_for_change_of_modification                = 'total_months_for_change_of_modification';
     const realized_loss_to_trust                                 = 'realized_loss_to_trust';
     const estimated_future_interest_loss_to_trust_rate_reduction = 'estimated_future_interest_loss_to_trust_rate_reduction';
-    const comments_hlmr_cml                                      = 'comments_hlmr_cml';
+    const comments_hlmfclr                                      = 'comments_hlmfclr';
     const modification_execution_date                            = 'modification_execution_date';
     const modification_booking_date                              = 'modification_booking_date';
 
@@ -71,7 +71,7 @@ class CustodianCtsCmbsRestrictedServicerReportHlmfclr extends AbstractCustodianC
         self::total_months_for_change_of_modification                => 'string',
         self::realized_loss_to_trust                                 => 'string',
         self::estimated_future_interest_loss_to_trust_rate_reduction => 'string',
-        self::comments_hlmr_cml                                      => 'string',
+        self::comments_hlmfclr                                      => 'string',
         self::modification_execution_date                            => 'string',
         self::modification_booking_date                              => 'string',
     ];
