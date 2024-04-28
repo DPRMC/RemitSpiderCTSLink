@@ -115,12 +115,14 @@ class CMBSRestrictedServicerReportFactory {
 
     protected CustodianCtsLink $custodianCtsLink;
     protected ?Carbon          $dateOfFile;
-    protected ?int             $documentId;
+    public readonly int        $documentId;
 
     /**
      * @param string|NULL $timezone
      */
-    public function __construct( string $timezone = NULL, Carbon $dateOfFile = NULL, int $documentId = NULL ) {
+    public function __construct( string $timezone = NULL,
+                                 Carbon $dateOfFile = NULL,
+                                 int    $documentId = NULL ) {
         if ( $timezone ):
             $this->timezone = $timezone;
         else:
