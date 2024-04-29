@@ -242,10 +242,10 @@ class HLMFCLRFactory extends AbstractTabFactory {
                 if ( empty( $firstCell ) ):
                     continue;
                 endif;
-                $newCleanRow               = [];
-                $newCleanRow[ 'date' ]     = empty( $this->date ) ? NULL : $this->date->toDateString();
-                $newCleanRow[ 'category' ] = $name;
-                $newCleanRow['document_id'] = $this->documentId;
+                $newCleanRow                  = [];
+                $newCleanRow[ 'date' ]        = empty( $this->date ) ? NULL : $this->date->toDateString();
+                $newCleanRow[ 'category' ]    = $name;
+                $newCleanRow[ 'document_id' ] = $this->documentId;
                 foreach ( $this->localHeaders as $j => $header ):
                     $newCleanRow[ $header ] = trim( $validRow[ $j ] ?? '' );
                 endforeach;
@@ -257,6 +257,19 @@ class HLMFCLRFactory extends AbstractTabFactory {
     }
 
     protected function _removeInvalidRows( array $rows = [] ): array {
-        return $rows;
+        $validRows = [];
+        foreach ( $rows as $category => $rowsByCategory ):
+            if ( ! isset( $validRows[ $category ] ) ):
+                $validRows[ $category ] = [];
+            endif;
+
+            foreach ( $rowsByCategory as $i => $row ):
+                if ( strtolower( 'NONE TO REPORT' ) == strtolower( $row[ 'loan_id' ] ) ):
+                    continue;
+                endif;
+                $validRows[ $category ][] = $row;
+            endforeach;
+        endforeach;
+        return $validRows;
     }
 }
