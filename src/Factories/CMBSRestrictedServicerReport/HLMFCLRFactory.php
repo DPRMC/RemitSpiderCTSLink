@@ -267,6 +267,11 @@ class HLMFCLRFactory extends AbstractTabFactory {
                 if ( strtolower( 'NONE TO REPORT' ) == strtolower( $row[ 'loan_id' ] ) ):
                     continue;
                 endif;
+
+                if ( strtolower( 'NONE TO REPORT' ) == strtolower( $row[ 'trans_id' ] ) ):
+                    continue;
+                endif;
+
                 $validRows[ $category ][] = $row;
             endforeach;
         endforeach;
