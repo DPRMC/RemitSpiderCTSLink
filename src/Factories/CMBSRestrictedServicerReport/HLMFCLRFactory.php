@@ -48,7 +48,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
 
         $this->_setCleanRows( $allRows, $existingRows );
 
-
+        $this->cleanRows = $this->_removeInvalidRows( $this->cleanRows );
 //        if ( $sheetName == 'hlmfclr' ) {
 //            dd( $this->cleanRows );
 //        }
