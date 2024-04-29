@@ -363,15 +363,14 @@ class DLSRFactory extends AbstractTabFactory {
             endif;
 
             foreach ( $rowsByCategory as $i => $row ):
-                if ( 'NONE TO REPORT' == $row[ 'loan_id' ] ):
-                    continue;
-                endif;
-
                 // Remove empty rows.
                 if ( count($row) < 4 ):
                     continue;
                 endif;
 
+                if ( 'NONE TO REPORT' == $row[ 'loan_id' ] ):
+                    continue;
+                endif;
 
                 $validRows[ $category ][] = $row;
             endforeach;

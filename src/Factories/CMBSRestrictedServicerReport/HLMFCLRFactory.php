@@ -266,6 +266,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
             endif;
 
             foreach ( $rowsByCategory as $i => $row ):
+                // Remove empty rows.
                 if ( count( $row ) < 4 ):
                     continue;
                 endif;
