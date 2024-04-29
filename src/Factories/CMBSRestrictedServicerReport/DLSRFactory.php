@@ -314,7 +314,10 @@ class DLSRFactory extends AbstractTabFactory {
     protected function _setCleanRows( array $allRows, array $existingRows = [] ): void {
         $cleanRows = $existingRows;
 
+
         foreach ( $this->rowCategoryIndexes as $name => $bookends ):
+
+
             $cleanRows[ $name ] = [];
             $length             = $bookends[ self::END ] - $bookends[ self::START ];
             $validRows          = array_slice( $allRows, $bookends[ self::START ], $length );
@@ -338,7 +341,13 @@ class DLSRFactory extends AbstractTabFactory {
                 $cleanRows[ $name ][] = $newCleanRow;
 //                $cleanRows[ $name ][ $newCleanRow[ 'loan_id' ] ] = $newCleanRow;
             endforeach;
+
+//            if ( 'cur_spec_serv' == $name ):
+//               dd($cleanRows);
+//            endif;
         endforeach;
+
+
 
         $this->cleanRows = $cleanRows;
     }
