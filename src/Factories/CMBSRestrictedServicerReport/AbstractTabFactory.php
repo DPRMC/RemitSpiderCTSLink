@@ -309,6 +309,11 @@ abstract class AbstractTabFactory {
 
             $newCleanRow = [];
 
+            foreach ( $this->localHeaders as $j => $header ):
+                $data                   = trim( $validRow[ $j ] ?? '' );
+                $newCleanRow[ $header ] = $data;
+            endforeach;
+
             // Some tabs leave the date off.
             // So set a placeholder of NULL for now, and I will "borrow" the date from another tab.
             if ( $this->date ):
@@ -318,11 +323,6 @@ abstract class AbstractTabFactory {
             endif;
 
             $newCleanRow['document_id'] = $this->documentId;
-
-            foreach ( $this->localHeaders as $j => $header ):
-                $data                   = trim( $validRow[ $j ] ?? '' );
-                $newCleanRow[ $header ] = $data;
-            endforeach;
 
             // KLUDGE
             // I have empty rows coming in, and I dont want to bother finding out why.

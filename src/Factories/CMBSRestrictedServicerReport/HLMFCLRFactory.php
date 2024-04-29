@@ -49,9 +49,9 @@ class HLMFCLRFactory extends AbstractTabFactory {
         $this->_setCleanRows( $allRows, $existingRows );
 
 
-        if ( $sheetName == 'hlmfclr' ) {
-            dd( $this->cleanRows );
-        }
+//        if ( $sheetName == 'hlmfclr' ) {
+//            dd( $this->cleanRows );
+//        }
     }
 
 
@@ -245,6 +245,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
                 $newCleanRow               = [];
                 $newCleanRow[ 'date' ]     = empty( $this->date ) ? NULL : $this->date->toDateString();
                 $newCleanRow[ 'category' ] = $name;
+                $newCleanRow['document_id'] = $this->documentId;
                 foreach ( $this->localHeaders as $j => $header ):
                     $newCleanRow[ $header ] = trim( $validRow[ $j ] ?? '' );
                 endforeach;
