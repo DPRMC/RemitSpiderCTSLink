@@ -258,12 +258,19 @@ class HLMFCLRFactory extends AbstractTabFactory {
 
     protected function _removeInvalidRows( array $rows = [] ): array {
         $validRows = [];
+
+
         foreach ( $rows as $category => $rowsByCategory ):
             if ( ! isset( $validRows[ $category ] ) ):
                 $validRows[ $category ] = [];
             endif;
 
             foreach ( $rowsByCategory as $i => $row ):
+                if ( count( $row ) < 4 ):
+                    continue;
+                endif;
+
+
                 if ( strtolower( 'NONE TO REPORT' ) == strtolower( $row[ 'loan_id' ] ) ):
                     continue;
                 endif;
@@ -275,6 +282,8 @@ class HLMFCLRFactory extends AbstractTabFactory {
                 $validRows[ $category ][] = $row;
             endforeach;
         endforeach;
+
+
         return $validRows;
     }
 }
