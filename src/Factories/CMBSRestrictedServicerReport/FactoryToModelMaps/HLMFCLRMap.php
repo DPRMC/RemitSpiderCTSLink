@@ -75,7 +75,8 @@ class HLMFCLRMap extends AbstractFactoryToModelMap {
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::total_months_for_change_of_modification                => [ 'total_months_for_change_of_modification' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::realized_loss_to_trust                                 => [ 'realized_loss_to_trust' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::estimated_future_interest_loss_to_trust_rate_reduction => [ 'estimated_future_interest_loss_to_trust_rate_reduction' ],
-        CustodianCtsCmbsRestrictedServicerReportHlmfclr::comments_hlmr_cml                                      => [ 'comments_hlmfclr' ],
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::comments_hlmfclr                                       => [ 'comments_hlmfclr',
+                                                                                                                     'comments_hlmr_cml' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::modification_execution_date                            => [ 'modification_execution_date' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::modification_booking_date                              => [ 'modification_booking_date' ],
     ];
