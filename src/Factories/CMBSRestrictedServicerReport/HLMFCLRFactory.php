@@ -35,6 +35,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
     protected function _setParsedRows( array $allRows, string $sheetName = NULL, array $existingRows = [] ): void {
         $this->_setCategoryIndexes( $allRows );
 
+
 // I wrote this, but in fact some of the HLM sheets just WON'T have these indexes.
 //        if ( $this->_isMissingSomeIndexes() ):
 //            throw new HLMFLCRTabMissingSomeCategoriesException( "Patch the parser. HLMFLCR missing some cats. Look in the indexes array of this exception. Anything that is NULL could not be found. You will need to edit the methods used in _setCategoryIndexes()",
@@ -46,6 +47,11 @@ class HLMFCLRFactory extends AbstractTabFactory {
         $this->_setRowCategoryIndexes();
 
         $this->_setCleanRows( $allRows, $existingRows );
+
+
+        if ( $sheetName == 'hlmfclr' ) {
+            dd( $this->cleanRows );
+        }
     }
 
 
@@ -71,6 +77,12 @@ class HLMFCLRFactory extends AbstractTabFactory {
         $numRows = count( $allRows );
 
         $possibleFirstRowOfData = $this->headerRowIndex + 1;
+
+        // Some sheets don't even have a header that starts with 'loan modif', which is
+        // the test performed below in the _isLoanModForbear() method below.
+        // So let's default the loan mod forbear header line to the top/MAIN header of the sheet.
+        $this->indexes[ self::LOAN_MOD_FORBEAR ] = $possibleFirstRowOfData;
+
         for ( $i = $possibleFirstRowOfData; $i < $numRows; $i++ ):
             if ( $this->_isLoanModForbear( $allRows[ $i ] ) ):
                 $this->indexes[ self::LOAN_MOD_FORBEAR ] = $i;
@@ -128,9 +140,14 @@ class HLMFCLRFactory extends AbstractTabFactory {
 
 
     protected function _isLoanModForbear( $row ): bool {
-        if ( isset( $this->indexes[ self::LOAN_MOD_FORBEAR ] ) ):
-            return FALSE;
-        endif;
+
+        // Commented this out because I started defaulting the index for the
+        // loan mod forbear header row, because sometimes they leave it off.
+        // In those cases, the "header" for that section is just the top/main
+        // header of the sheet.
+//        if ( isset( $this->indexes[ self::LOAN_MOD_FORBEAR ] ) ):
+//            return FALSE;
+//        endif;
 
         if ( $this->_catStartsWith( $row, 'loan modif' ) ):
             return TRUE;
@@ -181,7 +198,6 @@ class HLMFCLRFactory extends AbstractTabFactory {
      * @return void
      */
     protected function _setRowCategoryIndexes(): void {
-
         foreach ( $this->indexes as $name => $subHeaderIndex ):
             if ( self::LAST_ROW == $name ):
                 return;
