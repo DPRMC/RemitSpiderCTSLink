@@ -58,6 +58,8 @@ class DLSRFactory extends AbstractTabFactory {
 
         $this->_setRowCategoryIndexes();
         $this->_setCleanRows( $allRows, $existingRows );
+
+        $this->cleanRows = $this->_removeInvalidRows( $this->cleanRows );
     }
 
 
@@ -341,7 +343,25 @@ class DLSRFactory extends AbstractTabFactory {
         $this->cleanRows = $cleanRows;
     }
 
+
+    /**
+     * @param array $rows
+     * @return array
+     */
     protected function _removeInvalidRows( array $rows = [] ): array {
+        $validRows = [];
+        foreach ( $rows as $category => $rowsByCategory ):
+            if ( ! isset( $validRows[ $category ] ) ):
+                $validRows[ $category ] = [];
+            endif;
+
+            foreach ( $rowsByCategory as $i => $row ):
+                if ( 'NONE TO REPORT' == $row[ 'loan_id' ] ):
+                    continue;
+                endif;
+                $validRows[ $category ][] = $row;
+            endforeach;
+        endforeach;
         return $rows;
     }
 }
