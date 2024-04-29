@@ -59,7 +59,9 @@ class DLSRFactory extends AbstractTabFactory {
         $this->_setRowCategoryIndexes();
         $this->_setCleanRows( $allRows, $existingRows );
 
+        dump($this->cleanRows);
         $this->cleanRows = $this->_removeInvalidRows( $this->cleanRows );
+        dd($this->cleanRows);
     }
 
 
@@ -362,6 +364,6 @@ class DLSRFactory extends AbstractTabFactory {
                 $validRows[ $category ][] = $row;
             endforeach;
         endforeach;
-        return $rows;
+        return $validRows;
     }
 }
