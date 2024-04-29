@@ -347,8 +347,6 @@ class DLSRFactory extends AbstractTabFactory {
 //            endif;
         endforeach;
 
-
-
         $this->cleanRows = $cleanRows;
     }
 
@@ -368,6 +366,13 @@ class DLSRFactory extends AbstractTabFactory {
                 if ( 'NONE TO REPORT' == $row[ 'loan_id' ] ):
                     continue;
                 endif;
+
+                // Remove empty rows.
+                if ( count($row) < 4 ):
+                    continue;
+                endif;
+
+
                 $validRows[ $category ][] = $row;
             endforeach;
         endforeach;
