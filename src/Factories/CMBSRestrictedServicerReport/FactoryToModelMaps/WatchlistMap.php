@@ -6,6 +6,11 @@ use DPRMC\RemitSpiderCTSLink\Eloquent\CustodianCtsCmbsRestrictedServicerReportWa
 
 class WatchlistMap extends AbstractFactoryToModelMap {
 
+
+    public static array $jsonFieldsToIgnore = [
+        'strategy_loan_no', // This has consistently been the same as the loan_id value.
+    ];
+
     /**
      * @var array These are Eloquent model fields that are dates, however the date value is stored in Excel's format. I use this array to "automate" conversion of the data.
      */
