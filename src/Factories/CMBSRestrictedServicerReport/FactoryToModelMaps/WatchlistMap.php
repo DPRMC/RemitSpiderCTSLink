@@ -8,7 +8,7 @@ class WatchlistMap extends AbstractFactoryToModelMap {
 
 
     public static array $jsonFieldsToIgnore = [
-        'strategy_loan_no', // This has consistently been the same as the loan_id value.
+        'strategy_loan_no.', // This has consistently been the same as the loan_id value.
     ];
 
     /**
