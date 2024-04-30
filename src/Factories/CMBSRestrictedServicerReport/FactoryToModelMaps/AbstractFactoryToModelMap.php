@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 abstract class AbstractFactoryToModelMap implements InterfaceFactoryToModelMap {
 
+    public static array $jsonFieldsToIgnore = [];
 
     /**
      * @param array $map
