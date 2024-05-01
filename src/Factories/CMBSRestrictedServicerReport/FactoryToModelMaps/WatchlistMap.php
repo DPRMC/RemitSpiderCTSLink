@@ -91,13 +91,14 @@ class WatchlistMap extends AbstractFactoryToModelMap {
                                                                                                            'watchlist_comments',
                                                                                                            'comment_action_to_be_taken', ],
         CustodianCtsCmbsRestrictedServicerReportWatchlist::informational_or_credit                    => [ 'informational_or_credit',
-                                                                                                           'informational_credit',
-                                                                                                           'or_credit' ],
+                                                                                                           'or_credit',
+                                                                                                           'informational_credit', ],
         CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_physical_occupancy             => [ 'most_recent_physical_occupancy',
                                                                                                            'physical_occupancy' ],
         CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_occupancy_as_of_date           => [ 'most_recent_occupancy_as_of_date',
                                                                                                            'occupancy_as_of_date',
-                                                                                                           'most_recent_occupancy_date', ],
+                                                                                                           'most_recent_occupancy_date',
+                                                                                                           'most_recent_physical_occupancy_as_of_date', ],
 
 
     ];
