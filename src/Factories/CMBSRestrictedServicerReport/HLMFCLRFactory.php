@@ -272,7 +272,12 @@ class HLMFCLRFactory extends AbstractTabFactory {
                 endif;
 
                 // Garbage rows will not have a loan id present.
-                if( empty($row['loan_id'])):
+                if ( empty( $row[ 'loan_id' ] ) ):
+                    continue;
+                endif;
+
+                // An errand header row was sneaking in there.
+                if ( str_contains( $row[ 'loan_id' ], 'Loan ID' ) ):
                     continue;
                 endif;
 
