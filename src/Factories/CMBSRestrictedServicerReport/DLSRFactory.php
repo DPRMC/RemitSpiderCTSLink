@@ -200,6 +200,10 @@ class DLSRFactory extends AbstractTabFactory {
             return TRUE;
         endif;
 
+        if ( str_contains($row[0], 'Questions') ):
+            return TRUE;
+        endif;
+
         if ( $rowIndex >= $numRows ):
             return TRUE;
         endif;
