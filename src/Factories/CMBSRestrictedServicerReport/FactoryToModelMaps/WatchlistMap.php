@@ -9,6 +9,9 @@ class WatchlistMap extends AbstractFactoryToModelMap {
 
     public static array $jsonFieldsToIgnore = [
         'strategy_loan_no.', // This has consistently been the same as the loan_id value.
+        'investor',
+        'determination_dt',
+        'officer_code', // The above four lines are in a block that is unique to just one spreadsheet.
     ];
 
     /**
