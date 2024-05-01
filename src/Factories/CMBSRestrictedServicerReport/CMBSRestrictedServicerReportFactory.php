@@ -486,10 +486,9 @@ class CMBSRestrictedServicerReportFactory {
                 return TRUE;
             endif;
 
-
             // I found a tab labeled 'Total Loan Report CXP-2022-CXP1'
             // So if 'Total Loan' exists in the tab, let's call it a win.
-            if( str_contains($tabName, $sheetName)):
+            if( str_contains($sheetName,$tabName)):
                 return true;
             endif;
         endforeach;
