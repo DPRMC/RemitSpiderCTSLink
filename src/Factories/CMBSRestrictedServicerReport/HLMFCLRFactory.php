@@ -271,6 +271,11 @@ class HLMFCLRFactory extends AbstractTabFactory {
                     continue;
                 endif;
 
+                // Garbage rows will not have a loan id present.
+                if( empty($row['loan_id'])):
+                    continue;
+                endif;
+
 
                 if ( strtolower( 'NONE TO REPORT' ) == strtolower( $row[ 'loan_id' ] ) ):
                     continue;
