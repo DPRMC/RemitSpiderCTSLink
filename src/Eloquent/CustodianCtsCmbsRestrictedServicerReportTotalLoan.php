@@ -16,11 +16,13 @@ class CustodianCtsCmbsRestrictedServicerReportTotalLoan extends Model {
     public $incrementing = TRUE;
 
     const id                                              = 'id';
-    const date                                                          = 'date';
+    const shelf                                           = 'shelf';
+    const series                                          = 'series';
+    const date                                            = 'date';
+    const document_id                                     = 'document_id';
     const created_at                                      = 'created_at';
     const updated_at                                      = 'updated_at';
     const transaction_id                                  = 'transaction_id';
-    const group_id                                        = 'group_id';
     const loan_id                                         = 'loan_id';
     const split_loan_id                                   = 'split_loan_id';
     const original_split_loan_amount                      = 'original_split_loan_amount';
@@ -45,22 +47,24 @@ class CustodianCtsCmbsRestrictedServicerReportTotalLoan extends Model {
     const current_lockbox_status                          = 'current_lockbox_status';
 
     protected $casts = [
-        self::date => 'date',
+        self::shelf                                            => 'string',
+        self::series                                           => 'string',
+        self::date                                             => 'date',
+        self::document_id                                      => 'integer',
         self:: transaction_id                                  => 'string',
-        self:: group_id                                        => 'string',
         self:: loan_id                                         => 'string',
         self:: split_loan_id                                   => 'string',
-        self:: original_split_loan_amount                      => 'string',
+        self:: original_split_loan_amount                      => 'integer',
         self:: prospectus_loan_id                              => 'string',
         self:: loan_contributor_to_securitization              => 'string',
         self:: prospectus_loan_name                            => 'string',
         self:: original_shadow_rating_m_s_f_d                  => 'string',
-        self:: total_loan_amount_at_origination                => 'string',
-        self:: scheduled_principal_balance_at_contribution     => 'string',
-        self:: current_ending_scheduled_balance                => 'string',
-        self:: total_scheduled_p_and_i_due                     => 'string',
-        self:: current_note_rate                               => 'string',
-        self:: paid_through_date                               => 'string',
+        self:: total_loan_amount_at_origination                => 'integer',
+        self:: scheduled_principal_balance_at_contribution     => 'integer',
+        self:: current_ending_scheduled_balance                => 'integer',
+        self:: total_scheduled_p_and_i_due                     => 'float',
+        self:: current_note_rate                               => 'float',
+        self:: paid_through_date                               => 'date',
         self:: sequential_pay_order                            => 'string',
         self:: trustee                                         => 'string',
         self:: master_servicer                                 => 'string',
@@ -73,9 +77,11 @@ class CustodianCtsCmbsRestrictedServicerReportTotalLoan extends Model {
     ];
 
     protected $fillable = [
+        self::shelf,
+        self::series,
         self::date,
+        self::document_id,
         self:: transaction_id,
-        self:: group_id,
         self:: loan_id,
         self:: split_loan_id,
         self:: original_split_loan_amount,
