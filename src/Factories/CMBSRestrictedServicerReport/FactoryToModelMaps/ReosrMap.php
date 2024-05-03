@@ -23,6 +23,7 @@ class ReosrMap extends AbstractFactoryToModelMap {
 
     public static array $map = [
         CustodianCtsCmbsRestrictedServicerReportReosr::date                                                        => [ 'date' ],
+        CustodianCtsCmbsRestrictedServicerReportReosr::document_id                                                 => [ 'document_id' ],
         CustodianCtsCmbsRestrictedServicerReportReosr::trans_id                                                    => [ 'trans_id' ],
         CustodianCtsCmbsRestrictedServicerReportReosr::loan_id                                                     => [ 'loan_id' ],
         CustodianCtsCmbsRestrictedServicerReportReosr::prospectus_loan_id                                          => [ 'prospectus_loan_id',

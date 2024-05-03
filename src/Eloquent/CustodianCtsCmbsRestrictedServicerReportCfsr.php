@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  *
  */
-class CustodianCtsCmbsRestrictedServicerReportCfsr extends Model {
+class CustodianCtsCmbsRestrictedServicerReportCfsr extends AbstractCustodianCtsCmbsRestrictedServicerReportTab {
 
     public $table        = 'custodian_cts_cmbs_restricted_servicer_report_cfsrs';
     public $primaryKey   = self::id;
@@ -16,12 +16,13 @@ class CustodianCtsCmbsRestrictedServicerReportCfsr extends Model {
     public $incrementing = TRUE;
 
     // Pulled from the filename of the parsed json file.1
-    const shelf       = 'shelf';
-    const series      = 'series';
-    const document_id = 'document_id';
+    const shelf  = 'shelf';
+    const series = 'series';
+
 
     const id                                                           = 'id';
-    const date                                                         = 'date';
+//    const date                                                         = 'date';
+//    const document_id                                                  = 'document_id';
     const created_at                                                   = 'created_at';
     const updated_at                                                   = 'updated_at';
     const trans_id                                                     = 'trans_id';
@@ -63,7 +64,8 @@ class CustodianCtsCmbsRestrictedServicerReportCfsr extends Model {
     const net_change_preceding_and_base_year_dscr                      = 'net_change_preceding_and_base_year_dscr';
 
     protected $casts = [
-        self::date                                                          => 'date',
+        self::date                                                         => 'date',
+        self::document_id                                                  => 'integer',
         self::trans_id                                                     => 'string',
         self::loan_id                                                      => 'string',
         self::prospectus_loan_id                                           => 'string',

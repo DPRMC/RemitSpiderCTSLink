@@ -36,7 +36,11 @@ abstract class AbstractTabFactory {
 
     protected array $cleanRows = [];
 
+    /**
+     * @var Carbon|null Date of the file
+     */
     protected ?Carbon $date;
+    protected ?int    $documentId;
 
     protected array $firstColumnValidTextValues = [];
     protected ?int  $dateRowIndex               = NULL;
@@ -54,7 +58,10 @@ abstract class AbstractTabFactory {
     /**
      * @param string|NULL $timezone
      */
-    public function __construct( string $timezone = NULL, string $factoryToModelMapName = NULL ) {
+    public function __construct( string $timezone = NULL,
+                                 string $factoryToModelMapName = NULL,
+                                 Carbon $dateOfFile = NULL,
+                                 int    $documentId = NULL ) {
         if ( $timezone ):
             $this->timezone = $timezone;
         else:
@@ -62,6 +69,9 @@ abstract class AbstractTabFactory {
         endif;
 
         $this->factoryToModelMapName = $factoryToModelMapName;
+
+        $this->date       = $dateOfFile;
+        $this->documentId = $documentId;
     }
 
     abstract protected function _removeInvalidRows( array $rows = [] ): array;
@@ -108,6 +118,11 @@ abstract class AbstractTabFactory {
      * @throws DateNotFoundInHeaderException
      */
     protected function _setDate( array $allRows ): void {
+        // If the date is already set in the constructor, then no need to search the tabs for a date.
+        if ( $this->date ):
+            return;
+        endif;
+
 //        $dateRow    = $allRows[ $dateRowIndex ][ 0 ];
 //        $parts      = explode( ' ', $dateRow );
 //        $stringDate = end( $parts );
@@ -129,7 +144,7 @@ abstract class AbstractTabFactory {
 
         $this->date = NULL;
         //$pattern    = '/^\d{1,2}\/\d{1,2}\/\d{4}$/';                                             // Will match dates like 1/1/2023 or 12/31/2023
-        $pattern    = '/\d{1,2}\/\d{1,2}\/\d{4}/';                                             // Will match dates like 1/1/2023 or 12/31/2023 even when wrapped in other text.
+        $pattern = '/\d{1,2}\/\d{1,2}\/\d{4}/';                                                  // Will match dates like 1/1/2023 or 12/31/2023 even when wrapped in other text.
         //$pattern_2  = '/^\d{8}$/';                                                               // Matches 20230311, but also matches 28010338, so I replaced it with the pattern below.
         $pattern_2 = '/^(\d{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01]))$/';                       //
         $pattern_3 = '/^4\d{4}$/';                                                               // Matches an Excel date. Will DEFINITELY BREAK IN THE FUTURE.
@@ -294,6 +309,11 @@ abstract class AbstractTabFactory {
 
             $newCleanRow = [];
 
+            foreach ( $this->localHeaders as $j => $header ):
+                $data                   = trim( $validRow[ $j ] ?? '' );
+                $newCleanRow[ $header ] = $data;
+            endforeach;
+
             // Some tabs leave the date off.
             // So set a placeholder of NULL for now, and I will "borrow" the date from another tab.
             if ( $this->date ):
@@ -302,10 +322,7 @@ abstract class AbstractTabFactory {
                 $newCleanRow[ 'date' ] = NULL;
             endif;
 
-            foreach ( $this->localHeaders as $j => $header ):
-                $data                   = trim( $validRow[ $j ] ?? '' );
-                $newCleanRow[ $header ] = $data;
-            endforeach;
+            $newCleanRow['document_id'] = $this->documentId;
 
             // KLUDGE
             // I have empty rows coming in, and I dont want to bother finding out why.

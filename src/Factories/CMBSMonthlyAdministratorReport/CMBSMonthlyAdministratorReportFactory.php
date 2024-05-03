@@ -2,11 +2,9 @@
 
 namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSMonthlyAdministratorReport;
 
+use Carbon\Carbon;
 use DPRMC\Excel\Excel;
 use DPRMC\RemitSpiderCTSLink\Eloquent\CustodianCtsLink;
-use DPRMC\RemitSpiderCTSLink\Exceptions\HLMFLCRTabMissingSomeCategoriesException;
-use DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException;
-use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\AtLeastOneTabNotFoundException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\NoDatesInTabsException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\ProbablyExcelDateException;
 use DPRMC\RemitSpiderCTSLink\Factories\HeaderTrait;
@@ -24,15 +22,21 @@ class CMBSMonthlyAdministratorReportFactory {
     public array $exceptions = [];
     public array $alerts     = [];
 
+    protected ?Carbon      $dateOfFile;
+    public readonly int $documentId;
+
     /**
      * @param string|NULL $timezone
      */
-    public function __construct( string $timezone = NULL ) {
+    public function __construct( string $timezone = NULL, Carbon $dateOfFile = NULL, int $documentId = NULL ) {
         if ( $timezone ):
             $this->timezone = $timezone;
         else:
             $this->timezone = self::DEFAULT_TIMEZONE;
         endif;
+
+        $this->dateOfFile = $dateOfFile;
+        $this->documentId = $documentId;
     }
 
 

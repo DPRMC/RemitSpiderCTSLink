@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 abstract class AbstractFactoryToModelMap implements InterfaceFactoryToModelMap {
 
+    public static array $jsonFieldsToIgnore = [];
 
     /**
      * @param array $map
@@ -32,7 +33,7 @@ abstract class AbstractFactoryToModelMap implements InterfaceFactoryToModelMap {
             endforeach;
         endforeach;
 
-        throw new FieldNotFoundException( "CTS: Add to MAP array. The json field did not have a mapping to a property in the eloquent model: " . $jsonField . " so search for something spelled like this field.",
+        throw new FieldNotFoundException( "CTS: Add to MAP array. 'Look at the comment above to know which map.' The json field did not have a mapping to a property in the eloquent model: [" . $jsonField . "] so search for something spelled like this field.",
                                           0,
                                           NULL,
                                           $map,

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  *
  */
-class CustodianCtsCmbsRestrictedServicerReportWatchlist extends Model {
+class CustodianCtsCmbsRestrictedServicerReportWatchlist extends AbstractCustodianCtsCmbsRestrictedServicerReportTab {
 
     public $table        = 'custodian_cts_cmbs_restricted_servicer_report_watchlists';
     public $primaryKey   = self::id;
@@ -16,7 +16,8 @@ class CustodianCtsCmbsRestrictedServicerReportWatchlist extends Model {
     public $incrementing = TRUE;
 
     const id                                         = 'id';
-    const date                                                          = 'date';
+//    const date                                       = 'date';
+//    const document_id                                = 'document_id';
     const created_at                                 = 'created_at';
     const updated_at                                 = 'updated_at';
     const trans_id                                   = 'trans_id';
@@ -43,55 +44,56 @@ class CustodianCtsCmbsRestrictedServicerReportWatchlist extends Model {
     const most_recent_occupancy_as_of_date           = 'most_recent_occupancy_as_of_date';
 
     protected $casts = [
-        self::date => 'date',
-        self:: trans_id                                   => 'string',
-        self:: group_id                                   => 'string',
-        self:: loan_id                                    => 'string',
-        self:: prospectus_loan_id                         => 'string',
-        self:: property_name                              => 'string',
-        self:: property_type                              => 'string',
-        self:: property_city                              => 'string',
-        self:: property_state                             => 'string',
-        self:: date_added_to_servicer_watchlist           => 'string',
-        self:: current_ending_scheduled_balance           => 'string',
-        self:: paid_thru_date                             => 'string',
-        self:: maturity_date                              => 'string',
-        self:: preceding_fy_dscr_noi_ncf                  => 'string',
-        self:: preceding_fiscal_year_financial_as_of_date => 'string',
-        self:: most_recent_dscr_noi_ncf                   => 'string',
-        self:: most_recent_financial_as_of_start_date     => 'string',
-        self:: most_recent_financial_as_of_end_date       => 'string',
-        self:: servicer_watch_list_code                   => 'string',
-        self:: comments_servicer_watchlist                => 'string',
-        self:: informational_or_credit                    => 'string',
-        self:: most_recent_physical_occupancy             => 'string',
-        self:: most_recent_occupancy_as_of_date           => 'string',
+        self::date                                       => 'date',
+        self::document_id                                => 'integer',
+        self::trans_id                                   => 'string',
+        self::group_id                                   => 'string',
+        self::loan_id                                    => 'string',
+        self::prospectus_loan_id                         => 'string',
+        self::property_name                              => 'string',
+        self::property_type                              => 'string',
+        self::property_city                              => 'string',
+        self::property_state                             => 'string',
+        self::date_added_to_servicer_watchlist           => 'string',
+        self::current_ending_scheduled_balance           => 'string',
+        self::paid_thru_date                             => 'string',
+        self::maturity_date                              => 'string',
+        self::preceding_fy_dscr_noi_ncf                  => 'string',
+        self::preceding_fiscal_year_financial_as_of_date => 'string',
+        self::most_recent_dscr_noi_ncf                   => 'string',
+        self::most_recent_financial_as_of_start_date     => 'string',
+        self::most_recent_financial_as_of_end_date       => 'string',
+        self::servicer_watch_list_code                   => 'string',
+        self::comments_servicer_watchlist                => 'string',
+        self::informational_or_credit                    => 'string',
+        self::most_recent_physical_occupancy             => 'string',
+        self::most_recent_occupancy_as_of_date           => 'string',
     ];
 
     protected $fillable = [
         self::date,
-        self:: trans_id,
-        self:: group_id,
-        self:: loan_id,
-        self:: prospectus_loan_id,
-        self:: property_name,
-        self:: property_type,
-        self:: property_city,
-        self:: property_state,
-        self:: date_added_to_servicer_watchlist,
-        self:: current_ending_scheduled_balance,
-        self:: paid_thru_date,
-        self:: maturity_date,
-        self:: preceding_fy_dscr_noi_ncf,
-        self:: preceding_fiscal_year_financial_as_of_date,
-        self:: most_recent_dscr_noi_ncf,
-        self:: most_recent_financial_as_of_start_date,
-        self:: most_recent_financial_as_of_end_date,
-        self:: servicer_watch_list_code,
-        self:: comments_servicer_watchlist,
-        self:: informational_or_credit,
-        self:: most_recent_physical_occupancy,
-        self:: most_recent_occupancy_as_of_date,
+        self::trans_id,
+        self::group_id,
+        self::loan_id,
+        self::prospectus_loan_id,
+        self::property_name,
+        self::property_type,
+        self::property_city,
+        self::property_state,
+        self::date_added_to_servicer_watchlist,
+        self::current_ending_scheduled_balance,
+        self::paid_thru_date,
+        self::maturity_date,
+        self::preceding_fy_dscr_noi_ncf,
+        self::preceding_fiscal_year_financial_as_of_date,
+        self::most_recent_dscr_noi_ncf,
+        self::most_recent_financial_as_of_start_date,
+        self::most_recent_financial_as_of_end_date,
+        self::servicer_watch_list_code,
+        self::comments_servicer_watchlist,
+        self::informational_or_credit,
+        self::most_recent_physical_occupancy,
+        self::most_recent_occupancy_as_of_date,
     ];
 
 

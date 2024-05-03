@@ -52,6 +52,7 @@ class HLMFCLRMap extends AbstractFactoryToModelMap {
      */
     public static array $map = [
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::date                                                   => [ 'date' ],
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::document_id                                            => [ 'document_id' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::category                                               => [ 'category' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::trans_id                                               => [ 'trans_id' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::group_id                                               => [ 'group_id' ],
@@ -63,7 +64,8 @@ class HLMFCLRMap extends AbstractFactoryToModelMap {
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::most_recent_master_servicer_return_date                => [ 'most_recent_master_servicer_return_date' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::date_of_last_modification                              => [ 'date_of_last_modification' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::balance_when_sent_to_special_servicer                  => [ 'balance_when_sent_to_special_servicer' ],
-        CustodianCtsCmbsRestrictedServicerReportHlmfclr::balance_at_the_effective_date_of_modification          => [ 'balance_at_the_effective_date_of_modification' ],
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::balance_at_the_effective_date_of_modification          => [ 'balance_at_the_effective_date_of_modification',
+                                                                                                                     'balance_at_the_effective_date_of_modificaiton' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::old_note_rate                                          => [ 'old_note_rate' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::number_of_months_for_rate_change                       => [ 'number_of_months_for_rate_change' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::modified_note_rate                                     => [ 'modified_note_rate' ],
@@ -74,7 +76,8 @@ class HLMFCLRMap extends AbstractFactoryToModelMap {
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::total_months_for_change_of_modification                => [ 'total_months_for_change_of_modification' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::realized_loss_to_trust                                 => [ 'realized_loss_to_trust' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::estimated_future_interest_loss_to_trust_rate_reduction => [ 'estimated_future_interest_loss_to_trust_rate_reduction' ],
-        CustodianCtsCmbsRestrictedServicerReportHlmfclr::comments_hlmr_cml                                      => [ 'comments_hlmfclr' ],
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::comments_hlmfclr                                       => [ 'comments_hlmfclr',
+                                                                                                                     'comments_hlmr_cml' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::modification_execution_date                            => [ 'modification_execution_date' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::modification_booking_date                              => [ 'modification_booking_date' ],
     ];

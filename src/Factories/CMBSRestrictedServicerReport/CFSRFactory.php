@@ -36,6 +36,16 @@ class CFSRFactory extends AbstractTabFactory {
             $trimmedValue = trim( $row[ 0 ] );
 
             if ( in_array( $trimmedValue, $firstColumnValidTextValues ) ):
+
+                // Check for a two column header
+                $secondRowHeader = strtolower(trim($allRows[$i+1][0])); // Might be ID, but a "valid row" value would be WFCM 2016-C32
+                if('id' == $secondRowHeader):
+                    $this->headerRowIndex = $i+1; // Used in other methods of this class.
+                    $headerRow            = $row; // But keep the top row that contains most of the header data.
+                    break;
+                endif;
+
+                // Else this is just a regular one row header
                 $this->headerRowIndex = $i; // Used in other methods of this class.
                 $headerRow            = $row;
                 break;

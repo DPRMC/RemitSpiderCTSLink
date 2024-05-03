@@ -5,9 +5,16 @@ namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Factor
 use DPRMC\RemitSpiderCTSLink\Eloquent\CustodianCtsCmbsRestrictedServicerReportLlResLoc;
 
 class LlResLocMap extends AbstractFactoryToModelMap {
+    public static array $jsonFieldsToIgnore = [
+        'reserve_seq._#',
+        'determination_date',
+        'investor_#',
+        'strategy_loan_no.',
+    ];
 
     public static array $map = [
         CustodianCtsCmbsRestrictedServicerReportLlResLoc::date                             => [ 'date' ],
+        CustodianCtsCmbsRestrictedServicerReportLlResLoc::document_id                      => [ 'document_id' ],
         CustodianCtsCmbsRestrictedServicerReportLlResLoc::trans_id                         => [ 'trans_id' ],
         CustodianCtsCmbsRestrictedServicerReportLlResLoc::group_id                         => [ 'group_id' ],
         CustodianCtsCmbsRestrictedServicerReportLlResLoc::loan_id                          => [ 'loan_id' ],

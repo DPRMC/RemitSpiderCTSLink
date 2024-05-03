@@ -58,6 +58,8 @@ class DLSRFactory extends AbstractTabFactory {
 
         $this->_setRowCategoryIndexes();
         $this->_setCleanRows( $allRows, $existingRows );
+
+        $this->cleanRows = $this->_removeInvalidRows( $this->cleanRows );
     }
 
 
@@ -198,6 +200,10 @@ class DLSRFactory extends AbstractTabFactory {
             return TRUE;
         endif;
 
+        if ( str_contains($row[0], 'Questions') ):
+            return TRUE;
+        endif;
+
         if ( $rowIndex >= $numRows ):
             return TRUE;
         endif;
@@ -312,7 +318,10 @@ class DLSRFactory extends AbstractTabFactory {
     protected function _setCleanRows( array $allRows, array $existingRows = [] ): void {
         $cleanRows = $existingRows;
 
+
         foreach ( $this->rowCategoryIndexes as $name => $bookends ):
+
+
             $cleanRows[ $name ] = [];
             $length             = $bookends[ self::END ] - $bookends[ self::START ];
             $validRows          = array_slice( $allRows, $bookends[ self::START ], $length );
@@ -322,25 +331,54 @@ class DLSRFactory extends AbstractTabFactory {
                 if ( empty( $firstCell ) ):
                     continue;
                 endif;
-                $newCleanRow               = [];
-                $newCleanRow[ 'date' ]     = empty( $this->date ) ? NULL : $this->date->toDateString();
-                $newCleanRow[ 'category' ] = $name;
+                $newCleanRow                  = [];
+                $newCleanRow[ 'date' ]        = empty( $this->date ) ? NULL : $this->date->toDateString();
+                $newCleanRow[ 'document_id' ] = $this->documentId;
+                $newCleanRow[ 'category' ]    = $name;
                 foreach ( $this->localHeaders as $j => $header ):
 
                     // Let's just make sure we have consistent header/field values.
-                    $header = AbstractFactoryToModelMap::getCommonFieldName(DlsrMap::$map,$header);
+                    $header = AbstractFactoryToModelMap::getCommonFieldName( DlsrMap::$map, $header );
 
                     $newCleanRow[ $header ] = trim( $validRow[ $j ] ?? '' );
                 endforeach;
                 $cleanRows[ $name ][] = $newCleanRow;
 //                $cleanRows[ $name ][ $newCleanRow[ 'loan_id' ] ] = $newCleanRow;
             endforeach;
+
+//            if ( 'cur_spec_serv' == $name ):
+//               dd($cleanRows);
+//            endif;
         endforeach;
 
         $this->cleanRows = $cleanRows;
     }
 
+
+    /**
+     * @param array $rows
+     * @return array
+     */
     protected function _removeInvalidRows( array $rows = [] ): array {
-        return $rows;
+        $validRows = [];
+        foreach ( $rows as $category => $rowsByCategory ):
+            if ( ! isset( $validRows[ $category ] ) ):
+                $validRows[ $category ] = [];
+            endif;
+
+            foreach ( $rowsByCategory as $i => $row ):
+                // Remove empty rows.
+                if ( count($row) < 4 ):
+                    continue;
+                endif;
+
+                if ( 'NONE TO REPORT' == $row[ 'loan_id' ] ):
+                    continue;
+                endif;
+
+                $validRows[ $category ][] = $row;
+            endforeach;
+        endforeach;
+        return $validRows;
     }
 }

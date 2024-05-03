@@ -4,11 +4,16 @@ namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 
 class HLMFCLRFactory extends AbstractTabFactory {
 
-    protected array $firstColumnValidTextValues = [ 'Trans ID', 'Trans' ];
+    protected array $firstColumnValidTextValues = [ 'Trans ID',
+                                                    'Trans',
+                                                    "Trans\nID",
+    ];
+
 
     const LOAN_MOD_FORBEAR     = 'loan_modifications_forbearance';   // Loan Modifications/Forbearance
     const CORRECTED_MORT_LOANS = 'corrected_mortgage_loans';         // Corrected Mortgage Loans:
     const LAST_ROW             = 'last_row';                         // Total For All Loans:
+
 
     protected array $indexes = [
         self::LOAN_MOD_FORBEAR     => NULL,
@@ -16,16 +21,20 @@ class HLMFCLRFactory extends AbstractTabFactory {
         self::LAST_ROW             => NULL,
     ];
 
+
     const START = 'start';
     const END   = 'end';
+
+
     protected array $rowCategoryIndexes = [
         self::LOAN_MOD_FORBEAR     => [ self::START => NULL, self::END => NULL ],
         self::CORRECTED_MORT_LOANS => [ self::START => NULL, self::END => NULL ],
     ];
 
 
-    protected function _setParsedRows( array $allRows, string $sheetName = null, array $existingRows = [] ): void {
+    protected function _setParsedRows( array $allRows, string $sheetName = NULL, array $existingRows = [] ): void {
         $this->_setCategoryIndexes( $allRows );
+
 
 // I wrote this, but in fact some of the HLM sheets just WON'T have these indexes.
 //        if ( $this->_isMissingSomeIndexes() ):
@@ -38,6 +47,11 @@ class HLMFCLRFactory extends AbstractTabFactory {
         $this->_setRowCategoryIndexes();
 
         $this->_setCleanRows( $allRows, $existingRows );
+
+        $this->cleanRows = $this->_removeInvalidRows( $this->cleanRows );
+//        if ( $sheetName == 'hlmfclr' ) {
+//            dd( $this->cleanRows );
+//        }
     }
 
 
@@ -63,6 +77,12 @@ class HLMFCLRFactory extends AbstractTabFactory {
         $numRows = count( $allRows );
 
         $possibleFirstRowOfData = $this->headerRowIndex + 1;
+
+        // Some sheets don't even have a header that starts with 'loan modif', which is
+        // the test performed below in the _isLoanModForbear() method below.
+        // So let's default the loan mod forbear header line to the top/MAIN header of the sheet.
+        $this->indexes[ self::LOAN_MOD_FORBEAR ] = $possibleFirstRowOfData;
+
         for ( $i = $possibleFirstRowOfData; $i < $numRows; $i++ ):
             if ( $this->_isLoanModForbear( $allRows[ $i ] ) ):
                 $this->indexes[ self::LOAN_MOD_FORBEAR ] = $i;
@@ -120,10 +140,28 @@ class HLMFCLRFactory extends AbstractTabFactory {
 
 
     protected function _isLoanModForbear( $row ): bool {
-        if ( isset( $this->indexes[ self::LOAN_MOD_FORBEAR ] ) ):
-            return FALSE;
+
+        // Commented this out because I started defaulting the index for the
+        // loan mod forbear header row, because sometimes they leave it off.
+        // In those cases, the "header" for that section is just the top/main
+        // header of the sheet.
+//        if ( isset( $this->indexes[ self::LOAN_MOD_FORBEAR ] ) ):
+//            return FALSE;
+//        endif;
+
+        if ( $this->_catStartsWith( $row, 'loan modif' ) ):
+            return TRUE;
         endif;
-        return $this->_catStartsWith( $row, 'loan modif' );
+
+        foreach ( $row as $i => $cell ):
+            $haystack = strtolower( $cell );
+            $needle   = 'forbearance';
+            if ( str_contains( $haystack, $needle ) ):
+                return TRUE;
+            endif;
+        endforeach;
+
+        return FALSE;
     }
 
     protected function _isCorrectedMortgageLoans( $row ): bool {
@@ -140,7 +178,19 @@ class HLMFCLRFactory extends AbstractTabFactory {
             return FALSE;
         endif;
 
-        return $this->_catStartsWith( $row, 'total for' );
+        if ( $this->_catStartsWith( $row, 'total for' ) ):
+            return TRUE;
+        endif;
+
+        $needle = strtolower( 'THIS REPORT IS HISTORICAL' );
+        foreach ( $row as $i => $cell ):
+            $haystack = strtolower( $cell );
+            if ( str_contains( $haystack, $needle ) ):
+                return TRUE;
+            endif;
+        endforeach;
+
+        return FALSE;
     }
 
 
@@ -192,9 +242,10 @@ class HLMFCLRFactory extends AbstractTabFactory {
                 if ( empty( $firstCell ) ):
                     continue;
                 endif;
-                $newCleanRow               = [];
-                $newCleanRow[ 'date' ]     = empty( $this->date ) ? NULL : $this->date->toDateString();
-                $newCleanRow[ 'category' ] = $name;
+                $newCleanRow                  = [];
+                $newCleanRow[ 'date' ]        = empty( $this->date ) ? NULL : $this->date->toDateString();
+                $newCleanRow[ 'category' ]    = $name;
+                $newCleanRow[ 'document_id' ] = $this->documentId;
                 foreach ( $this->localHeaders as $j => $header ):
                     $newCleanRow[ $header ] = trim( $validRow[ $j ] ?? '' );
                 endforeach;
@@ -206,6 +257,44 @@ class HLMFCLRFactory extends AbstractTabFactory {
     }
 
     protected function _removeInvalidRows( array $rows = [] ): array {
-        return $rows;
+        $validRows = [];
+
+
+        foreach ( $rows as $category => $rowsByCategory ):
+            if ( ! isset( $validRows[ $category ] ) ):
+                $validRows[ $category ] = [];
+            endif;
+
+            foreach ( $rowsByCategory as $i => $row ):
+                // Remove empty rows.
+                if ( count( $row ) < 4 ):
+                    continue;
+                endif;
+
+                // Garbage rows will not have a loan id present.
+                if ( empty( $row[ 'loan_id' ] ) ):
+                    continue;
+                endif;
+
+                // An errand header row was sneaking in there.
+                if ( str_contains( $row[ 'loan_id' ], 'Loan ID' ) ):
+                    continue;
+                endif;
+
+
+                if ( strtolower( 'NONE TO REPORT' ) == strtolower( $row[ 'loan_id' ] ) ):
+                    continue;
+                endif;
+
+                if ( strtolower( 'NONE TO REPORT' ) == strtolower( $row[ 'trans_id' ] ) ):
+                    continue;
+                endif;
+
+                $validRows[ $category ][] = $row;
+            endforeach;
+        endforeach;
+
+
+        return $validRows;
     }
 }
