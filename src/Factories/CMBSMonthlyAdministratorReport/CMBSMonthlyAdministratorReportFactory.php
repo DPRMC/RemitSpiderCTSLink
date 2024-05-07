@@ -9,6 +9,8 @@ use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\N
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\ProbablyExcelDateException;
 use DPRMC\RemitSpiderCTSLink\Factories\HeaderTrait;
 use DPRMC\RemitSpiderCTSLink\Models\CMBSMonthlyAdministratorReport\CMBSMonthlyAdministratorReport;
+use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Date;
+use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Helpers;
 
 class CMBSMonthlyAdministratorReportFactory {
 
@@ -22,7 +24,7 @@ class CMBSMonthlyAdministratorReportFactory {
     public array $exceptions = [];
     public array $alerts     = [];
 
-    protected ?Carbon      $dateOfFile;
+    protected ?Carbon   $dateOfFile;
     public readonly int $documentId;
 
     /**
@@ -87,6 +89,8 @@ class CMBSMonthlyAdministratorReportFactory {
                 $headers = $this->_cleanTheHeaders( $headers );
 
                 $lpu = $this->_getLpuData( $headers, $rows, $ctsLink );
+
+                dd( $lpu );
             } catch ( \Carbon\Exceptions\InvalidFormatException $exception ) {
                 $newException = new ProbablyExcelDateException( $exception->getMessage(),
                                                                 $exception->getCode(),
@@ -132,7 +136,13 @@ class CMBSMonthlyAdministratorReportFactory {
 
 
             foreach ( $row as $j => $value ):
-                $newRow[ $headers[ $j ] ] = $value;
+                if ( 'paid_thru_date' == $headers[ $j ] && is_numeric($headers[ $j ]) ):
+                    $newRow[ $headers[ $j ] ] = Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value));
+                else:
+                    $newRow[ $headers[ $j ] ] = $value;
+                endif;
+
+
             endforeach;
             $parsedData[] = $newRow;
         endforeach;
