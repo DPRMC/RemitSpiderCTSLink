@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  *
  */
-class CustodianCtsCmbsRestrictedServicerReportTotalLoan extends AbstractCustodianCtsCmbsRestrictedServicerReportTab {
+class CustodianCtsCmbsRestrictedServicerReportTotalLoan extends Model {
 
     public $table        = 'custodian_cts_cmbs_restricted_servicer_report_total_loans';
     public $primaryKey   = self::id;
@@ -16,12 +16,13 @@ class CustodianCtsCmbsRestrictedServicerReportTotalLoan extends AbstractCustodia
     public $incrementing = TRUE;
 
     const id                                              = 'id';
-//    const date                                            = 'date';
-//    const document_id                                     = 'document_id';
+    const shelf                                           = 'shelf';
+    const series                                          = 'series';
+    const date                                            = 'date';
+    const document_id                                     = 'document_id';
     const created_at                                      = 'created_at';
     const updated_at                                      = 'updated_at';
     const transaction_id                                  = 'transaction_id';
-    const group_id                                        = 'group_id';
     const loan_id                                         = 'loan_id';
     const split_loan_id                                   = 'split_loan_id';
     const original_split_loan_amount                      = 'original_split_loan_amount';
@@ -46,60 +47,63 @@ class CustodianCtsCmbsRestrictedServicerReportTotalLoan extends AbstractCustodia
     const current_lockbox_status                          = 'current_lockbox_status';
 
     protected $casts = [
-        self::date                                            => 'date',
-        self::document_id                                     => 'integer',
-        self::transaction_id                                  => 'string',
-        self::group_id                                        => 'string',
-        self::loan_id                                         => 'string',
-        self::split_loan_id                                   => 'string',
-        self::original_split_loan_amount                      => 'string',
-        self::prospectus_loan_id                              => 'string',
-        self::loan_contributor_to_securitization              => 'string',
-        self::prospectus_loan_name                            => 'string',
-        self::original_shadow_rating_m_s_f_d                  => 'string',
-        self::total_loan_amount_at_origination                => 'string',
-        self::scheduled_principal_balance_at_contribution     => 'string',
-        self::current_ending_scheduled_balance                => 'string',
-        self::total_scheduled_p_and_i_due                     => 'string',
-        self::current_note_rate                               => 'string',
-        self::paid_through_date                               => 'string',
-        self::sequential_pay_order                            => 'string',
-        self::trustee                                         => 'string',
-        self::master_servicer                                 => 'string',
-        self::advancing_servicer                              => 'string',
-        self::special_servicer                                => 'string',
-        self::special_servicer_workout_control_type           => 'string',
-        self::current_controlling_holder_or_operating_advisor => 'string',
-        self::controlling_class_rights                        => 'string',
-        self::current_lockbox_status                          => 'string',
+        self::shelf                                            => 'string',
+        self::series                                           => 'string',
+        self::date                                             => 'date',
+        self::document_id                                      => 'integer',
+        self:: transaction_id                                  => 'string',
+        self:: loan_id                                         => 'string',
+        self:: split_loan_id                                   => 'string',
+        self:: original_split_loan_amount                      => 'integer',
+        self:: prospectus_loan_id                              => 'string',
+        self:: loan_contributor_to_securitization              => 'string',
+        self:: prospectus_loan_name                            => 'string',
+        self:: original_shadow_rating_m_s_f_d                  => 'string',
+        self:: total_loan_amount_at_origination                => 'integer',
+        self:: scheduled_principal_balance_at_contribution     => 'integer',
+        self:: current_ending_scheduled_balance                => 'integer',
+        self:: total_scheduled_p_and_i_due                     => 'float',
+        self:: current_note_rate                               => 'float',
+        self:: paid_through_date                               => 'date',
+        self:: sequential_pay_order                            => 'string',
+        self:: trustee                                         => 'string',
+        self:: master_servicer                                 => 'string',
+        self:: advancing_servicer                              => 'string',
+        self:: special_servicer                                => 'string',
+        self:: special_servicer_workout_control_type           => 'string',
+        self:: current_controlling_holder_or_operating_advisor => 'string',
+        self:: controlling_class_rights                        => 'string',
+        self:: current_lockbox_status                          => 'string',
     ];
 
     protected $fillable = [
+        self::shelf,
+        self::series,
         self::date,
-        self::transaction_id,
-        self::group_id,
-        self::loan_id,
-        self::split_loan_id,
-        self::original_split_loan_amount,
-        self::prospectus_loan_id,
-        self::loan_contributor_to_securitization,
-        self::prospectus_loan_name,
-        self::original_shadow_rating_m_s_f_d,
-        self::total_loan_amount_at_origination,
-        self::scheduled_principal_balance_at_contribution,
-        self::current_ending_scheduled_balance,
-        self::total_scheduled_p_and_i_due,
-        self::current_note_rate,
-        self::paid_through_date,
-        self::sequential_pay_order,
-        self::trustee,
-        self::master_servicer,
-        self::advancing_servicer,
-        self::special_servicer,
-        self::special_servicer_workout_control_type,
-        self::current_controlling_holder_or_operating_advisor,
-        self::controlling_class_rights,
-        self::current_lockbox_status,
+        self::document_id,
+        self:: transaction_id,
+        self:: loan_id,
+        self:: split_loan_id,
+        self:: original_split_loan_amount,
+        self:: prospectus_loan_id,
+        self:: loan_contributor_to_securitization,
+        self:: prospectus_loan_name,
+        self:: original_shadow_rating_m_s_f_d,
+        self:: total_loan_amount_at_origination,
+        self:: scheduled_principal_balance_at_contribution,
+        self:: current_ending_scheduled_balance,
+        self:: total_scheduled_p_and_i_due,
+        self:: current_note_rate,
+        self:: paid_through_date,
+        self:: sequential_pay_order,
+        self:: trustee,
+        self:: master_servicer,
+        self:: advancing_servicer,
+        self:: special_servicer,
+        self:: special_servicer_workout_control_type,
+        self:: current_controlling_holder_or_operating_advisor,
+        self:: controlling_class_rights,
+        self:: current_lockbox_status,
     ];
 
 
