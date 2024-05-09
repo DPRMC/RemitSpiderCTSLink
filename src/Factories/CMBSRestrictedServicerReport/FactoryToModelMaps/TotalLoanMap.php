@@ -66,6 +66,7 @@ class TotalLoanMap extends AbstractFactoryToModelMap {
         CustodianCtsCmbsRestrictedServicerReportTotalLoan::controlling_class_rights                        => ['controlling_class_rights'],
         CustodianCtsCmbsRestrictedServicerReportTotalLoan::current_lockbox_status                          => ['current_lockbox_status'],
         CustodianCtsCmbsRestrictedServicerReportTotalLoan::date                                            => ['date'],
-        CustodianCtsCmbsRestrictedServicerReportTotalLoan::document_id                                     => ['document_id']
+        CustodianCtsCmbsRestrictedServicerReportTotalLoan::document_id                                     => ['document_id'],
+        CustodianCtsCmbsRestrictedServicerReportTotalLoan::group_id                                        => ['group_id']
     ];
 }

@@ -45,6 +45,7 @@ class CustodianCtsCmbsRestrictedServicerReportTotalLoan extends Model {
     const current_controlling_holder_or_operating_advisor = 'current_controlling_holder_or_operating_advisor';
     const controlling_class_rights                        = 'controlling_class_rights';
     const current_lockbox_status                          = 'current_lockbox_status';
+    const group_id                                        = 'group_id';
 
     protected $casts = [
         self::shelf                                            => 'string',
@@ -74,6 +75,7 @@ class CustodianCtsCmbsRestrictedServicerReportTotalLoan extends Model {
         self:: current_controlling_holder_or_operating_advisor => 'string',
         self:: controlling_class_rights                        => 'string',
         self:: current_lockbox_status                          => 'string',
+        self::group_id                                         => 'string'
     ];
 
     protected $fillable = [
@@ -104,6 +106,7 @@ class CustodianCtsCmbsRestrictedServicerReportTotalLoan extends Model {
         self:: current_controlling_holder_or_operating_advisor,
         self:: controlling_class_rights,
         self:: current_lockbox_status,
+        self::group_id
     ];
 
 
