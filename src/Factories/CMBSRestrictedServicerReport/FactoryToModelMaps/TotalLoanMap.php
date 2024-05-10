@@ -7,18 +7,14 @@ use DPRMC\RemitSpiderCTSLink\Eloquent\CustodianCtsCmbsRestrictedServicerReportTo
 class TotalLoanMap extends AbstractFactoryToModelMap {
 
 
-//    public static array $jsonFieldsToIgnore = [
-//        'strategy_loan_no.', // This has consistently been the same as the loan_id value.
-//        'investor',
-//        'determination_dt',
-//        'officer_code', // The above four lines are in a block that is unique to just one spreadsheet.
-//    ];
+    public static array $jsonFieldsToIgnore = [];
 
     /**
      * @var array These are Eloquent model fields that are dates, however the date value is stored in Excel's format. I use this array to "automate" conversion of the data.
      */
     public static array $excelDateFields = [
-
+        CustodianCtsCmbsRestrictedServicerReportTotalLoan::date,
+        CustodianCtsCmbsRestrictedServicerReportTotalLoan::paid_through_date
     ];
 
 
@@ -26,19 +22,15 @@ class TotalLoanMap extends AbstractFactoryToModelMap {
      * @var array Remove commas and currency glyphs from these guys.
      */
     public static array $numericFields = [
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::current_net_rentable_sqft_or_number_of_units_beds_rooms,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::current_ending_scheduled_balance,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::cumulative_aser_amount,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::total_p_and_i_advance_outstanding,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::other_expenses_advances_outstanding,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::total_t_and_i_advance_outstanding,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::cumulative_accrued_unpaid_advance_interest,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::total_exposure,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::total_scheduled_p_and_i_due,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::dscr_noi_ncf,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_value,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::loss_using_90percent_of_most_recent_value,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::ara_appraisal_reduction_amount
+        CustodianCtsCmbsRestrictedServicerReportTotalLoan::document_id,
+        CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination,
+        CustodianCtsCmbsRestrictedServicerReportTotalLoan::original_split_loan_amount,
+        CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination,
+        CustodianCtsCmbsRestrictedServicerReportTotalLoan::scheduled_principal_balance_at_contribution,
+        CustodianCtsCmbsRestrictedServicerReportTotalLoan::current_ending_scheduled_balance,
+        CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_scheduled_p_and_i_due,
+        CustodianCtsCmbsRestrictedServicerReportTotalLoan::current_note_rate
+
     ];
 
     public static array $map = [
