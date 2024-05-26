@@ -68,7 +68,8 @@ class TotalLoanMap extends AbstractFactoryToModelMap {
                                                                                                                 'note_rate'],
         CustodianCtsCmbsRestrictedServicerReportTotalLoan::paid_through_date                               => [
                                                                                                                 'paid_through_date',
-                                                                                                                'through_date'],
+                                                                                                                'through_date',
+                                                                                                                'paid_thru_date',],
         CustodianCtsCmbsRestrictedServicerReportTotalLoan::sequential_pay_order                            => [
                                                                                                                 'sequential_pay_order',
                                                                                                                 'pay_order'],
