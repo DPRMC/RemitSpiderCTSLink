@@ -64,7 +64,8 @@ class HLMFCLRMap extends AbstractFactoryToModelMap {
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::most_recent_master_servicer_return_date                => [ 'most_recent_master_servicer_return_date',
                                                                                                                      'servicer_return_date', // Found one with a header split over 4 rows. I was only reading the last 2.
         ],
-        CustodianCtsCmbsRestrictedServicerReportHlmfclr::date_of_last_modification                              => [ 'date_of_last_modification' ],
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::date_of_last_modification                              => [ 'date_of_last_modification',
+                                                                                                                     'last_modification', ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::balance_when_sent_to_special_servicer                  => [ 'balance_when_sent_to_special_servicer' ],
         CustodianCtsCmbsRestrictedServicerReportHlmfclr::balance_at_the_effective_date_of_modification          => [ 'balance_at_the_effective_date_of_modification',
                                                                                                                      'balance_at_the_effective_date_of_modificaiton' ],
