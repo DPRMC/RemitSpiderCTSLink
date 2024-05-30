@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class AbstractCustodianCtsCmbsRestrictedServicerReportTab extends Model {
 
+    const id = 'id';
     const shelf       = 'shelf';
     const series      = 'series';
     const date        = 'date';
