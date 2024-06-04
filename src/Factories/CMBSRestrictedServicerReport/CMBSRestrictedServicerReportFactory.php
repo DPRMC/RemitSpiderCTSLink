@@ -5,6 +5,7 @@ namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 use Carbon\Carbon;
 use DPRMC\Excel\Excel;
 use DPRMC\RemitSpiderCTSLink\Eloquent\CustodianCtsLink;
+use DPRMC\RemitSpiderCTSLink\Exceptions\DuplicatesInHeaderRowException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\HLMFLCRTabMissingSomeCategoriesException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\AtLeastOneTabNotFoundException;
@@ -179,117 +180,117 @@ class CMBSRestrictedServicerReportFactory {
 
             try {
                 $rows = Excel::sheetToArray( $pathToRestrictedServicerReportXlsx,
-                                             $sheetName,
-                                             NULL,
-                                             NULL,
-                                             FALSE, // Was TRUE and was causing a #REF! date error. In Format.php line 139: Unsupported operand types: string + string
-                                             FALSE );
+                    $sheetName,
+                    NULL,
+                    NULL,
+                    FALSE, // Was TRUE and was causing a #REF! date error. In Format.php line 139: Unsupported operand types: string + string
+                    FALSE );
 
                 //$headers = Excel::sheetHeaderToArray($pathToRestrictedServicerReportXlsx, $sheetName );
                 if ( $this->_foundSheetName( self::WATCHLIST, $sheetName ) ):
 
                     $this->tabsThatHaveBeenFound[ self::WATCHLIST ] = TRUE;
                     $factory                                        = new WatchlistFactory( self::DEFAULT_TIMEZONE,
-                                                                                            NULL,
-                                                                                            $this->dateOfFile,
-                                                                                            $this->documentId );
+                        NULL,
+                        $this->dateOfFile,
+                        $this->documentId );
                     $watchlist                                      = $factory->parse( $rows,
-                                                                                       $cleanHeadersBySheetName,
-                                                                                       CMBSRestrictedServicerReport::watchlist,
-                                                                                       $watchlist );
+                        $cleanHeadersBySheetName,
+                        CMBSRestrictedServicerReport::watchlist,
+                        $watchlist );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::DLSR, $sheetName ) ):
                     //dump( self::DLSR . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::DLSR ] = TRUE;
                     $factory                                   = new DLSRFactory( self::DEFAULT_TIMEZONE,
-                                                                                  NULL,
-                                                                                  $this->dateOfFile,
-                                                                                  $this->documentId );
+                        NULL,
+                        $this->dateOfFile,
+                        $this->documentId );
                     $dlsr                                      = $factory->parse( $rows,
-                                                                                  $cleanHeadersBySheetName,
-                                                                                  CMBSRestrictedServicerReport::dlsr,
-                                                                                  $dlsr );
+                        $cleanHeadersBySheetName,
+                        CMBSRestrictedServicerReport::dlsr,
+                        $dlsr );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::REOSR, $sheetName ) ):
                     //dump( self::REOSR . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::REOSR ] = TRUE;
                     $factory                                    = new REOSRFactory( self::DEFAULT_TIMEZONE,
-                                                                                    NULL,
-                                                                                    $this->dateOfFile,
-                                                                                    $this->documentId );
+                        NULL,
+                        $this->dateOfFile,
+                        $this->documentId );
                     $reosr                                      = $factory->parse( $rows,
-                                                                                   $cleanHeadersBySheetName,
-                                                                                   CMBSRestrictedServicerReport::reosr,
-                                                                                   $reosr );
+                        $cleanHeadersBySheetName,
+                        CMBSRestrictedServicerReport::reosr,
+                        $reosr );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::HLMFCLR, $sheetName ) ):
                     //dump( self::HLMFCLR . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::HLMFCLR ] = TRUE;
                     $factory                                      = new HLMFCLRFactory( self::DEFAULT_TIMEZONE,
-                                                                                        NULL,
-                                                                                        $this->dateOfFile,
-                                                                                        $this->documentId );
+                        NULL,
+                        $this->dateOfFile,
+                        $this->documentId );
                     $hlmfclr                                      = $factory->parse( $rows,
-                                                                                     $cleanHeadersBySheetName,
-                                                                                     CMBSRestrictedServicerReport::hlmfclr,
-                                                                                     $hlmfclr );
+                        $cleanHeadersBySheetName,
+                        CMBSRestrictedServicerReport::hlmfclr,
+                        $hlmfclr );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::CFSR, $sheetName ) ):
                     //dump( self::CFSR . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::CFSR ] = TRUE;
                     $factory                                   = new CFSRFactory( self::DEFAULT_TIMEZONE,
-                                                                                  NULL,
-                                                                                  $this->dateOfFile,
-                                                                                  $this->documentId );
+                        NULL,
+                        $this->dateOfFile,
+                        $this->documentId );
                     $csfr                                      = $factory->parse( $rows,
-                                                                                  $cleanHeadersBySheetName,
-                                                                                  CMBSRestrictedServicerReport::csfr,
-                                                                                  $csfr );
+                        $cleanHeadersBySheetName,
+                        CMBSRestrictedServicerReport::csfr,
+                        $csfr );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::LLRES, $sheetName ) ):
                     //dump( self::LLRES . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::LLRES ] = TRUE;
                     $factory                                    = new LLResLOCFactory( self::DEFAULT_TIMEZONE,
-                                                                                       NULL,
-                                                                                       $this->dateOfFile,
-                                                                                       $this->documentId );
+                        NULL,
+                        $this->dateOfFile,
+                        $this->documentId );
                     $llResLOC                                   = $factory->parse( $rows,
-                                                                                   $cleanHeadersBySheetName,
-                                                                                   CMBSRestrictedServicerReport::llResLOC,
-                                                                                   $llResLOC );
+                        $cleanHeadersBySheetName,
+                        CMBSRestrictedServicerReport::llResLOC,
+                        $llResLOC );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::TOTALLOAN, $sheetName ) ):
                     //dump( self::TOTALLOAN . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::TOTALLOAN ] = TRUE;
                     $factory                                        = new TotalLoanFactory( self::DEFAULT_TIMEZONE,
-                                                                                            NULL,
-                                                                                            $this->dateOfFile,
-                                                                                            $this->documentId );
+                        NULL,
+                        $this->dateOfFile,
+                        $this->documentId );
                     $totalLoan                                      = $factory->parse( $rows,
-                                                                                       $cleanHeadersBySheetName,
-                                                                                       CMBSRestrictedServicerReport::totalLoan,
-                                                                                       $totalLoan );
+                        $cleanHeadersBySheetName,
+                        CMBSRestrictedServicerReport::totalLoan,
+                        $totalLoan );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::RECOVERY, $sheetName ) ):
                     //dump( self::RECOVERY . " " . $sheetName );
                     $this->tabsThatHaveBeenFound[ self::RECOVERY ] = TRUE;
                     $factory                                       = new AdvanceRecoveryFactory( self::DEFAULT_TIMEZONE,
-                                                                                                 NULL,
-                                                                                                 $this->dateOfFile,
-                                                                                                 $this->documentId );
+                        NULL,
+                        $this->dateOfFile,
+                        $this->documentId );
                     $advanceRecovery                               = $factory->parse( $rows,
-                                                                                      $cleanHeadersBySheetName,
-                                                                                      CMBSRestrictedServicerReport::advanceRecovery,
-                                                                                      $advanceRecovery );
+                        $cleanHeadersBySheetName,
+                        CMBSRestrictedServicerReport::advanceRecovery,
+                        $advanceRecovery );
                     unset( $factory );
                 else:
                     //dump( "doing nothing with " . $sheetName );
                 endif;
             } catch ( \Carbon\Exceptions\InvalidFormatException $exception ) {
                 $newException = new ProbablyExcelDateException( $exception->getMessage(),
-                                                                $exception->getCode(),
-                                                                $exception->getPrevious(),
-                                                                $sheetName );
+                    $exception->getCode(),
+                    $exception->getPrevious(),
+                    $sheetName );
                 $exceptions[] = $newException;
             } catch ( NoDataInTabException $exception ) {
                 $exception->sheetName = $sheetName;
@@ -310,6 +311,9 @@ class CMBSRestrictedServicerReportFactory {
                 $alerts[] = $exception;
             } catch ( TabWithSimilarNameAndDifferentHeaders $exception ) {
                 $exceptions[] = $exception;
+            } catch ( DuplicatesInHeaderRowException $exception ) {
+                $newException = new \Exception( 'In tab "' . $sheetName . '" ' . $exception->generateMessage() );
+                $exceptions[] = $newException;
             } catch ( \Exception $exception ) {
                 $exceptions[] = $exception;
             }
@@ -317,11 +321,11 @@ class CMBSRestrictedServicerReportFactory {
 
         if ( $this->_atLeastOneTabNotFound() ):
             $exceptions[] = new AtLeastOneTabNotFoundException( "Need to update the tabs array in CMBSRestrictedServicerReportFactory. CTS has a different spelling for one of their tabs. Update every FALSE tab attached to this exception.",
-                                                                0,
-                                                                NULL,
-                                                                $this->tabsThatHaveBeenFound,
-                                                                $pathToRestrictedServicerReportXlsx,
-                                                                $sheetNames );
+                0,
+                NULL,
+                $this->tabsThatHaveBeenFound,
+                $pathToRestrictedServicerReportXlsx,
+                $sheetNames );
         endif;
 
 //        $theDate = $this->_getTheDate( [ $watchlist,
@@ -364,18 +368,18 @@ class CMBSRestrictedServicerReportFactory {
 
 
         return new CMBSRestrictedServicerReport( $watchlist,
-                                                 $dlsr,
-                                                 $reosr,
-                                                 $hlmfclr,
-                                                 $csfr,
-                                                 $llResLOC,
-                                                 $totalLoan,
-                                                 $advanceRecovery,
-                                                 $cleanHeadersBySheetName,
-                                                 $alerts,
-                                                 $exceptions,
-                                                 $this->dateOfFile,
-                                                 $this->documentId );
+            $dlsr,
+            $reosr,
+            $hlmfclr,
+            $csfr,
+            $llResLOC,
+            $totalLoan,
+            $advanceRecovery,
+            $cleanHeadersBySheetName,
+            $alerts,
+            $exceptions,
+            $this->dateOfFile,
+            $this->documentId );
     }
 
 
@@ -423,9 +427,9 @@ class CMBSRestrictedServicerReportFactory {
 
         if ( count( $uniqueDates ) < 1 ):
             throw new NoDatesInTabsException( "There are NO dates in any of the tabs. Which is suuuuuper weird.",
-                                              0,
-                                              NULL,
-                                              $tabs );
+                0,
+                NULL,
+                $tabs );
         endif;
 
         $date = reset( $uniqueDates ); // THE date
