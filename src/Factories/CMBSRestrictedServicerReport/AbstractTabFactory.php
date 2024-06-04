@@ -215,11 +215,10 @@ abstract class AbstractTabFactory {
                 // Some sheets have the header split between 2 rows, because that's fun.
                 if ( $this->_isSecondRowAlsoHeader( $this->headerRowIndex, $allRows ) ):
                     if( 0 < $this->headerRowIndex  ) :
-                        $posibleHeaderRowAbove = $this->headerRowIndex - 1;
+                        $headerRow = $this->_consolidateMultipleHeaderRows( $allRows[ $this->headerRowIndex ], $allRows[ $this->headerRowIndex + 1 ], $allRows[ $this->headerRowIndex - 1 ] );
                     else :
-                        $posibleHeaderRowAbove = NULL;
+                        $headerRow = $this->_consolidateMultipleHeaderRows( $allRows[ $this->headerRowIndex ], $allRows[ $this->headerRowIndex + 1 ], NULL );
                     endif;
-                    $headerRow = $this->_consolidateMultipleHeaderRows( $allRows[ $this->headerRowIndex ], $allRows[ $this->headerRowIndex + 1 ], $allRows[ $posibleHeaderRowAbove ] );
                     $this->headerRowIndex++;
                 endif;
 
@@ -281,6 +280,7 @@ abstract class AbstractTabFactory {
      */
     protected function _consolidateMultipleHeaderRows( array $topHeaderRow = [], array $bottomHeaderRow = [], array $possibleHeaderRowAbove = NULL ) : array {
         $headerRow = [];
+
         foreach ( $topHeaderRow as $i => $topName ):
             $topName = trim( $topName );
             if ( isset( $bottomHeaderRow[ $i ] ) ):
@@ -289,22 +289,26 @@ abstract class AbstractTabFactory {
                 $bottomName = NULL;
             endif;
 
+            if( isset( $possibleHeaderRowAbove[ $i ] ) ) :
+                $aboveName = trim( $possibleHeaderRowAbove[ $i ] );
+            else :
+                $aboveName = NULL;
+            endif;
+
             if ( $bottomName ):
                 $headerName = $topName . ' ' . $bottomName;
-
-                // It is possible when concatenating the rows that the concatenation results in a duplication of an existing header value
-                // This is likely caused by the existence of an additional header row above the '$topHeaderRow'
-                // This code includes the above header row in the concatenation to hopefully deliver a unique header value
-                if( in_array( $headerName, $headerRow ) && $possibleHeaderRowAbove ) :
-                    if ( isset( $possibleHeaderRowAbove[ $i ] ) ):
-                        $aboveName = trim( $possibleHeaderRowAbove[ $i ] );
-                        $headerName = $aboveName . ' ' . $headerName;
-                    endif;
-                endif;
-                $headerRow[] = $headerName;
             else:
-                $headerRow[] = $topName;
+                $headerName = $topName;
             endif;
+
+            // It is possible when concatenating the rows that the concatenation results in a duplication of an existing header value
+            // This is likely caused by the existence of an additional header row above the '$topHeaderRow'
+            // This code includes the above header row in the concatenation to hopefully deliver a unique header value
+            if( in_array( $headerName, $headerRow ) && $aboveName ) :
+                $headerName = $aboveName . ' ' . $topName . ' ' . $bottomName;
+            endif;
+
+            $headerRow[] = trim( $headerName );
 
         endforeach;
 
