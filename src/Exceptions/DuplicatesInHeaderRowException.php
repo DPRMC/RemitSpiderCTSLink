@@ -15,13 +15,13 @@ class DuplicatesInHeaderRowException extends Exception {
      * An array containing all the headers from the parsed document
      * @var array
      */
-    public array  $headerRow;
+    public array  $headerRow = [];
 
     /**
      * An array containing all the duplicate headers found in the parsed document
      * @var array
      */
-    public array  $duplicates;
+    public array  $duplicates = [];
 
     /**
      * @param array $headerRow
@@ -30,15 +30,30 @@ class DuplicatesInHeaderRowException extends Exception {
      */
     public function __construct( array $headerRow = [], int $code = 0, ?Throwable $previous = NULL ) {
         $this->headerRow  = $headerRow;
-        $this->duplicates = array_diff( $this->headerRow, array_unique( $this->headerRow ) );
+        $this->setDuplicates();
         parent::__construct( $this->generateMessage(), $code, $previous );
+    }
+
+    /**
+     * @return void
+     */
+    protected function setDuplicates() : void {
+        $values     = [];
+        foreach( $this->headerRow as $header ) :
+            if( in_array( $header, $values ) ) :
+                $this->duplicates[] = $header;
+            else :
+                $values[] = $header;
+            endif;
+
+        endforeach;
     }
 
     /**
      * Generates the error message with the documentId and duplicate headers
      * @return string
      */
-    protected function generateMessage() : string {
+    public function generateMessage() : string {
         $message = "Header row contains the following duplicate values: ";
         foreach( $this->duplicates as $duplicate ) :
             $message .= "'$duplicate', ";
