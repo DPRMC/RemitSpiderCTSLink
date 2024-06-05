@@ -4,6 +4,7 @@ namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 
 use Carbon\Carbon;
 use DPRMC\RemitSpiderCTSLink\Exceptions\DateNotFoundInHeaderException;
+use DPRMC\RemitSpiderCTSLink\Exceptions\DuplicatesInHeaderRowException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\HeadersTooLongForMySQLException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\TabWithSimilarNameAndDifferentHeaders;
@@ -12,6 +13,7 @@ use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\FactoryToMod
 use DPRMC\RemitSpiderCTSLink\Factories\HeaderTrait;
 use DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport\CMBSRestrictedServicerReport;
 use Illuminate\Support\Facades\Log;
+use Matrix\Exception;
 
 abstract class AbstractTabFactory {
 
@@ -104,7 +106,7 @@ abstract class AbstractTabFactory {
         $this->_setLocalHeaders( $rows, $this->firstColumnValidTextValues, $sheetName );
 
         $cleanHeadersByProperty[ $sheetName ] = $this->_integrateLocalHeadersWithGlobalHeaders( $cleanHeadersByProperty[ $sheetName ] ?? [],
-                                                                                                $sheetName );
+            $sheetName );
 
         $this->_setParsedRows( $rows, $sheetName, $existingCleanRows );
 
@@ -181,11 +183,11 @@ abstract class AbstractTabFactory {
         endfor;
 
         throw new DateNotFoundInHeaderException( "Patch the parser. Can't find the date. Some headers don't have the date present. Going to add code now to 'borrow' the date from another sheet.",
-                                                 8732465782, // Gibberish
-                                                 NULL,
-                                                 array_slice( $allRows,
-                                                              0,
-                                                              $numRowsToCheck ) );
+            8732465782, // Gibberish
+            NULL,
+            array_slice( $allRows,
+                0,
+                $numRowsToCheck ) );
     }
 
 
@@ -212,7 +214,11 @@ abstract class AbstractTabFactory {
 
                 // Some sheets have the header split between 2 rows, because that's fun.
                 if ( $this->_isSecondRowAlsoHeader( $this->headerRowIndex, $allRows ) ):
-                    $headerRow = $this->_consolidateMultipleHeaderRows( $allRows[ $this->headerRowIndex ], $allRows[ $this->headerRowIndex + 1 ] );
+                    if( 0 < $this->headerRowIndex  ) :
+                        $headerRow = $this->_consolidateMultipleHeaderRows( $allRows[ $this->headerRowIndex ], $allRows[ $this->headerRowIndex + 1 ], $allRows[ $this->headerRowIndex - 1 ] );
+                    else :
+                        $headerRow = $this->_consolidateMultipleHeaderRows( $allRows[ $this->headerRowIndex ], $allRows[ $this->headerRowIndex + 1 ], NULL );
+                    endif;
                     $this->headerRowIndex++;
                 endif;
 
@@ -231,6 +237,7 @@ abstract class AbstractTabFactory {
 
             $cleanHeaders[ $i ] = $this->cleanHeaderValue( $header );
         endforeach;
+
         $this->localHeaders = $cleanHeaders;
     }
 
@@ -267,10 +274,13 @@ abstract class AbstractTabFactory {
      * If the header is split among multiple rows, then this method will concatenate the header values into one row.
      * @param array $topHeaderRow
      * @param array $bottomHeaderRow
+     * @param array|NULL $possibleHeaderRowAbove
      * @return array
+     * @throws DuplicatesInHeaderRowException
      */
-    protected function _consolidateMultipleHeaderRows( array $topHeaderRow = [], array $bottomHeaderRow = [] ): array {
+    protected function _consolidateMultipleHeaderRows( array $topHeaderRow = [], array $bottomHeaderRow = [], array $possibleHeaderRowAbove = NULL ) : array {
         $headerRow = [];
+
         foreach ( $topHeaderRow as $i => $topName ):
             $topName = trim( $topName );
             if ( isset( $bottomHeaderRow[ $i ] ) ):
@@ -279,12 +289,32 @@ abstract class AbstractTabFactory {
                 $bottomName = NULL;
             endif;
 
-            if ( $bottomName ):
-                $headerRow[] = $topName . ' ' . $bottomName;
-            else:
-                $headerRow[] = $topName;
+            if( isset( $possibleHeaderRowAbove[ $i ] ) ) :
+                $aboveName = trim( $possibleHeaderRowAbove[ $i ] );
+            else :
+                $aboveName = NULL;
             endif;
+
+            if ( $bottomName ):
+                $headerName = $topName . ' ' . $bottomName;
+            else:
+                $headerName = $topName;
+            endif;
+
+            // It is possible when concatenating the rows that the concatenation results in a duplication of an existing header value
+            // This is likely caused by the existence of an additional header row above the '$topHeaderRow'
+            // This code includes the above header row in the concatenation to hopefully deliver a unique header value
+            if( in_array( $headerName, $headerRow ) && $aboveName ) :
+                $headerName = $aboveName . ' ' . $topName . ' ' . $bottomName;
+            endif;
+
+            $headerRow[] = trim( $headerName );
+
         endforeach;
+
+        if( count( $headerRow ) !== count( array_unique( $headerRow ) ) ) :
+            throw new DuplicatesInHeaderRowException( $headerRow );
+        endif;
 
         return $headerRow;
     }
@@ -398,11 +428,11 @@ abstract class AbstractTabFactory {
         endfor;
 
         throw new NoDataInTabException( "Couldn't find data in this tab: " . $this->sheetName,
-                                        0,
-                                        NULL,
-                                        array_slice( $allRows, $this->headerRowIndex, $maxBlankRowsBeforeData ),
-                                        $this->_getLocalHeaders(),
-                                        $this->sheetName );
+            0,
+            NULL,
+            array_slice( $allRows, $this->headerRowIndex, $maxBlankRowsBeforeData ),
+            $this->_getLocalHeaders(),
+            $this->sheetName );
     }
 
 
@@ -424,9 +454,9 @@ abstract class AbstractTabFactory {
 
         if ( ! empty( $tooLongHeadersForMySQL ) ):
             throw new HeadersTooLongForMySQLException( "At least one header from XLSX was too long to create an MySQL column name.",
-                                                       0,
-                                                       NULL,
-                                                       $tooLongHeadersForMySQL );
+                0,
+                NULL,
+                $tooLongHeadersForMySQL );
         endif;
 
 
@@ -455,9 +485,9 @@ abstract class AbstractTabFactory {
 
         if ( ! empty( $tooLongHeadersForMySQL ) ):
             $exception = new HeadersTooLongForMySQLException( "At least one header from XLSX was too long to create an MySQL column name.",
-                                                              0,
-                                                              NULL,
-                                                              $tooLongHeadersForMySQL );
+                0,
+                NULL,
+                $tooLongHeadersForMySQL );
             // Placeholder to dump the Exception message for debugging.
             throw $exception;
         endif;
