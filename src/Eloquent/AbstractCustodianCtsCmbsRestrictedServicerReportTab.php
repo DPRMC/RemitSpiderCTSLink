@@ -17,6 +17,7 @@ class AbstractCustodianCtsCmbsRestrictedServicerReportTab extends Model {
     const document_id = 'document_id';
 
 
+    const loan_id            = 'loan_id';
     const prospectus_loan_id = 'prospectus_loan_id';
     const property_id        = 'property_id';
     const property_name      = 'property_name';
