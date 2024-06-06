@@ -73,9 +73,9 @@ class TotalLoanFactory extends AbstractTabFactory {
 
 
             $nulls = 0;
-            foreach ( $row as $i => $cell ):
+            foreach ( $row as $cell ):
                 $cell = trim( $cell );
-                if ( empty( $cell ) && !is_numeric( $cell ) ):
+                if ( empty( $cell ) && ! is_numeric( $cell ) ):
                     $nulls++;
                 endif;
             endforeach;
