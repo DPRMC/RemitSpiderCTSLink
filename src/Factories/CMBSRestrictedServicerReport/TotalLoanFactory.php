@@ -53,10 +53,15 @@ class TotalLoanFactory extends AbstractTabFactory {
             // Skip that.
             // If the first cell contains part of the word 'Transaction' then
             // you can be sure its a header or junk row. Skip it.
-            if ( str_contains( $row[ 0 ], 'ransac' ) ):
+            if ( str_contains( strtolower( $row[ 0 ] ), 'ransac' ) ):
                 continue;
             endif;
 
+            // Since these files sometimes have headers that span several rows, we will also skip rows whre the first
+            // cell contains 'ID'
+            if ( str_contains( strtolower( $row[ 0 ] ), 'id' ) ):
+                continue;
+            endif;
 
             // There can also be a row of just integer counters for columns.
             // Certainly don't need that either.
