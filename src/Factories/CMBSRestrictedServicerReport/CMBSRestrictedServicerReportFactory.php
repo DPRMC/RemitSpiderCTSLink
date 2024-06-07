@@ -133,8 +133,8 @@ class CMBSRestrictedServicerReportFactory {
             $this->timezone = self::DEFAULT_TIMEZONE;
         endif;
 
-        $this->dateOfFile = $dateOfFile;
-        $this->documentId = $documentId;
+        $this->dateOfFile     = $dateOfFile;
+        $this->documentId     = $documentId;
         $this->headerKeywords = $headerKeywords;
     }
 
@@ -150,7 +150,9 @@ class CMBSRestrictedServicerReportFactory {
      * @throws NoDatesInTabsException
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function make( string $pathToRestrictedServicerReportXlsx, CustodianCtsLink $ctsLink = NULL, Carbon $dateOfFile = NULL ): CMBSRestrictedServicerReport {
+    public function make( string           $pathToRestrictedServicerReportXlsx,
+                          CustodianCtsLink $ctsLink = NULL,
+                          Carbon           $dateOfFile = NULL ): CMBSRestrictedServicerReport {
         $this->custodianCtsLink = $ctsLink;
         $this->dateOfFile       = $dateOfFile ?? $this->dateOfFile;
         $sheetNames             = Excel::getSheetNames( $pathToRestrictedServicerReportXlsx );
@@ -199,7 +201,8 @@ class CMBSRestrictedServicerReportFactory {
                     $factory                                        = new WatchlistFactory( self::DEFAULT_TIMEZONE,
                                                                                             NULL,
                                                                                             $this->dateOfFile,
-                                                                                            $this->documentId );
+                                                                                            $this->documentId,
+                                                                                            $this->headerKeywords );
                     $watchlist                                      = $factory->parse( $rows,
                                                                                        $cleanHeadersBySheetName,
                                                                                        CMBSRestrictedServicerReport::watchlist,
@@ -211,7 +214,8 @@ class CMBSRestrictedServicerReportFactory {
                     $factory                                   = new DLSRFactory( self::DEFAULT_TIMEZONE,
                                                                                   NULL,
                                                                                   $this->dateOfFile,
-                                                                                  $this->documentId );
+                                                                                  $this->documentId,
+                                                                                  $this->headerKeywords );
                     $dlsr                                      = $factory->parse( $rows,
                                                                                   $cleanHeadersBySheetName,
                                                                                   CMBSRestrictedServicerReport::dlsr,
@@ -223,7 +227,8 @@ class CMBSRestrictedServicerReportFactory {
                     $factory                                    = new REOSRFactory( self::DEFAULT_TIMEZONE,
                                                                                     NULL,
                                                                                     $this->dateOfFile,
-                                                                                    $this->documentId );
+                                                                                    $this->documentId,
+                                                                                    $this->headerKeywords );
                     $reosr                                      = $factory->parse( $rows,
                                                                                    $cleanHeadersBySheetName,
                                                                                    CMBSRestrictedServicerReport::reosr,
@@ -235,7 +240,8 @@ class CMBSRestrictedServicerReportFactory {
                     $factory                                      = new HLMFCLRFactory( self::DEFAULT_TIMEZONE,
                                                                                         NULL,
                                                                                         $this->dateOfFile,
-                                                                                        $this->documentId );
+                                                                                        $this->documentId,
+                                                                                        $this->headerKeywords );
                     $hlmfclr                                      = $factory->parse( $rows,
                                                                                      $cleanHeadersBySheetName,
                                                                                      CMBSRestrictedServicerReport::hlmfclr,
@@ -247,7 +253,8 @@ class CMBSRestrictedServicerReportFactory {
                     $factory                                   = new CFSRFactory( self::DEFAULT_TIMEZONE,
                                                                                   NULL,
                                                                                   $this->dateOfFile,
-                                                                                  $this->documentId );
+                                                                                  $this->documentId,
+                                                                                  $this->headerKeywords );
                     $csfr                                      = $factory->parse( $rows,
                                                                                   $cleanHeadersBySheetName,
                                                                                   CMBSRestrictedServicerReport::csfr,
@@ -259,7 +266,8 @@ class CMBSRestrictedServicerReportFactory {
                     $factory                                    = new LLResLOCFactory( self::DEFAULT_TIMEZONE,
                                                                                        NULL,
                                                                                        $this->dateOfFile,
-                                                                                       $this->documentId );
+                                                                                       $this->documentId,
+                                                                                       $this->headerKeywords );
                     $llResLOC                                   = $factory->parse( $rows,
                                                                                    $cleanHeadersBySheetName,
                                                                                    CMBSRestrictedServicerReport::llResLOC,
@@ -271,7 +279,8 @@ class CMBSRestrictedServicerReportFactory {
                     $factory                                        = new TotalLoanFactory( self::DEFAULT_TIMEZONE,
                                                                                             NULL,
                                                                                             $this->dateOfFile,
-                                                                                            $this->documentId );
+                                                                                            $this->documentId,
+                                                                                            $this->headerKeywords );
                     $totalLoan                                      = $factory->parse( $rows,
                                                                                        $cleanHeadersBySheetName,
                                                                                        CMBSRestrictedServicerReport::totalLoan,
@@ -283,7 +292,8 @@ class CMBSRestrictedServicerReportFactory {
                     $factory                                       = new AdvanceRecoveryFactory( self::DEFAULT_TIMEZONE,
                                                                                                  NULL,
                                                                                                  $this->dateOfFile,
-                                                                                                 $this->documentId );
+                                                                                                 $this->documentId,
+                                                                                                 $this->headerKeywords );
                     $advanceRecovery                               = $factory->parse( $rows,
                                                                                       $cleanHeadersBySheetName,
                                                                                       CMBSRestrictedServicerReport::advanceRecovery,
