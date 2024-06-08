@@ -93,6 +93,7 @@ class CMBSRestrictedServicerReportFactory {
             'rptRsvLOC',
             'Loan Level Reserve  LOC Report',
             'Reserve_LOC',
+            'LoanLevelReserve', // 20240608:mdd
         ], // LOAN LEVEL RESERVE/LOC REPORT
         self::TOTALLOAN => [
             'Total Loan',
