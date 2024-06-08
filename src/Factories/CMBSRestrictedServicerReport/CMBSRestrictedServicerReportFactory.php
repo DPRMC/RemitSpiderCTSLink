@@ -105,6 +105,7 @@ class CMBSRestrictedServicerReportFactory {
             'TotalLoan',
             'rptTTotalLoan',
             'Total_Loan_Report',
+            'BSCMS_2007PWR17_tlr_0524', // 20240608:mdd
         ], // TOTAL LOAN REPORT
         self::RECOVERY  => [
             'Advance Recovery',
