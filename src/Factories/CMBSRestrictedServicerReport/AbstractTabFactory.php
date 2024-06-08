@@ -54,6 +54,9 @@ abstract class AbstractTabFactory {
 
     protected array $headerKeywords = [];
 
+    //temp
+    protected ?int $headerRowIndexThatContainsTheWordID = NULL;
+
     /**
      * @var string|null The class name of the Factory Model Map. The map is a static array.
      */
@@ -203,9 +206,136 @@ abstract class AbstractTabFactory {
      *
      * @return void
      */
-    protected function _setLocalHeaders( array $allRows, array $firstColumnValidTextValues = [], string $debugSheetName = NULL ): void {
-        dump( '-----------------' . $debugSheetName );
-        $headerRow = [];
+    protected function _setLocalHeaders( array  $allRows,
+                                         array  $firstColumnValidTextValues = [],
+                                         string $debugSheetName = NULL ): void {
+
+        //if ( $debugSheetName == 'hlmfclr' ) {
+        //    dd( $allRows );
+        //}
+
+        $this->headerRowIndex = $this->_getArrayIndexOfBottomHeaderRow( $allRows, $firstColumnValidTextValues );
+        $cleanHeaders         = $this->_consolidateMultipleHeaderRowsUsingKeywords( $allRows );
+        $this->localHeaders   = $cleanHeaders;
+    }
+
+
+    /**
+     * @param $value
+     *
+     * @return bool
+     */
+    private function _valueIsPartOfTheHeader( $value ): bool {
+        if ( is_null( $value ) ):
+            return FALSE;
+        endif;
+
+        $value = trim( $value );
+        if ( empty( $value ) ):
+            return FALSE;
+        endif;
+
+        if ( $this->_cellValueContainsHeaderKeyword( $value ) ):
+            return TRUE;
+        endif;
+
+        return FALSE;
+    }
+
+
+    /**
+     * @param string|NULL $value
+     *
+     * @return bool
+     */
+    private function _cellValueContainsHeaderKeyword( string $value = NULL ): bool {
+        if ( is_null( $value ) ):
+            return FALSE;
+        endif;
+        $value = strtolower( $value );
+
+        foreach ( $this->headerKeywords as $headerKeyword ):
+            if ( str_contains( $value, $headerKeyword ) ):
+                return TRUE;
+            endif;
+        endforeach;
+        return FALSE;
+    }
+
+    protected function _consolidateMultipleHeaderRowsUsingKeywords( array $allRows = [] ): array {
+        $consolidatedHeaderRow         = [];
+        $baseHeaderRow                 = $allRows[ $this->headerRowIndex ];
+        $rowIndexAboveTheBaseHeaderRow = $this->headerRowIndex - 1;
+
+        // This code should actually never run.
+        // I dont think I have ever seen a sheet that had the header in the top row.
+        if ( !array_key_exists( $rowIndexAboveTheBaseHeaderRow, $allRows[ 0 ] ) ):
+            $cleanHeaderValues = [];
+            foreach ( $baseHeaderRow as $headerValue ):
+                $cleanHeaderValues[] = $this->cleanHeaderValue( $headerValue );
+            endforeach;
+            $consolidatedHeaderRow = $cleanHeaderValues;
+            return $consolidatedHeaderRow;
+        else:
+            //dump( "there are definitely POTENTIAL headers to loop at above the base/current row I am looking at." );
+        endif;
+
+        foreach ( $baseHeaderRow as $columnIndex => $baseValue ):
+            $nextRowUpToCheckForPotentialHeaderValue = $rowIndexAboveTheBaseHeaderRow; // Init every time.
+            $partsOfTheHeaderToBeAssembled           = [];
+            $partsOfTheHeaderToBeAssembled[]         = $baseValue;
+
+            $nextPotentialHeaderValueFromTheCellAbove = trim( $allRows[ $nextRowUpToCheckForPotentialHeaderValue ][ $columnIndex ] );
+
+
+            while ( $this->_valueIsPartOfTheHeader( $nextPotentialHeaderValueFromTheCellAbove ) ):
+                array_unshift( $partsOfTheHeaderToBeAssembled, $nextPotentialHeaderValueFromTheCellAbove );
+                $nextRowUpToCheckForPotentialHeaderValue--;
+                $nextPotentialHeaderValueFromTheCellAbove = $allRows[ $nextRowUpToCheckForPotentialHeaderValue ][ $columnIndex ];
+            endwhile;
+
+            $newConcatenatedHeader                 = $this->cleanHeaderValue( implode( ' ', $partsOfTheHeaderToBeAssembled ) );
+            $consolidatedHeaderRow[ $columnIndex ] = $newConcatenatedHeader;
+        endforeach;
+
+        $consolidatedHeaderRow = array_filter( $consolidatedHeaderRow );
+        $consolidatedHeaderRow = array_values( $consolidatedHeaderRow );
+
+        return $consolidatedHeaderRow;
+
+        $this->localHeaders = $cleanHeaders;
+    }
+
+
+    /**
+     * @param int   $headerRowIndex
+     * @param array $allRows
+     *
+     * @return bool
+     */
+    protected function _isNextRowPartOfTheHeader( int $headerRowIndex, array $allRows = [] ): bool {
+        $potentialSecondHeaderRowIndex = $headerRowIndex + 1;
+        if ( !isset( $allRows[ $potentialSecondHeaderRowIndex ] ) ):
+            return FALSE;
+        endif;
+
+        if ( !isset( $allRows[ $potentialSecondHeaderRowIndex ][ 0 ] ) ):
+            return FALSE;
+        endif;
+
+        $trimmedValue   = trim( $allRows[ $potentialSecondHeaderRowIndex ][ 0 ] );
+        $lowercaseValue = strtolower( $trimmedValue );
+
+        if ( 'id' == $lowercaseValue ):
+            return TRUE;
+        endif;
+
+        return FALSE;
+    }
+
+
+    protected function _getArrayIndexOfBottomHeaderRow( array $allRows = [], array $firstColumnValidTextValues = [] ): int {
+        $headerRowIndex = NULL;
         foreach ( $allRows as $i => $row ):
 
             $trimmedValue = trim( $row[ 0 ] ?? '' );
@@ -214,48 +344,20 @@ abstract class AbstractTabFactory {
                 continue;
             endif;
 
-            dump( $trimmedValue );
-
-
             if ( in_array( $trimmedValue, $firstColumnValidTextValues ) ):
-                dump( "+++++++++++++++++++++++++++++++++++++++++++++++is a valid text value" );
-                $this->headerRowIndex = $i; // Used in other methods of this class.
-                $headerRow            = $row;
+                $headerRowIndex = $i; // Used in other methods of this class.
+                $headerRow      = $row;
 
-                // Some sheets have the header split between 2 rows, because that's fun.
-                if ( $this->_isSecondRowAlsoHeader( $this->headerRowIndex, $allRows ) ):
-                    dump( '^^^^^^^^^^^^^^^^^^^^ 2nd row is also a header' );
-                    if ( 0 < $this->headerRowIndex ) :
-                        $headerRow = $this->_consolidateMultipleHeaderRows( $allRows[ $this->headerRowIndex ],
-                                                                            $allRows[ $this->headerRowIndex + 1 ],
-                                                                            $allRows[ $this->headerRowIndex - 1 ] );
-                    else :
-                        $headerRow = $this->_consolidateMultipleHeaderRows( $allRows[ $this->headerRowIndex ],
-                                                                            $allRows[ $this->headerRowIndex + 1 ],
-                                                                            NULL );
-                    endif;
-                    $this->headerRowIndex++;
+                // Some sheets have the header split between 2 (or more) rows, because that's fun.
+                if ( $this->_isNextRowPartOfTheHeader( $headerRowIndex, $allRows ) ):
+                    $headerRowIndex++;
                 endif;
 
                 break;
-            else:
-                dump( "is not a valid text value" );
             endif;
         endforeach;
 
-        $cleanHeaders = [];
-
-        foreach ( $headerRow as $i => $header ):
-
-            // Avoid deprecation warning about passing null to strtolower.
-            if ( empty( $header ) ):
-                continue;
-            endif;
-
-            $cleanHeaders[ $i ] = $this->cleanHeaderValue( $header );
-        endforeach;
-
-        $this->localHeaders = $cleanHeaders;
+        return $headerRowIndex;
     }
 
 
