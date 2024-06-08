@@ -214,6 +214,7 @@ abstract class AbstractTabFactory {
         //    dd( $allRows );
         //}
 
+        //dump($debugSheetName);
         $this->headerRowIndex = $this->_getArrayIndexOfBottomHeaderRow( $allRows, $firstColumnValidTextValues );
         $cleanHeaders         = $this->_consolidateMultipleHeaderRowsUsingKeywords( $allRows );
         $this->localHeaders   = $cleanHeaders;
@@ -356,6 +357,11 @@ abstract class AbstractTabFactory {
                 break;
             endif;
         endforeach;
+
+        // Uncomment this for debugging. You probably need a new spelling of "Trans Id"
+        //if(is_null($headerRowIndex)){
+        //    dd($allRows);
+        //}
 
         return $headerRowIndex;
     }
