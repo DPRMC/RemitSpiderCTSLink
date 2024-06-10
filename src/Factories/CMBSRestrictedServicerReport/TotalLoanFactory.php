@@ -6,6 +6,8 @@ class TotalLoanFactory extends AbstractTabFactory {
 
     protected array $firstColumnValidTextValues = [ 'Transaction ID', 'Trans', 'Transaction' ];
 
+    protected array $rowIndexZeroDisqualifyingValues = [ 'total' ];
+
     protected function _removeInvalidRows( array $rows = [] ): array {
         /**
          * $row
@@ -71,6 +73,12 @@ class TotalLoanFactory extends AbstractTabFactory {
                 continue;
             endif;
 
+            // This code will skip items found in the first cell of the row that contain string values found in property '$rowIndexZeroDisqualifyingValues'
+            foreach( $this->rowIndexZeroDisqualifyingValues as $disqualifyingValue ) :
+                if( str_contains( strtolower( trim( $row[ 0 ] ) ), $disqualifyingValue ) ) :
+                    continue;
+                endif;
+            endforeach;
 
             $nulls = 0;
             foreach ( $row as $cell ):
@@ -80,7 +88,7 @@ class TotalLoanFactory extends AbstractTabFactory {
                 endif;
             endforeach;
 
-            if ( $nulls <= 3 ):
+            if ( $nulls <= 10 ):
                 $validRows[] = $row;
             endif;
         endforeach;
@@ -90,7 +98,7 @@ class TotalLoanFactory extends AbstractTabFactory {
 
     protected function _getRowsToBeParsed( array $allRows ): array {
         /**
-         * This method needed an override because the total loan tab can have a blank row in the middle of the docuument.
+         * This method needed an override because the total loan tab can have a blank row in the middle of the document.
          * This method was excluding valid rows below the blank row.
          * See Total Loan tab of CCRE_2016C3_6655160_CCRE_2016C3_RSRV.xls for an example
          */
