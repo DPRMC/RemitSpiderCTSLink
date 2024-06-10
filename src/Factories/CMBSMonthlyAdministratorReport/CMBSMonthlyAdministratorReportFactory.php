@@ -90,7 +90,7 @@ class CMBSMonthlyAdministratorReportFactory {
 
                 $lpu = $this->_getLpuData( $headers, $rows, $ctsLink );
 
-                dd( $lpu );
+                //dd( $lpu );
             } catch ( \Carbon\Exceptions\InvalidFormatException $exception ) {
                 $newException = new ProbablyExcelDateException( $exception->getMessage(),
                                                                 $exception->getCode(),

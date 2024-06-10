@@ -7,6 +7,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
     protected array $firstColumnValidTextValues = [ 'Trans ID',
                                                     'Trans',
                                                     "Trans\nID",
+                                                    "Trans \nID",
     ];
 
 
@@ -99,6 +100,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
 
     /**
      * Test to determine if more parsing needs to take place.
+     *
      * @return bool
      */
     protected function _isMissingSomeIndexes(): bool {
@@ -112,8 +114,9 @@ class HLMFCLRFactory extends AbstractTabFactory {
 
 
     /**
-     * @param array $row
+     * @param array  $row
      * @param string $strStartsWith
+     *
      * @return bool
      */
     protected function _catStartsWith( array $row, string $strStartsWith ): bool {
@@ -261,7 +264,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
 
 
         foreach ( $rows as $category => $rowsByCategory ):
-            if ( ! isset( $validRows[ $category ] ) ):
+            if ( !isset( $validRows[ $category ] ) ):
                 $validRows[ $category ] = [];
             endif;
 

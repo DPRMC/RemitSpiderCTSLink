@@ -8,7 +8,9 @@ use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\FactoryToMod
 
 class DLSRFactory extends AbstractTabFactory {
 
-    protected array $firstColumnValidTextValues = [ 'Trans ID', 'Trans' ];
+    protected array $firstColumnValidTextValues = [ 'Trans ID',
+                                                    'Trans',
+                                                    'Trans  ID' ];
 
     const DEL_90_PLUS   = 'del_90_plus';   // 90 + Days Delinquent
     const DEL_60_PLUS   = 'del_60_plus';   // 60 to 89 Days Delinquent
@@ -42,6 +44,7 @@ class DLSRFactory extends AbstractTabFactory {
 
     /**
      * @param array $allRows
+     *
      * @return void
      * @throws DLSRTabMissingSomeDelinquencyCategoriesException
      */
@@ -65,6 +68,7 @@ class DLSRFactory extends AbstractTabFactory {
 
     /**
      * @param array $allRows
+     *
      * @return array
      * @throws \DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException
      */
@@ -91,6 +95,7 @@ class DLSRFactory extends AbstractTabFactory {
 
     /**
      * @param array $allRows
+     *
      * @return void
      */
     protected function _setDelinquencyIndexes( array $allRows ): void {
@@ -133,6 +138,7 @@ class DLSRFactory extends AbstractTabFactory {
 
     /**
      * Test to determine if more parsing needs to take place.
+     *
      * @return bool
      */
     protected function _isMissingSomeDelinquencyIndexes(): bool {
@@ -146,8 +152,9 @@ class DLSRFactory extends AbstractTabFactory {
 
 
     /**
-     * @param array $row
+     * @param array  $row
      * @param string $strStartsWith
+     *
      * @return bool
      */
     protected function _isXPlusIndex( array $row, string $strStartsWith ): bool {
@@ -168,6 +175,7 @@ class DLSRFactory extends AbstractTabFactory {
 
     /**
      * @param $row
+     *
      * @return bool
      */
     protected function _isNinetyPlusIndex( $row ): bool {
@@ -200,7 +208,7 @@ class DLSRFactory extends AbstractTabFactory {
             return TRUE;
         endif;
 
-        if ( str_contains($row[0], 'Questions') ):
+        if ( str_contains( $row[ 0 ], 'Questions' ) ):
             return TRUE;
         endif;
 
@@ -312,6 +320,7 @@ class DLSRFactory extends AbstractTabFactory {
     /**
      * @param array $allRows
      * @param array $existingRows
+     *
      * @return void
      * @throws FactoryToModelMaps\FieldNotFoundException
      */
@@ -357,18 +366,19 @@ class DLSRFactory extends AbstractTabFactory {
 
     /**
      * @param array $rows
+     *
      * @return array
      */
     protected function _removeInvalidRows( array $rows = [] ): array {
         $validRows = [];
         foreach ( $rows as $category => $rowsByCategory ):
-            if ( ! isset( $validRows[ $category ] ) ):
+            if ( !isset( $validRows[ $category ] ) ):
                 $validRows[ $category ] = [];
             endif;
 
             foreach ( $rowsByCategory as $i => $row ):
                 // Remove empty rows.
-                if ( count($row) < 4 ):
+                if ( count( $row ) < 4 ):
                     continue;
                 endif;
 

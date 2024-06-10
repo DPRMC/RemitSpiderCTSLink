@@ -99,6 +99,11 @@ trait HeaderTrait {
                                   'comments_hlmfclr',
                                   $newHeader );
 
+        // 20240607:mdd
+        $newHeader = str_replace( "-_",
+                                  '_',
+                                  $newHeader );
+
         //
         return $newHeader;
     }
