@@ -461,8 +461,7 @@ abstract class AbstractTabFactory {
         $this->cleanRows = $existingRows;
 
         $validRows = $this->_getRowsToBeParsed( $allRows );
-
-        $validRows = $this->_removeInvalidRows( $validRows );
+//        $validRows = $this->_removeInvalidRows( $validRows );
 
         foreach ( $validRows as $i => $validRow ):
 
@@ -503,6 +502,8 @@ abstract class AbstractTabFactory {
                 unset( $this->cleanRows[ $k ] );
             endif;
         endforeach;
+
+        $this->cleanRows = $this->_removeInvalidRows( $this->cleanRows );
 
         $this->cleanRows = array_values( $this->cleanRows ); // Reindex the array so the indexes are sequential again.
     }
