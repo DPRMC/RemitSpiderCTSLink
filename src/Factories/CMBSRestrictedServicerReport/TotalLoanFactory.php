@@ -2,6 +2,10 @@
 
 namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
 
+use DPRMC\RemitSpiderCTSLink\Eloquent\CustodianCtsCmbsRestrictedServicerReportTotalLoan;
+use DPRMC\RemitSpiderCTSLink\Exceptions\ValidationHeadersNotFoundException;
+use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\FactoryToModelMaps\TotalLoanMap;
+
 class TotalLoanFactory extends AbstractTabFactory {
 
     protected array $firstColumnValidTextValues = [ 'Transaction ID', 'Trans', 'Transaction' ];
@@ -9,6 +13,8 @@ class TotalLoanFactory extends AbstractTabFactory {
     protected array $rowIndexZeroDisqualifyingValues = [ 'total' ];
 
     protected function _removeInvalidRows( array $rows = [] ): array {
+
+
         /**
          * $row
          * array:24 [
@@ -39,29 +45,43 @@ class TotalLoanFactory extends AbstractTabFactory {
          * ]
          */
 
-        //$validRows = [];
-        //foreach( $rows as $row ) :
-        //    // Only valid if the 'Current Note Rate' contains a decimal
-        //    if( is_float( $row[13] ) || str_contains( $row[13], '.' ) ) :
-        //        $validRows[] = $row;
-        //    endif;
-        //endforeach;
-
 
         $validRows = [];
+        $totalLoanMap = TotalLoanMap::$map;
         foreach ( $rows as $i => $row ) :
+
+            $validatedRow = [];
+            foreach( $row as $header => $cellValue ) :
+                foreach( $totalLoanMap as $mappedHeader => $possibleHeaderValues ) :
+                    if( in_array( $header, $possibleHeaderValues ) ) :
+                        $validatedRow[$mappedHeader] = $cellValue;
+                        continue;
+                    endif;
+                endforeach;
+            endforeach;
+
+            $missingValidationHeaders = [];
+
+            if( ! array_key_exists(CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id, $validatedRow ) ) :
+                $missingValidationHeaders[] = CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id;
+            endif;
+
+            if( ! empty( $missingValidationHeaders ) ) :
+                throw new ValidationHeadersNotFoundException( $missingValidationHeaders );
+            endif;
+
 
             // There is sometimes a spurious second row of headers on this tab.
             // Skip that.
             // If the first cell contains part of the word 'Transaction' then
             // you can be sure its a header or junk row. Skip it.
-            if ( str_contains( strtolower( $row[ 0 ] ), 'ransac' ) ):
+            if ( str_contains( strtolower( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id] ), 'ransac' ) ):
                 continue;
             endif;
 
             // Since these files sometimes have headers that span several rows, we will also skip rows whre the first
             // cell contains 'ID'
-            if ( str_contains( strtolower( $row[ 0 ] ), 'id' ) ):
+            if ( str_contains( strtolower( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id] ), 'id' ) ):
                 continue;
             endif;
 
@@ -69,13 +89,13 @@ class TotalLoanFactory extends AbstractTabFactory {
             // Certainly don't need that either.
             // Cell 0 (zero) should be a Transaction_ID which is alphanumeric.
             // If it's just plain numeric, skip it.
-            if ( is_numeric( $row[ 0 ] ) ):
+            if ( is_numeric( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id] ) ):
                 continue;
             endif;
 
             // This code will skip items found in the first cell of the row that contain string values found in property '$rowIndexZeroDisqualifyingValues'
             foreach( $this->rowIndexZeroDisqualifyingValues as $disqualifyingValue ) :
-                if( str_contains( strtolower( trim( $row[ 0 ] ) ), $disqualifyingValue ) ) :
+                if( str_contains( strtolower( trim( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id] ) ), $disqualifyingValue ) ) :
                     continue;
                 endif;
             endforeach;
