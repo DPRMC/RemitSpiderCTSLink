@@ -21,7 +21,7 @@
     "chrome-php/chrome": "^1",
     "ext-dom": "*",
     "nesbot/carbon": "^2.57",
-    "smalot/pdfparser": "^2.3",
+    "smalot/pdfparser": "^2.0",
     "ext-intl": "*",
     "dprmc/cusip": "^1.0",
     "dprmc/excel": "^2.0",
