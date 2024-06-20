@@ -33,7 +33,7 @@ class ValidationHeadersNotFoundException extends Exception {
      * @return string
      */
     public function generateMessage() : string {
-        $message = "Header row is missing the following keys needed for validation: ";
+        $message = "The following header columns needed for validation are missing: ";
         foreach( $this->missingValidationHeaders as $missingValidationHeader ) :
             $message .= "'$missingValidationHeader', ";
         endforeach;
