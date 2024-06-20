@@ -10,7 +10,7 @@ class TotalLoanFactory extends AbstractTabFactory {
 
     protected array $firstColumnValidTextValues = [ 'Transaction ID', 'Trans', 'Transaction' ];
 
-    protected array $rowIndexZeroDisqualifyingValues = [ 'total' ];
+    protected array $rowIndexZeroDisqualifyingValues = [ 'total', '#N/A', 'nav = not available' ];
 
     protected function _removeInvalidRows( array $rows = [] ): array {
 
@@ -66,6 +66,10 @@ class TotalLoanFactory extends AbstractTabFactory {
                 $missingValidationHeaders[] = CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id;
             endif;
 
+            if( ! array_key_exists( CustodianCtsCmbsRestrictedServicerReportTotalLoan::original_split_loan_amount, $validatedRow ) ) :
+                $missingValidationHeaders[] = CustodianCtsCmbsRestrictedServicerReportTotalLoan::original_split_loan_amount;
+            endif;
+
             if( ! empty( $missingValidationHeaders ) ) :
                 throw new ValidationHeadersNotFoundException( $missingValidationHeaders );
             endif;
@@ -99,6 +103,17 @@ class TotalLoanFactory extends AbstractTabFactory {
                     continue;
                 endif;
             endforeach;
+
+            // At this point we can validate against the column 'original_split_loan_amount' which should be either null
+            // or a numeric value or 'nav' or 'n/a'.  Anything else is a junk row
+            if( ! is_null( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::original_split_loan_amount] ) ) :
+                if( ! is_numeric( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::original_split_loan_amount] ) ) :
+                    if( ( 'nav' != strtolower( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::original_split_loan_amount] ) ) &&
+                        ( 'n/a' != strtolower( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::original_split_loan_amount] ) ) ) :
+                            continue;
+                    endif;
+                endif;
+            endif;
 
             $nulls = 0;
             foreach ( $row as $cell ):
