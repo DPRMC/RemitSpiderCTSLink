@@ -97,12 +97,17 @@ class TotalLoanFactory extends AbstractTabFactory {
                 continue;
             endif;
 
-            // This code will skip items found in the first cell of the row that contain string values found in property '$rowIndexZeroDisqualifyingValues'
+            // Skip items found in the first cell of the row that contain string values found in property '$rowIndexZeroDisqualifyingValues'
+            $disqualifyingValueFlag = FALSE;
             foreach( $this->rowIndexZeroDisqualifyingValues as $disqualifyingValue ) :
                 if( str_contains( strtolower( trim( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id] ) ), $disqualifyingValue ) ) :
-                    continue;
+                    $disqualifyingValueFlag = TRUE;
                 endif;
             endforeach;
+
+            if( $disqualifyingValueFlag ) :
+                continue;
+            endif;
 
             // At this point we can validate against the column 'original_split_loan_amount' which should be either null
             // or a numeric value or 'nav' or 'n/a'.  Anything else is a junk row
@@ -110,22 +115,25 @@ class TotalLoanFactory extends AbstractTabFactory {
                 if( ! is_numeric( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::original_split_loan_amount] ) ) :
                     if( ( 'nav' != strtolower( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::original_split_loan_amount] ) ) &&
                         ( 'n/a' != strtolower( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::original_split_loan_amount] ) ) ) :
-                            continue;
+                        continue;
                     endif;
                 endif;
             endif;
 
-            $nulls = 0;
-            foreach ( $row as $cell ):
-                $cell = trim( $cell );
-                if ( empty( $cell ) && ! is_numeric( $cell ) ):
-                    $nulls++;
-                endif;
-            endforeach;
+//            $nulls = 0;
+//            foreach ( $row as $cell ):
+//                $cell = trim( $cell );
+//                if ( empty( $cell ) && ! is_numeric( $cell ) ):
+//                    $nulls++;
+//                endif;
+//            endforeach;
+//
+//            if ( $nulls <= 10 ):
+//                $validRows[] = $row;
+//            endif;
 
-            if ( $nulls <= 10 ):
-                $validRows[] = $row;
-            endif;
+            $validRows[] = $row;
+
         endforeach;
 
         return $validRows;
