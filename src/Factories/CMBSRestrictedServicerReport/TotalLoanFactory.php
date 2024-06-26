@@ -12,8 +12,21 @@ class TotalLoanFactory extends AbstractTabFactory {
 
     protected array $rowIndexZeroDisqualifyingValues = [ 'total', '#N/A', 'nav = not available' ];
 
-    protected function _removeInvalidRows( array $rows = [] ): array {
+    protected array $totalLoanAmountAtOriginationValuesThatShouldBeNull = [
+        'west la office - 1950 sawtelle boulevard',
+        'vertex pharmaceuticals hq',
+        'the shops at crystals',
+        'the shops at coconut point',
+        'simon premium outlets',
+        'international square',
+        'gaffney premium outlets',
+        'flagler corporate center',
+        'easton town center',
+        'columbia center',
+        'briarwood mall'
+    ];
 
+    protected function _removeInvalidRows( array $rows = [] ): array {
 
         /**
          * $row
@@ -66,8 +79,8 @@ class TotalLoanFactory extends AbstractTabFactory {
                 $missingValidationHeaders[] = CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id;
             endif;
 
-            if( ! array_key_exists( CustodianCtsCmbsRestrictedServicerReportTotalLoan::original_split_loan_amount, $validatedRow ) ) :
-                $missingValidationHeaders[] = CustodianCtsCmbsRestrictedServicerReportTotalLoan::original_split_loan_amount;
+            if( ! array_key_exists( CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination, $validatedRow ) ) :
+                $missingValidationHeaders[] = CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination;
             endif;
 
             if( ! empty( $missingValidationHeaders ) ) :
@@ -109,14 +122,13 @@ class TotalLoanFactory extends AbstractTabFactory {
                 continue;
             endif;
 
-            // At this point we can validate against the column 'original_split_loan_amount' which should be either null
-            // or a numeric value or 'nav' or 'n/a'.  Anything else is a junk row
-            if( ! is_null( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::original_split_loan_amount] ) ) :
-                if( ! is_numeric( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::original_split_loan_amount] ) ) :
-                    if( ( 'nav' != strtolower( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::original_split_loan_amount] ) ) &&
-                        ( 'n/a' != strtolower( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::original_split_loan_amount] ) ) ) :
-                        continue;
-                    endif;
+            // At this point we can validate against the column 'total_loan_amount_at_origination' which should be either NULL
+            // or a numeric value.  Except for document id '6665524' which is an outlier with property names in this field.
+            // Those have been added to an exceptions array and will be set to NULL.   Anything else is a junk row.
+            if( ! is_null( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination] ) &&
+                ! is_numeric( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination] ) ) :
+                if( ! in_array( strtolower( trim( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination] ) ), $this->totalLoanAmountAtOriginationValuesThatShouldBeNull ) ) :
+                    continue;
                 endif;
             endif;
 
