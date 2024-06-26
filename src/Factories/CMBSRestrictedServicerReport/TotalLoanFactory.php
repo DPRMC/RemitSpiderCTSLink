@@ -124,7 +124,7 @@ class TotalLoanFactory extends AbstractTabFactory {
 
             // At this point we can validate against the column 'total_loan_amount_at_origination' which should be either NULL
             // or a numeric value.  Except for document id '6665524' which is an outlier with property names in this field.
-            // Those have been added to an exceptions array and will be set to NULL.   Anything else is a junk row.
+            // Those have been added to an exceptions array and will be allowed through. Anything else is a junk row.
             if( ! is_null( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination] ) &&
                 ! is_numeric( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination] ) ) :
                 if( ! in_array( strtolower( trim( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination] ) ), $this->totalLoanAmountAtOriginationValuesThatShouldBeNull ) ) :
