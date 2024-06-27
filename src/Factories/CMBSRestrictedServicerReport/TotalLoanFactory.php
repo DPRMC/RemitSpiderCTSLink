@@ -10,10 +10,23 @@ class TotalLoanFactory extends AbstractTabFactory {
 
     protected array $firstColumnValidTextValues = [ 'Transaction ID', 'Trans', 'Transaction' ];
 
-    protected array $rowIndexZeroDisqualifyingValues = [ 'total' ];
+    protected array $rowIndexZeroDisqualifyingValues = [ 'total', '#N/A', 'nav = not available' ];
+
+    protected array $totalLoanAmountAtOriginationValuesThatShouldBeNull = [
+        'west la office - 1950 sawtelle boulevard',
+        'vertex pharmaceuticals hq',
+        'the shops at crystals',
+        'the shops at coconut point',
+        'simon premium outlets',
+        'international square',
+        'gaffney premium outlets',
+        'flagler corporate center',
+        'easton town center',
+        'columbia center',
+        'briarwood mall'
+    ];
 
     protected function _removeInvalidRows( array $rows = [] ): array {
-
 
         /**
          * $row
@@ -66,6 +79,10 @@ class TotalLoanFactory extends AbstractTabFactory {
                 $missingValidationHeaders[] = CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id;
             endif;
 
+            if( ! array_key_exists( CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination, $validatedRow ) ) :
+                $missingValidationHeaders[] = CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination;
+            endif;
+
             if( ! empty( $missingValidationHeaders ) ) :
                 throw new ValidationHeadersNotFoundException( $missingValidationHeaders );
             endif;
@@ -93,24 +110,42 @@ class TotalLoanFactory extends AbstractTabFactory {
                 continue;
             endif;
 
-            // This code will skip items found in the first cell of the row that contain string values found in property '$rowIndexZeroDisqualifyingValues'
+            // Skip items found in the first cell of the row that contain string values found in property '$rowIndexZeroDisqualifyingValues'
+            $disqualifyingValueFlag = FALSE;
             foreach( $this->rowIndexZeroDisqualifyingValues as $disqualifyingValue ) :
                 if( str_contains( strtolower( trim( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id] ) ), $disqualifyingValue ) ) :
+                    $disqualifyingValueFlag = TRUE;
+                endif;
+            endforeach;
+
+            if( $disqualifyingValueFlag ) :
+                continue;
+            endif;
+
+            // At this point we can validate against the column 'total_loan_amount_at_origination' which should be either NULL
+            // or a numeric value.  Except for document id '6665524' which is an outlier with property names in this field.
+            // Those have been added to an exceptions array and will be set to NULL.   Anything else is a junk row.
+            if( ! is_null( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination] ) &&
+                ! is_numeric( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination] ) ) :
+                if( ! in_array( strtolower( trim( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination] ) ), $this->totalLoanAmountAtOriginationValuesThatShouldBeNull ) ) :
                     continue;
                 endif;
-            endforeach;
-
-            $nulls = 0;
-            foreach ( $row as $cell ):
-                $cell = trim( $cell );
-                if ( empty( $cell ) && ! is_numeric( $cell ) ):
-                    $nulls++;
-                endif;
-            endforeach;
-
-            if ( $nulls <= 10 ):
-                $validRows[] = $row;
             endif;
+
+//            $nulls = 0;
+//            foreach ( $row as $cell ):
+//                $cell = trim( $cell );
+//                if ( empty( $cell ) && ! is_numeric( $cell ) ):
+//                    $nulls++;
+//                endif;
+//            endforeach;
+//
+//            if ( $nulls <= 10 ):
+//                $validRows[] = $row;
+//            endif;
+
+            $validRows[] = $row;
+
         endforeach;
 
         return $validRows;

@@ -8,6 +8,7 @@ use DPRMC\RemitSpiderCTSLink\Eloquent\CustodianCtsLink;
 use DPRMC\RemitSpiderCTSLink\Exceptions\DuplicatesInHeaderRowException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\HLMFLCRTabMissingSomeCategoriesException;
 use DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException;
+use DPRMC\RemitSpiderCTSLink\Exceptions\ValidationHeadersNotFoundException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\AtLeastOneTabNotFoundException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\NoDatesInTabsException;
 use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\ProbablyExcelDateException;
@@ -330,6 +331,9 @@ class CMBSRestrictedServicerReportFactory {
             } catch ( TabWithSimilarNameAndDifferentHeaders $exception ) {
                 $exceptions[] = $exception;
             } catch ( DuplicatesInHeaderRowException $exception ) {
+                $newException = new \Exception( 'In tab "' . $sheetName . '" ' . $exception->generateMessage() );
+                $exceptions[] = $newException;
+            } catch ( ValidationHeadersNotFoundException $exception ) {
                 $newException = new \Exception( 'In tab "' . $sheetName . '" ' . $exception->generateMessage() );
                 $exceptions[] = $newException;
             } catch ( \Exception $exception ) {
