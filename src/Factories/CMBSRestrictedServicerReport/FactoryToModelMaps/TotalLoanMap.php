@@ -48,7 +48,8 @@ class TotalLoanMap extends AbstractFactoryToModelMap {
         ],
         CustodianCtsCmbsRestrictedServicerReportTotalLoan::prospectus_loan_name                            => [
             'prospectus_loan_name',
-            'loan_name' ],
+            'loan_name',
+            'prospectus_loan_navme'],
         CustodianCtsCmbsRestrictedServicerReportTotalLoan::original_shadow_rating_m_s_f_d                  => [
             'original_shadow_rating_m_s_f_d',
             'rating_m_s_f_d' ],
