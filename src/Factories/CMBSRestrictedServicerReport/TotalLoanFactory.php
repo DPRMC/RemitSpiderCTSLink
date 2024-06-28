@@ -12,20 +12,6 @@ class TotalLoanFactory extends AbstractTabFactory {
 
     protected array $rowIndexZeroDisqualifyingValues = [ 'total', '#N/A', 'nav = not available' ];
 
-    protected array $totalLoanAmountAtOriginationValuesThatShouldBeNull = [
-        'west la office - 1950 sawtelle boulevard',
-        'vertex pharmaceuticals hq',
-        'the shops at crystals',
-        'the shops at coconut point',
-        'simon premium outlets',
-        'international square',
-        'gaffney premium outlets',
-        'flagler corporate center',
-        'easton town center',
-        'columbia center',
-        'briarwood mall'
-    ];
-
     protected function _removeInvalidRows( array $rows = [] ): array {
 
         /**
@@ -60,6 +46,7 @@ class TotalLoanFactory extends AbstractTabFactory {
 
 
         $validRows = [];
+
         $totalLoanMap = TotalLoanMap::$map;
         foreach ( $rows as $i => $row ) :
 
@@ -77,10 +64,6 @@ class TotalLoanFactory extends AbstractTabFactory {
 
             if( ! array_key_exists(CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id, $validatedRow ) ) :
                 $missingValidationHeaders[] = CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id;
-            endif;
-
-            if( ! array_key_exists( CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination, $validatedRow ) ) :
-                $missingValidationHeaders[] = CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination;
             endif;
 
             if( ! empty( $missingValidationHeaders ) ) :
@@ -122,27 +105,34 @@ class TotalLoanFactory extends AbstractTabFactory {
                 continue;
             endif;
 
-            // At this point we can validate against the column 'total_loan_amount_at_origination' which should be either NULL
-            // or a numeric value.  Except for document id '6665524' which is an outlier with property names in this field.
-            // Those have been added to an exceptions array and will be allowed through. Anything else is a junk row.
-            if( ! is_null( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination] ) &&
-                ! is_numeric( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination] ) ) :
-                if( ! in_array( strtolower( trim( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination] ) ), $this->totalLoanAmountAtOriginationValuesThatShouldBeNull ) ) :
-                    continue;
+            // Count cells that have no value in the row
+            $nulls = 0;
+            foreach ( $row as $cell ):
+                $cell = trim( $cell );
+                if ( empty( $cell ) && ! is_numeric( $cell ) ):
+                    $nulls++;
                 endif;
+            endforeach;
+
+            // If the empty cells are more than 10, skip the row
+            if ( 10 < $nulls ):
+                continue;
             endif;
 
-//            $nulls = 0;
-//            foreach ( $row as $cell ):
-//                $cell = trim( $cell );
-//                if ( empty( $cell ) && ! is_numeric( $cell ) ):
-//                    $nulls++;
-//                endif;
-//            endforeach;
-//
-//            if ( $nulls <= 10 ):
-//                $validRows[] = $row;
-//            endif;
+            // Count the number of cells where the string cell value is found within the header string
+            $cellValueFoundInHeader = 0;
+            foreach( $row as $header => $cellValue ) :
+                $cellValue = strtolower( trim( $cellValue ) );
+                if( ! empty( $cellValue ) && ! is_numeric( $cellValue ) && str_contains( $header, $cellValue ) ) :
+                    $cellValueFoundInHeader++;
+                endif;
+            endforeach;
+
+            // If the string cell values are found within more than 6 header strings within the row, this row is an additioanl header
+            // row and should be skipped
+            if( 6 < $cellValueFoundInHeader ) :
+                continue;
+            endif;
 
             $validRows[] = $row;
 
