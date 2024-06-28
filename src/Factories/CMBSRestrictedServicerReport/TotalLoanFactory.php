@@ -128,8 +128,8 @@ class TotalLoanFactory extends AbstractTabFactory {
                 endif;
             endforeach;
 
-            // If the string cell values are found within more than 6 header strings within the row, this row is an additioanl header
-            // row and should be skipped
+            // If the string cell values are found within more than 6 header strings within the row, this row is an
+            // additional header row and should be skipped
             if( 6 < $cellValueFoundInHeader ) :
                 continue;
             endif;
