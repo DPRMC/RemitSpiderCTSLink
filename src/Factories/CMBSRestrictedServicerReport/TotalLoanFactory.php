@@ -8,6 +8,16 @@ use DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\FactoryToMod
 
 class TotalLoanFactory extends AbstractTabFactory {
 
+    /** This number represents the number of cells in a row that need to have a value other than 'NULL'
+     * @var int
+     */
+    protected int $nullValueThreshold = 10;
+
+    /** This number represents the number of cells in a row that need to have a value not found in the Header row
+     * @var int
+     */
+    protected  int $cellValuesFoundInHeaderThreshold = 4;
+
     protected array $firstColumnValidTextValues = [ 'Transaction ID', 'Trans', 'Transaction' ];
 
     protected array $rowIndexZeroDisqualifyingValues = [ 'total', '#N/A', 'nav = not available' ];
@@ -48,9 +58,14 @@ class TotalLoanFactory extends AbstractTabFactory {
         $validRows = [];
 
         $totalLoanMap = TotalLoanMap::$map;
+
         foreach ( $rows as $i => $row ) :
 
             $validatedRow = [];
+
+            // The values in specific cells are needed for the following validation code.  Since keys of the associative
+            //  array 'row' can have different spellings a check against the spelling found in the 'TotalLoanMap' object
+            // is needed to ensure the key for value needed to validate is present
             foreach( $row as $header => $cellValue ) :
                 foreach( $totalLoanMap as $mappedHeader => $possibleHeaderValues ) :
                     if( in_array( $header, $possibleHeaderValues ) ) :
@@ -105,32 +120,15 @@ class TotalLoanFactory extends AbstractTabFactory {
                 continue;
             endif;
 
-            // Count cells that have no value in the row
-            $nulls = 0;
-            foreach ( $row as $cell ):
-                $cell = trim( $cell );
-                if ( empty( $cell ) && ! is_numeric( $cell ) ):
-                    $nulls++;
-                endif;
-            endforeach;
-
-            // If the empty cells are more than 10, skip the row
-            if ( 10 < $nulls ):
+            // Valid rows should contain a minimum amount of data.  Rows that have NULL cells that exceed the threshold
+            // can be skipped.
+            if( $this->_nullCellsExceedThreshold( $row ) ) :
                 continue;
             endif;
 
-            // Count the number of cells where the string cell value is found within the header string
-            $cellValueFoundInHeader = 0;
-            foreach( $row as $header => $cellValue ) :
-                $cellValue = strtolower( trim( $cellValue ) );
-                if( ! empty( $cellValue ) && ! is_numeric( $cellValue ) && str_contains( $header, $cellValue ) ) :
-                    $cellValueFoundInHeader++;
-                endif;
-            endforeach;
-
-            // If the string cell values are found within more than 6 header strings within the row, this row is an
-            // additional header row and should be skipped
-            if( 6 < $cellValueFoundInHeader ) :
+            // Additional header rows are common in the Total Loan tab.  This check removes rows where the values in
+            // the cells of the row exceed the threshold of allowed values found within the column header
+            if( $this->_cellValuesFoundInHeaderExceedThreshold( $row ) ) :
                 continue;
             endif;
 
@@ -141,12 +139,15 @@ class TotalLoanFactory extends AbstractTabFactory {
         return $validRows;
     }
 
+    /**
+     *  This method needed an override because the total loan tab can have a blank row in the middle of the document.
+     *  This method was excluding valid rows below the blank row.
+     *  See Total Loan tab of CCRE_2016C3_6655160_CCRE_2016C3_RSRV.xls for an example
+     * @param array $allRows
+     * @return array
+     * @throws \DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException
+     */
     protected function _getRowsToBeParsed( array $allRows ): array {
-        /**
-         * This method needed an override because the total loan tab can have a blank row in the middle of the document.
-         * This method was excluding valid rows below the blank row.
-         * See Total Loan tab of CCRE_2016C3_6655160_CCRE_2016C3_RSRV.xls for an example
-         */
 
 //        $firstBlankRowIndex = 0;
 
@@ -165,5 +166,64 @@ class TotalLoanFactory extends AbstractTabFactory {
 
         return array_slice( $allRows, $firstRowOfDataIndex, $numRows );
     }
+
+    /**
+     * Use this method to determine if the cells in the row have more null values than the accepted threshold.
+     * This is used to remove 'spacer' rows in the Excel sheets that contain only null values in the row cells or
+     * cells that contain footnotes often found at the bottom of the sheets
+     * @param $row
+     * @return bool
+     */
+    protected function _nullCellsExceedThreshold( $row ) : bool {
+        // Count cells that have no value in the row
+        $nulls = 0;
+        foreach ( $row as $cell ):
+            $cell = trim( $cell );
+            if ( empty( $cell ) && ! is_numeric( $cell ) ):
+                $nulls++;
+            endif;
+        endforeach;
+
+        // If the threshold is less than the nulls in the row, skip the row
+        if ( $this->nullValueThreshold < $nulls ):
+            return TRUE;
+        endif;
+
+        return FALSE;
+
+    }
+
+    /** Use this method to determine if the row is an additional header row. (Example in sheet with document ID: 6680803)
+     * The threshold is needed as false positives can occur if the cell contains a value of only one or two characters.
+     * (Example in sheet with document ID: 6680803, Column:R  M will be found in the column header 'Master Servicer').
+     * Additional header rows will overcome this threshold, however,  and return true
+     * @param $row
+     * @return bool
+     */
+    protected function _cellValuesFoundInHeaderExceedThreshold( $row ) : bool {
+        // Count the number of cells where the string cell value is found within the header string
+        $cellValueFoundInHeader = 0;
+        foreach( $row as $header => $cellValue ) :
+            $cellValue = strtolower( trim( $cellValue ) );
+
+            // str_contains used below returns true on empty values, so skip those.
+            if( empty( $cellValue ) ) :
+                continue;
+            endif;
+
+            if( str_contains( $header, $cellValue ) ) :
+                $cellValueFoundInHeader++;
+            endif;
+        endforeach;
+
+        // If the threshold is less than the amount of cells with values found in the header, skip the row
+        if( $this->cellValuesFoundInHeaderThreshold < $cellValueFoundInHeader ) :
+            return TRUE;
+        endif;
+
+        return FALSE;
+
+    }
+
 
 }
