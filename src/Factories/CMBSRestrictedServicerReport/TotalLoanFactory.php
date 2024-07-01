@@ -16,7 +16,7 @@ class TotalLoanFactory extends AbstractTabFactory {
     /** This number represents the number of cells in a row that need to have a value not found in the Header row
      * @var int
      */
-    protected  int $cellValuesFoundInHeaderThreshold = 4;
+    protected int $cellValuesFoundInHeaderThreshold = 4;
 
     protected array $firstColumnValidTextValues = [ 'Transaction ID', 'Trans', 'Transaction' ];
 
@@ -66,10 +66,10 @@ class TotalLoanFactory extends AbstractTabFactory {
             // The values in specific cells are needed for the following validation code.  Since keys of the associative
             //  array 'row' can have different spellings a check against the spelling found in the 'TotalLoanMap' object
             // is needed to ensure the key for value needed to validate is present
-            foreach( $row as $header => $cellValue ) :
-                foreach( $totalLoanMap as $mappedHeader => $possibleHeaderValues ) :
-                    if( in_array( $header, $possibleHeaderValues ) ) :
-                        $validatedRow[$mappedHeader] = $cellValue;
+            foreach ( $row as $header => $cellValue ) :
+                foreach ( $totalLoanMap as $mappedHeader => $possibleHeaderValues ) :
+                    if ( in_array( $header, $possibleHeaderValues ) ) :
+                        $validatedRow[ $mappedHeader ] = $cellValue;
                         continue;
                     endif;
                 endforeach;
@@ -77,11 +77,11 @@ class TotalLoanFactory extends AbstractTabFactory {
 
             $missingValidationHeaders = [];
 
-            if( ! array_key_exists(CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id, $validatedRow ) ) :
+            if ( ! array_key_exists( CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id, $validatedRow ) ) :
                 $missingValidationHeaders[] = CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id;
             endif;
 
-            if( ! empty( $missingValidationHeaders ) ) :
+            if ( ! empty( $missingValidationHeaders ) ) :
                 throw new ValidationHeadersNotFoundException( $missingValidationHeaders );
             endif;
 
@@ -90,13 +90,13 @@ class TotalLoanFactory extends AbstractTabFactory {
             // Skip that.
             // If the first cell contains part of the word 'Transaction' then
             // you can be sure its a header or junk row. Skip it.
-            if ( str_contains( strtolower( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id] ), 'ransac' ) ):
+            if ( str_contains( strtolower( $row[ CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id ] ), 'ransac' ) ):
                 continue;
             endif;
 
             // Since these files sometimes have headers that span several rows, we will also skip rows whre the first
             // cell contains 'ID'
-            if ( str_contains( strtolower( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id] ), 'id' ) ):
+            if ( str_contains( strtolower( $row[ CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id ] ), 'id' ) ):
                 continue;
             endif;
 
@@ -104,31 +104,31 @@ class TotalLoanFactory extends AbstractTabFactory {
             // Certainly don't need that either.
             // Cell 0 (zero) should be a Transaction_ID which is alphanumeric.
             // If it's just plain numeric, skip it.
-            if ( is_numeric( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id] ) ):
+            if ( is_numeric( $row[ CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id ] ) ):
                 continue;
             endif;
 
             // Skip items found in the first cell of the row that contain string values found in property '$rowIndexZeroDisqualifyingValues'
             $disqualifyingValueFlag = FALSE;
-            foreach( $this->rowIndexZeroDisqualifyingValues as $disqualifyingValue ) :
-                if( str_contains( strtolower( trim( $row[CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id] ) ), $disqualifyingValue ) ) :
+            foreach ( $this->rowIndexZeroDisqualifyingValues as $disqualifyingValue ) :
+                if ( str_contains( strtolower( trim( $row[ CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id ] ) ), $disqualifyingValue ) ) :
                     $disqualifyingValueFlag = TRUE;
                 endif;
             endforeach;
 
-            if( $disqualifyingValueFlag ) :
+            if ( $disqualifyingValueFlag ) :
                 continue;
             endif;
 
             // Valid rows should contain a minimum amount of data.  Rows that have NULL cells that exceed the threshold
             // can be skipped.
-            if( $this->_nullCellsExceedThreshold( $row ) ) :
+            if ( $this->_nullCellsExceedThreshold( $row ) ) :
                 continue;
             endif;
 
             // Additional header rows are common in the Total Loan tab.  This check removes rows where the values in
             // the cells of the row exceed the threshold of allowed values found within the column header
-            if( $this->_cellValuesFoundInHeaderExceedThreshold( $row ) ) :
+            if ( $this->_cellValuesFoundInHeaderExceedThreshold( $row ) ) :
                 continue;
             endif;
 
@@ -174,7 +174,7 @@ class TotalLoanFactory extends AbstractTabFactory {
      * @param $row
      * @return bool
      */
-    protected function _nullCellsExceedThreshold( $row ) : bool {
+    protected function _nullCellsExceedThreshold( $row ): bool {
         // Count cells that have no value in the row
         $nulls = 0;
         foreach ( $row as $cell ):
@@ -200,24 +200,24 @@ class TotalLoanFactory extends AbstractTabFactory {
      * @param $row
      * @return bool
      */
-    protected function _cellValuesFoundInHeaderExceedThreshold( $row ) : bool {
+    protected function _cellValuesFoundInHeaderExceedThreshold( $row ): bool {
         // Count the number of cells where the string cell value is found within the header string
         $cellValueFoundInHeader = 0;
-        foreach( $row as $header => $cellValue ) :
+        foreach ( $row as $header => $cellValue ) :
             $cellValue = strtolower( trim( $cellValue ) );
 
             // str_contains used below returns true on empty values, so skip those.
-            if( empty( $cellValue ) ) :
+            if ( empty( $cellValue ) ) :
                 continue;
             endif;
 
-            if( str_contains( $header, $cellValue ) ) :
+            if ( str_contains( $header, $cellValue ) ) :
                 $cellValueFoundInHeader++;
             endif;
         endforeach;
 
         // If the threshold is less than the amount of cells with values found in the header, skip the row
-        if( $this->cellValuesFoundInHeaderThreshold < $cellValueFoundInHeader ) :
+        if ( $this->cellValuesFoundInHeaderThreshold < $cellValueFoundInHeader ) :
             return TRUE;
         endif;
 
