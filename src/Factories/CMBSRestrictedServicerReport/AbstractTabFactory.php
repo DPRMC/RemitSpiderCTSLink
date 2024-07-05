@@ -359,9 +359,12 @@ abstract class AbstractTabFactory {
         endforeach;
 
         // Uncomment this for debugging. You probably need a new spelling of "Trans Id"
-        //if(is_null($headerRowIndex)){
-        //    dd($allRows);
-        //}
+        if(is_null($headerRowIndex)){
+            dump($allRows);
+            dump('above are $allRows');
+
+            dd('You probably need a new spelling of "Trans Id"');
+        }
 
         return $headerRowIndex;
     }
