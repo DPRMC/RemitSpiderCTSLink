@@ -8,6 +8,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
                                                     'Trans',
                                                     "Trans\nID",
                                                     "Trans \nID",
+                                                    "TRANSACTION_ID",
     ];
 
 
