@@ -10,7 +10,8 @@ class DLSRFactory extends AbstractTabFactory {
 
     protected array $firstColumnValidTextValues = [ 'Trans ID',
                                                     'Trans',
-                                                    'Trans  ID' ];
+                                                    'Trans  ID',
+                                                    'TRANSACTION ID' ];
 
     const DEL_90_PLUS   = 'del_90_plus';   // 90 + Days Delinquent
     const DEL_60_PLUS   = 'del_60_plus';   // 60 to 89 Days Delinquent
