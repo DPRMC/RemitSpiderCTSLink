@@ -215,7 +215,7 @@ abstract class AbstractTabFactory {
         //}
 
         //dump($debugSheetName);
-        $this->headerRowIndex = $this->_getArrayIndexOfBottomHeaderRow( $allRows, $firstColumnValidTextValues );
+        $this->headerRowIndex = $this->_getArrayIndexOfBottomHeaderRow( $allRows, $firstColumnValidTextValues, $debugSheetName );
         $cleanHeaders         = $this->_consolidateMultipleHeaderRowsUsingKeywords( $allRows );
         $this->localHeaders   = $cleanHeaders;
     }
@@ -335,7 +335,7 @@ abstract class AbstractTabFactory {
     }
 
 
-    protected function _getArrayIndexOfBottomHeaderRow( array $allRows = [], array $firstColumnValidTextValues = [] ): int {
+    protected function _getArrayIndexOfBottomHeaderRow( array $allRows = [], array $firstColumnValidTextValues = [], string $debugSheetName = null ): int {
         $headerRowIndex = NULL;
         foreach ( $allRows as $i => $row ):
 
