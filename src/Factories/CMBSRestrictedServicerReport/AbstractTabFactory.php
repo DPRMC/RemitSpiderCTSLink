@@ -360,9 +360,10 @@ abstract class AbstractTabFactory {
 
         // Uncomment this for debugging. You probably need a new spelling of "Trans Id"
         if(is_null($headerRowIndex)){
+            dump($debugSheetName);
+            dump($firstColumnValidTextValues);
             dump($allRows);
             dump('above are $allRows');
-
             dd('You probably need a new spelling of "Trans Id"');
         }
 

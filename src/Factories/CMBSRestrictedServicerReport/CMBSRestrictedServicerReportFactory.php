@@ -68,6 +68,7 @@ class CMBSRestrictedServicerReportFactory {
             'REOSR',
             'REO Status Report',
             'REO STATUS',
+            'REOStatus',
             'rptREOStatus',
         ], // REO STATUS REPORT
         self::CFSR      => [
