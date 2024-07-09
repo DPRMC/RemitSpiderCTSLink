@@ -31,10 +31,16 @@ class DifferentSpellingOfTransactionIdNeededException extends \Exception {
     }
 
     protected function _getSuspectedNewSpellingOfTransactionId(): array {
+        $suspectedNewSpellings = [];
         foreach ( $this->allRows as $i => $rows ):
             foreach ( $rows as $j => $row ):
-                dump( $row );
+                foreach ( $row as $k => $value ):
+                    if ( str_contains( $value, 'rans' ) ):
+                        $suspectedNewSpellings[] = $value;
+                    endif;
+                endforeach;
             endforeach;
         endforeach;
+        return $suspectedNewSpellings;
     }
 }
