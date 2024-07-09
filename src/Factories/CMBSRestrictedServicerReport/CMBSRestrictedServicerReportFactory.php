@@ -78,6 +78,7 @@ class CMBSRestrictedServicerReportFactory {
             'tCComparativeFinancialStatusIRP',
             'Comparative Fin Status Report',
             'Comparative Financial Report',
+            'rptCComparativeFinancialStatus'
         ], // COMPARATIVE FINANCIAL STATUS REPORT
         self::HLMFCLR   => [
             'HLMFCLR',
