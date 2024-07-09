@@ -145,9 +145,9 @@ class CMBSRestrictedServicerReportFactory {
     /**
      * TODO I should create an INTERFACE that this and the CMBSMonthlyAdministratorReportFactory both implement.
      *
-     * @param string                $pathToRestrictedServicerReportXlsx
+     * @param string $pathToRestrictedServicerReportXlsx
      * @param CustodianCtsLink|NULL $ctsLink Not used in this particular make method()
-     * @param Carbon|NULL           $dateOfFile
+     * @param Carbon|NULL $dateOfFile
      *
      * @return CMBSRestrictedServicerReport
      * @throws NoDatesInTabsException
@@ -209,7 +209,8 @@ class CMBSRestrictedServicerReportFactory {
                     $watchlist                                      = $factory->parse( $rows,
                                                                                        $cleanHeadersBySheetName,
                                                                                        CMBSRestrictedServicerReport::watchlist,
-                                                                                       $watchlist );
+                                                                                       $watchlist,
+                                                                                       $pathToRestrictedServicerReportXlsx );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::DLSR, $sheetName ) ):
                     //dump( self::DLSR . " " . $sheetName );
@@ -222,7 +223,8 @@ class CMBSRestrictedServicerReportFactory {
                     $dlsr                                      = $factory->parse( $rows,
                                                                                   $cleanHeadersBySheetName,
                                                                                   CMBSRestrictedServicerReport::dlsr,
-                                                                                  $dlsr );
+                                                                                  $dlsr,
+                                                                                  $pathToRestrictedServicerReportXlsx );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::REOSR, $sheetName ) ):
                     //dump( self::REOSR . " " . $sheetName );
@@ -235,7 +237,8 @@ class CMBSRestrictedServicerReportFactory {
                     $reosr                                      = $factory->parse( $rows,
                                                                                    $cleanHeadersBySheetName,
                                                                                    CMBSRestrictedServicerReport::reosr,
-                                                                                   $reosr );
+                                                                                   $reosr,
+                                                                                   $pathToRestrictedServicerReportXlsx );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::HLMFCLR, $sheetName ) ):
                     //dump( self::HLMFCLR . " " . $sheetName );
@@ -248,7 +251,8 @@ class CMBSRestrictedServicerReportFactory {
                     $hlmfclr                                      = $factory->parse( $rows,
                                                                                      $cleanHeadersBySheetName,
                                                                                      CMBSRestrictedServicerReport::hlmfclr,
-                                                                                     $hlmfclr );
+                                                                                     $hlmfclr,
+                                                                                     $pathToRestrictedServicerReportXlsx );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::CFSR, $sheetName ) ):
                     //dump( self::CFSR . " " . $sheetName );
@@ -261,7 +265,8 @@ class CMBSRestrictedServicerReportFactory {
                     $csfr                                      = $factory->parse( $rows,
                                                                                   $cleanHeadersBySheetName,
                                                                                   CMBSRestrictedServicerReport::csfr,
-                                                                                  $csfr );
+                                                                                  $csfr,
+                                                                                  $pathToRestrictedServicerReportXlsx );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::LLRES, $sheetName ) ):
                     //dump( self::LLRES . " " . $sheetName );
@@ -274,7 +279,8 @@ class CMBSRestrictedServicerReportFactory {
                     $llResLOC                                   = $factory->parse( $rows,
                                                                                    $cleanHeadersBySheetName,
                                                                                    CMBSRestrictedServicerReport::llResLOC,
-                                                                                   $llResLOC );
+                                                                                   $llResLOC,
+                                                                                   $pathToRestrictedServicerReportXlsx );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::TOTALLOAN, $sheetName ) ):
                     //dump( self::TOTALLOAN . " " . $sheetName );
@@ -287,7 +293,8 @@ class CMBSRestrictedServicerReportFactory {
                     $totalLoan                                      = $factory->parse( $rows,
                                                                                        $cleanHeadersBySheetName,
                                                                                        CMBSRestrictedServicerReport::totalLoan,
-                                                                                       $totalLoan );
+                                                                                       $totalLoan,
+                                                                                       $pathToRestrictedServicerReportXlsx );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::RECOVERY, $sheetName ) ):
                     //dump( self::RECOVERY . " " . $sheetName );
@@ -300,7 +307,8 @@ class CMBSRestrictedServicerReportFactory {
                     $advanceRecovery                               = $factory->parse( $rows,
                                                                                       $cleanHeadersBySheetName,
                                                                                       CMBSRestrictedServicerReport::advanceRecovery,
-                                                                                      $advanceRecovery );
+                                                                                      $advanceRecovery,
+                                                                                      $pathToRestrictedServicerReportXlsx );
                     unset( $factory );
                 else:
                     //dump( "doing nothing with " . $sheetName );
@@ -415,7 +423,7 @@ class CMBSRestrictedServicerReportFactory {
      */
     protected function _getTheDate( array $tabs ): string {
 
-        if ( !is_null( $this->dateOfFile ) ):
+        if ( ! is_null( $this->dateOfFile ) ):
             return $this->dateOfFile->toDateString();
         endif;
 
@@ -433,7 +441,7 @@ class CMBSRestrictedServicerReportFactory {
         if ( count( $uniqueDates ) > 1 ):
             $dateCount = [];
             foreach ( $dates as $date ):
-                if ( !isset( $dateCount[ $date ] ) ):
+                if ( ! isset( $dateCount[ $date ] ) ):
                     $dateCount[ $date ] = 0;
                 endif;
                 $dateCount[ $date ]++;
@@ -463,7 +471,7 @@ class CMBSRestrictedServicerReportFactory {
 
 
     /**
-     * @param array  $rows
+     * @param array $rows
      * @param string $date
      *
      * @return array
@@ -527,7 +535,7 @@ class CMBSRestrictedServicerReportFactory {
     }
 
     public function hasExceptions(): bool {
-        return !empty( $this->exceptions );
+        return ! empty( $this->exceptions );
     }
 
     public function getExceptions(): array {
