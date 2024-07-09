@@ -202,11 +202,13 @@ abstract class AbstractTabFactory {
 
 
     /**
-     * @param array $allRows
-     * @param array $firstColumnValidTextValues
+     * @param array       $allRows
+     * @param array       $firstColumnValidTextValues
      * @param string|NULL $debugSheetName
+     * @param string|NULL $debugFilename
      *
      * @return void
+     * @throws \DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\Exceptions\DifferentSpellingOfTransactionIdNeededException
      */
     protected function _setLocalHeaders( array  $allRows,
                                          array  $firstColumnValidTextValues = [],

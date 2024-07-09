@@ -22,11 +22,14 @@ class CFSRFactory extends AbstractTabFactory {
 
     /**
      * I need a custom method here since the header values are in more than one row.
-     * @param array $allRows
-     * @param array $firstColumnValidTextValues
+     * @param array       $allRows
+     * @param array       $firstColumnValidTextValues
+     * @param string|NULL $debugSheetName
+     * @param string|NULL $debugFilename
+     *
      * @return void
      */
-    protected function _setLocalHeaders( array $allRows, array $firstColumnValidTextValues = [], string $debugSheetName=null ): void {
+    protected function _setLocalHeaders( array $allRows, array $firstColumnValidTextValues = [], string $debugSheetName = NULL, string $debugFilename = NULL,): void {
         $headerRow = [];
         foreach ( $allRows as $i => $row ):
             if ( empty( $row[ 0 ] ) ):

@@ -21,11 +21,15 @@ ID' ];
 
     /**
      * I need a custom method here since the header values are in more than one row.
-     * @param array $allRows
-     * @param array $firstColumnValidTextValues
-     * @return void
+     *
+     * @param array       $allRows
+     * @param array       $firstColumnValidTextValues
+     * @param string|null $debugSheetName
+     * @param string|null $debugFilename *
+     *
+* @return void
      */
-    protected function _setLocalHeaders( array $allRows, array $firstColumnValidTextValues = [], string $debugSheetName = NULL ): void {
+    protected function _setLocalHeaders( array $allRows, array $firstColumnValidTextValues = [], string $debugSheetName = NULL, string $debugFilename = NULL): void {
         $headerRow = [];
         foreach ( $allRows as $i => $row ):
             if ( empty( $row[ 0 ] ) ):
