@@ -14,6 +14,8 @@ class DifferentSpellingOfTransactionIdNeededException extends \Exception {
 
     public array $suspectedNewSpellings = [];
 
+    const TRANSACTION_ID_SEARCH_STRING = 'rans';
+
     public function __construct( string      $message = "",
                                  int         $code = 0,
                                  ?\Throwable $previous = NULL,
@@ -32,15 +34,30 @@ class DifferentSpellingOfTransactionIdNeededException extends \Exception {
 
     protected function _getSuspectedNewSpellingOfTransactionId(): array {
         $suspectedNewSpellings = [];
+
         foreach ( $this->allRows as $i => $rows ):
             foreach ( $rows as $j => $row ):
-                foreach ( $row as $k => $value ):
-                    if ( str_contains( $value, 'rans' ) ):
-                        $suspectedNewSpellings[] = $value;
+                if ( is_null( $row ) ):
+                    continue;
+                endif;
+
+                if ( is_array( $row ) ):
+                    foreach ( $row as $k => $value ):
+                        if ( str_contains( $value, self::TRANSACTION_ID_SEARCH_STRING ) ):
+                            $suspectedNewSpellings[] = $value;
+                        endif;
+                    endforeach;
+
+                else:
+                    if ( str_contains( $row, self::TRANSACTION_ID_SEARCH_STRING ) ):
+                        $suspectedNewSpellings[] = $row;
                     endif;
-                endforeach;
+                endif;
+
+
             endforeach;
         endforeach;
+
         return $suspectedNewSpellings;
     }
 }
