@@ -18,7 +18,7 @@ class TotalLoanFactory extends AbstractTabFactory {
      */
     protected int $cellValuesFoundInHeaderThreshold = 4;
 
-    protected array $firstColumnValidTextValues = [ 'Transaction ID', 'Trans', 'Transaction' ];
+    protected array $firstColumnValidTextValues = [ 'Transaction ID', 'Trans', 'Transaction', 'TRANSACTION ID' ];
 
     protected array $rowIndexZeroDisqualifyingValues = [ 'total', '#N/A', 'nav = not available' ];
 

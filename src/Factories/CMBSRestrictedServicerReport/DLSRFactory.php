@@ -173,9 +173,11 @@ class DLSRFactory extends AbstractTabFactory {
     protected function _isMissingAllDelinquencyIndexes(): bool {
         foreach ( $this->delinquencyIndexes as $key => $index ):
 
-            if ( is_null( $index ) ):
+            if ( 'last_row' == $key ):
                 continue;
-            else:
+            endif;
+
+            if ( !is_null( $index ) ):
                 return FALSE;
             endif;
         endforeach;
