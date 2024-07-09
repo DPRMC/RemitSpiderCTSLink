@@ -7,7 +7,11 @@ namespace DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport;
  * FYI, the parse function works perfectly. 2023-07-12:mdd
  */
 class WatchlistFactory extends AbstractTabFactory {
-    protected array $firstColumnValidTextValues = [ 'Trans ID', 'Trans Id', 'Trans', 'Tran ID' ];
+    protected array $firstColumnValidTextValues = [ 'Trans ID',
+                                                    'Trans Id',
+                                                    'Trans',
+                                                    'Tran ID',
+                                                    'transaction_id' ];
 
     protected function _removeInvalidRows( array $rows = [] ): array {
 
@@ -20,18 +24,18 @@ class WatchlistFactory extends AbstractTabFactory {
         $validRows = [];
         foreach ( $rows as $i => $row ):
 
-            $row = array_slice($row,0,count($this->localHeaders));
+            $row = array_slice( $row, 0, count( $this->localHeaders ) );
 
             $numNullCells           = 0;
             $nonIntegerFound        = FALSE;
             $numStartingWithLetterL = 0;
             foreach ( $row as $j => $value ):
-                $value = trim($value);
+                $value = trim( $value );
                 if ( empty( $value ) ):
                     $numNullCells++;
                 endif;
 
-                if (  isset($value) && !is_integer( (string)$value ) ):
+                if ( isset( $value ) && !is_integer( (string)$value ) ):
                     $nonIntegerFound = TRUE;
                 endif;
 
@@ -68,7 +72,7 @@ class WatchlistFactory extends AbstractTabFactory {
             //  20 => 21
             //  21 => 22
             //]
-            if (! $nonIntegerFound ):
+            if ( !$nonIntegerFound ):
                 continue;
             endif;
 

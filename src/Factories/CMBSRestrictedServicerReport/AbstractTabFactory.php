@@ -295,6 +295,14 @@ abstract class AbstractTabFactory {
             while ( $this->_valueIsPartOfTheHeader( $nextPotentialHeaderValueFromTheCellAbove ) ):
                 array_unshift( $partsOfTheHeaderToBeAssembled, $nextPotentialHeaderValueFromTheCellAbove );
                 $nextRowUpToCheckForPotentialHeaderValue--;
+
+
+                //dump('$nextRowUpToCheckForPotentialHeaderValue' . $nextRowUpToCheckForPotentialHeaderValue);
+                if ( 0 > $nextRowUpToCheckForPotentialHeaderValue ):
+                    return [];
+                    //dd( $allRows );
+                endif;
+
                 $nextPotentialHeaderValueFromTheCellAbove = $allRows[ $nextRowUpToCheckForPotentialHeaderValue ][ $columnIndex ];
             endwhile;
 

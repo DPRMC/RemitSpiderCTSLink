@@ -10,7 +10,8 @@ class DLSRFactory extends AbstractTabFactory {
 
     protected array $firstColumnValidTextValues = [ 'Trans ID',
                                                     'Trans',
-                                                    'Trans  ID' ];
+                                                    'Trans  ID',
+                                                    'TRANSACTION ID' ];
 
     const DEL_90_PLUS   = 'del_90_plus';   // 90 + Days Delinquent
     const DEL_60_PLUS   = 'del_60_plus';   // 60 to 89 Days Delinquent
@@ -51,6 +52,11 @@ class DLSRFactory extends AbstractTabFactory {
     protected function _setParsedRows( array $allRows, string $sheetName = NULL, array $existingRows = [] ): void {
 
         $this->_setDelinquencyIndexes( $allRows );
+
+        if ( $this->_isMissingAllDelinquencyIndexes() ):
+            $this->cleanRows = [];
+            return;
+        endif;
 
         if ( $this->_isMissingSomeDelinquencyIndexes() ):
             throw new DLSRTabMissingSomeDelinquencyCategoriesException( "Patch the parser. DLSR isMissingSomeDelinquencyIndexes",
@@ -105,7 +111,10 @@ class DLSRFactory extends AbstractTabFactory {
 
         for ( $i = $possibleFirstRowOfData; $i < $numRows; $i++ ):
 
+            //dump( $allRows[ $i ] );
             if ( $this->_isNinetyPlusIndex( $allRows[ $i ] ) ):
+                //dump('FOUND ITTTTTTT: ' . $i);
+
                 $this->delinquencyIndexes[ self::DEL_90_PLUS ] = $i;
 
             elseif ( $this->_isSixtyPlusIndex( $allRows[ $i ] ) ):
@@ -152,6 +161,32 @@ class DLSRFactory extends AbstractTabFactory {
 
 
     /**
+     * See CTS Document Key: 4035374
+     * This document had two DLSR tabs. One of the standard format.
+     * One that was some other pared down format that is useless.
+     * The useless one did not have any of the subheaders that I am looking for.
+     * So if the sheet/tab doesn't have ANY of the subheader/delinquincy labels (like 90+ days delin...)
+     * Then exit parsing, and don't return any new "clean" rows.
+     *
+     * @return bool
+     */
+    protected function _isMissingAllDelinquencyIndexes(): bool {
+        foreach ( $this->delinquencyIndexes as $key => $index ):
+
+            if ( 'last_row' == $key ):
+                continue;
+            endif;
+
+            if ( !is_null( $index ) ):
+                return FALSE;
+            endif;
+        endforeach;
+
+        return TRUE;
+    }
+
+
+    /**
      * @param array  $row
      * @param string $strStartsWith
      *
@@ -179,7 +214,11 @@ class DLSRFactory extends AbstractTabFactory {
      * @return bool
      */
     protected function _isNinetyPlusIndex( $row ): bool {
+        //dump( 'itereation X....................._isNinetyPlusIndex...............' );
+        //dump( self::DEL_90_PLUS );
+        //dump( $this->delinquencyIndexes[ self::DEL_90_PLUS ] );
         if ( isset( $this->delinquencyIndexes[ self::DEL_90_PLUS ] ) ):
+            //dd( 'already set/' );
             return FALSE;
         endif;
         return $this->_isXPlusIndex( $row, '90' );
