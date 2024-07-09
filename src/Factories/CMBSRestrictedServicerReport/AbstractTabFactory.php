@@ -216,8 +216,10 @@ abstract class AbstractTabFactory {
 
         //dump($debugSheetName);
         $this->headerRowIndex = $this->_getArrayIndexOfBottomHeaderRow( $allRows, $firstColumnValidTextValues, $debugSheetName );
-        $cleanHeaders         = $this->_consolidateMultipleHeaderRowsUsingKeywords( $allRows );
-        $this->localHeaders   = $cleanHeaders;
+
+        //dump($allRows);
+        $cleanHeaders       = $this->_consolidateMultipleHeaderRowsUsingKeywords( $allRows );
+        $this->localHeaders = $cleanHeaders;
     }
 
 
@@ -288,10 +290,17 @@ abstract class AbstractTabFactory {
 
             $nextPotentialHeaderValueFromTheCellAbove = trim( $allRows[ $nextRowUpToCheckForPotentialHeaderValue ][ $columnIndex ] );
 
-
             while ( $this->_valueIsPartOfTheHeader( $nextPotentialHeaderValueFromTheCellAbove ) ):
                 array_unshift( $partsOfTheHeaderToBeAssembled, $nextPotentialHeaderValueFromTheCellAbove );
                 $nextRowUpToCheckForPotentialHeaderValue--;
+
+
+                //dump('$nextRowUpToCheckForPotentialHeaderValue' . $nextRowUpToCheckForPotentialHeaderValue);
+                if ( 0 > $nextRowUpToCheckForPotentialHeaderValue ):
+                    return [];
+                    //dd( $allRows );
+                endif;
+
                 $nextPotentialHeaderValueFromTheCellAbove = $allRows[ $nextRowUpToCheckForPotentialHeaderValue ][ $columnIndex ];
             endwhile;
 
@@ -335,7 +344,7 @@ abstract class AbstractTabFactory {
     }
 
 
-    protected function _getArrayIndexOfBottomHeaderRow( array $allRows = [], array $firstColumnValidTextValues = [], string $debugSheetName = null ): int {
+    protected function _getArrayIndexOfBottomHeaderRow( array $allRows = [], array $firstColumnValidTextValues = [], string $debugSheetName = NULL ): int {
         $headerRowIndex = NULL;
         foreach ( $allRows as $i => $row ):
 
@@ -359,12 +368,12 @@ abstract class AbstractTabFactory {
         endforeach;
 
         // Uncomment this for debugging. You probably need a new spelling of "Trans Id"
-        if(is_null($headerRowIndex)){
-            dump($debugSheetName);
-            dump($firstColumnValidTextValues);
-            dump($allRows);
-            dump('above are $allRows');
-            dd('You probably need a new spelling of "Trans Id"');
+        if ( is_null( $headerRowIndex ) ) {
+            dump( $debugSheetName );
+            dump( $firstColumnValidTextValues );
+            dump( $allRows );
+            dump( 'above are $allRows' );
+            dd( 'You probably need a new spelling of "Trans Id"' );
         }
 
         return $headerRowIndex;
