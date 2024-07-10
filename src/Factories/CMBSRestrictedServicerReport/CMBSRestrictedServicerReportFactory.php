@@ -57,6 +57,7 @@ class CMBSRestrictedServicerReportFactory {
             'Servicer_Watchlist',
             'Watch List Report',
             'WATCHLIST',
+            'WatchList',
         ], // SERVICER WATCHLIST
         self::DLSR      => [
             'DLSR',
@@ -523,7 +524,9 @@ class CMBSRestrictedServicerReportFactory {
      */
     protected function _foundSheetName( string $index, string $sheetName ): bool {
         foreach ( $this->tabs[ $index ] as $tabName ):
-            if ( $sheetName == $tabName ):
+            // Added strtolower to make comparisons cleaner.
+            // I have seen Watchlist vs WatchList... for example.
+            if ( strtolower($sheetName) == strtolower($tabName) ):
                 return TRUE;
             endif;
 
