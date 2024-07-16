@@ -88,6 +88,7 @@ class CMBSRestrictedServicerReportFactory {
             'Hist Mod-Corr Mtg Loan',
             'Historical Modification Report',
             'rptMHistoricalLoanMod',
+            'HistLoanMod'
         ], // HISTORICAL LOAN MODIFICATION/FORBEARANCE and CORRECTED MORTGAGE LOAN REPORT
         self::LLRES     => [
             'LL Res, LOC',
