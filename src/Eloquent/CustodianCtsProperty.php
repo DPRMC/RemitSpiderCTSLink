@@ -24,7 +24,7 @@ class CustodianCtsProperty extends Model {
     const custodian_security_id = 'custodian_security_id';
     const url                   = 'url';
 
-
+    const transaction_id                                        = 'transaction_id';
     const loan_id                                               = 'loan_id';
     const prospectus_loan_id                                    = 'prospectus_loan_id';
     const property_id                                           = 'property_id';
@@ -124,6 +124,7 @@ class CustodianCtsProperty extends Model {
 
 
     protected $casts = [
+        self::transaction_id                                        => 'string',
         self::key                                                   => 'integer',
         self::custodian_security_id                                 => 'string',
         self::shelf                                                 => 'string',
