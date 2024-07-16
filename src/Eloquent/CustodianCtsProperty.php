@@ -16,6 +16,7 @@ class CustodianCtsProperty extends Model {
     public $incrementing = TRUE;
 
     const id                    = 'id';
+    const key                   = 'key';
     const created_at            = 'created_at';
     const updated_at            = 'updated_at';
     const shelf                 = 'shelf';
@@ -123,6 +124,7 @@ class CustodianCtsProperty extends Model {
 
 
     protected $casts = [
+        self::key                                                   => 'integer',
         self::custodian_security_id                                 => 'string',
         self::shelf                                                 => 'string',
         self::series                                                => 'string',
