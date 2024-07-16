@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CustodianCtsProperty extends Model {
 
-    public $table        = 'custodian_cts_properties';
+    public $table        = 'custodian_cts_cmbs_properties';
     public $primaryKey   = self::id;
     public $keyType      = 'integer';
     public $incrementing = TRUE;
