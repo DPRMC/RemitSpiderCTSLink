@@ -64,6 +64,7 @@ class CMBSRestrictedServicerReportFactory {
             'Del Loan Status Report',
             'Delinquent Loan Status',
             'rptDDelinquentLoanStatus',
+            'Delinquent'
         ], // Delinquent Loan Status Report
         self::REOSR     => [
             'REOSR',
@@ -76,6 +77,7 @@ class CMBSRestrictedServicerReportFactory {
             'CFSR',
             'Comp Finan Status Report',
             'Comparative_Fin',
+            'Comparative Fin',
             'tCComparativeFinancialStatusIRP',
             'Comparative Fin Status Report',
             'Comparative Financial Report',
@@ -88,7 +90,8 @@ class CMBSRestrictedServicerReportFactory {
             'Hist Mod-Corr Mtg Loan',
             'Historical Modification Report',
             'rptMHistoricalLoanMod',
-            'HistLoanMod'
+            'HistLoanMod',
+            'LoanMod'
         ], // HISTORICAL LOAN MODIFICATION/FORBEARANCE and CORRECTED MORTGAGE LOAN REPORT
         self::LLRES     => [
             'LL Res, LOC',
