@@ -59,7 +59,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
         $factory = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSDistributionFileFactory();
         $cusips  = $factory->getCUSIPList( $filePath );
 
-        dump( $cusips );
+        //dump( $cusips );
 
     }
 
