@@ -98,6 +98,7 @@ abstract class AbstractTabFactory {
      */
     public function parse( array $rows, array &$cleanHeadersByProperty, string $sheetName, array $existingCleanRows = [], string $debugFilename = null ): array {
 
+
         // Empty first time through, if there is only one tab.
         $this->globalHeadersBySheetName = $cleanHeadersByProperty;
 
@@ -111,7 +112,10 @@ abstract class AbstractTabFactory {
         }
 
 
-        $this->_setLocalHeaders( $rows, $this->firstColumnValidTextValues, $sheetName, $debugFilename );
+        $this->_setLocalHeaders( $rows,
+                                 $this->firstColumnValidTextValues,
+                                 $sheetName,
+                                 $debugFilename );
 
         $cleanHeadersByProperty[ $sheetName ] = $this->_integrateLocalHeadersWithGlobalHeaders( $cleanHeadersByProperty[ $sheetName ] ?? [],
                                                                                                 $sheetName );
@@ -215,11 +219,6 @@ abstract class AbstractTabFactory {
                                          string $debugSheetName = NULL,
                                          string $debugFilename = NULL ): void {
 
-        //if ( $debugSheetName == 'hlmfclr' ) {
-        //    dd( $allRows );
-        //}
-
-        //dump($debugSheetName);
         $this->headerRowIndex = $this->_getArrayIndexOfBottomHeaderRow( $allRows, $firstColumnValidTextValues, $debugSheetName, $debugFilename );
         $cleanHeaders         = $this->_consolidateMultipleHeaderRowsUsingKeywords( $allRows );
         $this->localHeaders   = $cleanHeaders;
@@ -269,6 +268,7 @@ abstract class AbstractTabFactory {
     }
 
     protected function _consolidateMultipleHeaderRowsUsingKeywords( array $allRows = [] ): array {
+
         $consolidatedHeaderRow         = [];
         $baseHeaderRow                 = $allRows[ $this->headerRowIndex ];
         $rowIndexAboveTheBaseHeaderRow = $this->headerRowIndex - 1;
@@ -614,7 +614,7 @@ abstract class AbstractTabFactory {
         endforeach;
 
         if ( ! empty( $tooLongHeadersForMySQL ) ):
-            throw new HeadersTooLongForMySQLException( "At least one header from XLSX was too long to create an MySQL column name.",
+            throw new HeadersTooLongForMySQLException( "At LEAST one header from XLSX was too long to create an MySQL column name.",
                                                        0,
                                                        NULL,
                                                        $tooLongHeadersForMySQL );

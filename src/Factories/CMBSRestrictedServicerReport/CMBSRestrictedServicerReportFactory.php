@@ -196,6 +196,25 @@ class CMBSRestrictedServicerReportFactory {
 
         foreach ( $sheetNames as $i => $sheetName ):
 
+            // DEBUG
+            /**
+             * ^ "Comp Finan Status Report"
+             * ^ "Servicer Watch List"
+             * ^ "Comparative_Fin"
+             */
+            //$debugArray = [
+            //    //'Comp Finan Status Report',
+            //    'Comparative_Fin'
+            //];
+            //if( ! in_array( $sheetName, $debugArray ) ):
+            //    continue;
+            //endif;
+            //
+            //dump("SHEETNAME: ". $sheetName);
+
+
+
+
             try {
                 $rows = Excel::sheetToArray( $pathToRestrictedServicerReportXlsx,
                                              $sheetName,
@@ -269,6 +288,7 @@ class CMBSRestrictedServicerReportFactory {
                                                                                   $this->dateOfFile,
                                                                                   $this->documentId,
                                                                                   $this->headerKeywords );
+
                     $csfr                                      = $factory->parse( $rows,
                                                                                   $cleanHeadersBySheetName,
                                                                                   CMBSRestrictedServicerReport::csfr,
@@ -385,6 +405,7 @@ class CMBSRestrictedServicerReportFactory {
 //        $totalLoan       = $this->_fillDateIfMissing( $totalLoan, $theDate );
 //        $advanceRecovery = $this->_fillDateIfMissing( $advanceRecovery, $theDate );
 
+
         $watchlist       = $this->_fillDateIfMissing( $watchlist, $this->dateOfFile );
         $dlsr            = $this->_fillDateIfMissing( $dlsr, $this->dateOfFile );
         $reosr           = $this->_fillDateIfMissing( $reosr, $this->dateOfFile );
@@ -394,6 +415,8 @@ class CMBSRestrictedServicerReportFactory {
         $totalLoan       = $this->_fillDateIfMissing( $totalLoan, $this->dateOfFile );
         $advanceRecovery = $this->_fillDateIfMissing( $advanceRecovery, $this->dateOfFile );
 
+
+
         $watchlist       = $this->_fillDocumentIdIfMissing( $watchlist, $this->documentId );
         $dlsr            = $this->_fillDocumentIdIfMissing( $dlsr, $this->documentId );
         $reosr           = $this->_fillDocumentIdIfMissing( $reosr, $this->documentId );
@@ -402,6 +425,7 @@ class CMBSRestrictedServicerReportFactory {
         $llResLOC        = $this->_fillDocumentIdIfMissing( $llResLOC, $this->documentId );
         $totalLoan       = $this->_fillDocumentIdIfMissing( $totalLoan, $this->documentId );
         $advanceRecovery = $this->_fillDocumentIdIfMissing( $advanceRecovery, $this->documentId );
+
 
 
         return new CMBSRestrictedServicerReport( $watchlist,

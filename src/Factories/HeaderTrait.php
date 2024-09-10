@@ -10,7 +10,7 @@ trait HeaderTrait {
      * @param string $header
      * @return string
      */
-    public function cleanHeaderValue( string $header ): string {
+    public function cleanHeaderValue( string $header = null ): string {
         $newHeader = $header;
         $newHeader = trim( $newHeader );
         $newHeader = strtolower( $header );

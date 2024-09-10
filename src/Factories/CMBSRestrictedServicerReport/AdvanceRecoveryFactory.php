@@ -27,7 +27,7 @@ ID' ];
      * @param string|null $debugSheetName
      * @param string|null $debugFilename *
      *
-* @return void
+     * @return void
      */
     protected function _setLocalHeaders( array $allRows, array $firstColumnValidTextValues = [], string $debugSheetName = NULL, string $debugFilename = NULL): void {
         $headerRow = [];
