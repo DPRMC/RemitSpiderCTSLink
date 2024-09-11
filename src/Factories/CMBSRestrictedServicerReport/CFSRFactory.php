@@ -8,15 +8,15 @@ class CFSRFactory extends AbstractTabFactory {
 
 
     protected array $replacementHeaders = [
-        'most_recent_financial_information_occ_as_of_date'                                                       => 'most_recent_financial_information_occup_as_of_date',
-        'most_recent_financial_information_percent_occ'                                                          => 'most_recent_financial_information_physical_occup_percent',
-        'at_contribution_information_base_year_$_noi_ncf'                                                        => 'at_contribution_information_base_year_noi_ncf',
-        'sec_prec_fy_operating_info_normalized_$_noi_ncf'                                                        => 'sec_prec_fy_operating_info_normalized_noi_ncf',
-        'prec_fy_operating_info_normalized_$_noi_ncf'                                                            => 'prec_fy_operating_info_normalized_noi_ncf',
-        'most_recent_financial_information_normalized_$_noi_ncf'                                                 => 'most_recent_financial_information_normalized_noi_ncf',
-        'most_recent_financial_information_fs_start_date'                                                        => 'most_recent_financial_information_financial_as_of_start_date',
-        'most_recent_financial_information_fs_end_date'                                                          => 'most_recent_financial_information_financial_as_of_end_date',
-        'most_recent_financial_information_normalized_total_revenue'                                             => 'most_recent_financial_information_normalized_revenue',
+        'most_recent_financial_information_occ_as_of_date'                                                            => 'most_recent_financial_information_occup_as_of_date',
+        'most_recent_financial_information_percent_occ'                                                               => 'most_recent_financial_information_physical_occup_percent',
+        'at_contribution_information_base_year_$_noi_ncf'                                                             => 'at_contribution_information_base_year_noi_ncf',
+        'sec_prec_fy_operating_info_normalized_$_noi_ncf'                                                             => 'sec_prec_fy_operating_info_normalized_noi_ncf',
+        'prec_fy_operating_info_normalized_$_noi_ncf'                                                                 => 'prec_fy_operating_info_normalized_noi_ncf',
+        'most_recent_financial_information_normalized_$_noi_ncf'                                                      => 'most_recent_financial_information_normalized_noi_ncf',
+        'most_recent_financial_information_fs_start_date'                                                             => 'most_recent_financial_information_financial_as_of_start_date',
+        'most_recent_financial_information_fs_end_date'                                                               => 'most_recent_financial_information_financial_as_of_end_date',
+        'most_recent_financial_information_normalized_total_revenue'                                                  => 'most_recent_financial_information_normalized_revenue',
 
 
         // SUPER KLUDGE
@@ -24,11 +24,20 @@ class CFSRFactory extends AbstractTabFactory {
         //15:sec_prec_fy_operating_info_as_of_second_preceding_fy_operating_information_as_of_financials_as_of_date
         //20:prec_fy_operating_info_as_of_preceding_fy_operating_information_as_of_financials_as_of_date
         //32:net_change_preceding_and_base_year_preceding_and_base_year_percent_occup
-        'at_contribution_information_base_year_at_contribution_information_base_year_financials_as_of_date'      => 'at_contribution_information_base_year_financials_as_of_date',
-        'sec_prec_fy_operating_info_as_of_second_preceding_fy_operating_information_as_of_financials_as_of_date' => 'sec_prec_fy_operating_info_as_of_financials_as_of_date',
-        'prec_fy_operating_info_as_of_preceding_fy_operating_information_as_of_financials_as_of_date'            => 'preceding_fy_operating_information_as_of_financials_as_of_date',
-        'net_change_preceding_and_base_year_preceding_and_base_year_percent_occup'                               => 'preceding_and_base_year_percent_occup',
+        'at_contribution_information_base_year_at_contribution_information_base_year_financials_as_of_date'           => 'at_contribution_information_base_year_financials_as_of_date',
+        'sec_prec_fy_operating_info_as_of_second_preceding_fy_operating_information_as_of_financials_as_of_date'      => 'sec_prec_fy_operating_info_as_of_financials_as_of_date',
+        'prec_fy_operating_info_as_of_preceding_fy_operating_information_as_of_financials_as_of_date'                 => 'preceding_fy_operating_information_as_of_financials_as_of_date',
+        'net_change_preceding_and_base_year_preceding_and_base_year_percent_occup'                                    => 'preceding_and_base_year_percent_occup',
 
+        // 5863085
+        // 10:at_contribution_information_base_year_original_underwriting_information_base_year_financial_info_as_of_date
+        // 15:sec_prec_fy_operating_info_as_of_nd_preceding_annual_operating_information_as_of_financial_info_as_of_date
+        // 25:most_recent_financial_information_most_recent_financial_information_*normalized_or_actual_fs_start_date
+        // 32:net_change_preceding_and_base_year_preceding_and_basis_percent_occ
+        'at_contribution_information_base_year_original_underwriting_information_base_year_financial_info_as_of_date' => 'at_contribution_information_base_year_financials_as_of_date',
+        'sec_prec_fy_operating_info_as_of_nd_preceding_annual_operating_information_as_of_financial_info_as_of_date'  => 'sec_prec_fy_operating_info_as_of_financials_as_of_date',
+        'most_recent_financial_information_most_recent_financial_information_*normalized_or_actual_fs_start_date'     => 'most_recent_financial_information_financial_as_of_start_date',
+        'net_change_preceding_and_base_year_preceding_and_basis_percent_occ'                                          => 'preceding_and_base_year_percent_occup',
     ];
 
 
