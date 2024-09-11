@@ -202,15 +202,16 @@ class CMBSRestrictedServicerReportFactory {
              * ^ "Servicer Watch List"
              * ^ "Comparative_Fin"
              */
-            //$debugArray = [
-            //    //'Comp Finan Status Report',
-            //    'Comparative_Fin'
-            //];
-            //if( ! in_array( $sheetName, $debugArray ) ):
-            //    continue;
-            //endif;
-            //
-            //dump("SHEETNAME: ". $sheetName);
+            $debugArray = [
+                //'Comp Finan Status Report',
+                //'Comparative_Fin',
+                'Watchlist',
+            ];
+            if( ! in_array( $sheetName, $debugArray ) ):
+                continue;
+            endif;
+
+            dump("SHEETNAME: ". $sheetName);
 
 
 
@@ -237,6 +238,7 @@ class CMBSRestrictedServicerReportFactory {
                                                                                        CMBSRestrictedServicerReport::watchlist,
                                                                                        $watchlist,
                                                                                        $pathToRestrictedServicerReportXlsx );
+                    //dd($watchlist);
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::DLSR, $sheetName ) ):
                     //dump( self::DLSR . " " . $sheetName );

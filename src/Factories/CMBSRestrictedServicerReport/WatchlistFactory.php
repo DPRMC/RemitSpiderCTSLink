@@ -15,6 +15,7 @@ class WatchlistFactory extends AbstractTabFactory {
 
     protected function _removeInvalidRows( array $rows = [] ): array {
 
+        //dd($this->localHeaders);
         // TODO add this code to the other Factories as well.
         if ( empty( $this->localHeaders ) ):
             throw new \Exception( "The localHeaders property is empty. That is going to have this method return zero valid rows. So check that property. You might need to add a new value to the firstColumnValidTextValues property." );
