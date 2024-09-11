@@ -666,7 +666,8 @@ abstract class AbstractTabFactory {
             $exception = new HeadersTooLongForMySQLException( "At least one header from XLSX was too long to create an MySQL column name.",
                                                               0,
                                                               NULL,
-                                                              $tooLongHeadersForMySQL );
+                                                              $tooLongHeadersForMySQL,
+                                                              $debugSheetName );
             // Placeholder to dump the Exception message for debugging.
             throw $exception;
         endif;

@@ -9,14 +9,17 @@ namespace DPRMC\RemitSpiderCTSLink\Exceptions;
  */
 class HeadersTooLongForMySQLException extends \Exception {
 
-    public array $headersThatAreTooLong;
+    public array   $headersThatAreTooLong;
+    public ?string $debugSheetName = NULL;
 
 
     public function __construct( string      $message = "",
                                  int         $code = 0,
                                  ?\Throwable $previous = NULL,
-                                 ?array      $headersThatAreTooLong = [] ) {
+                                 ?array      $headersThatAreTooLong = [],
+                                 ?string     $debugSheetName = null ) {
         parent::__construct( $message, $code, $previous );
         $this->headersThatAreTooLong = $headersThatAreTooLong;
+        $this->debugSheetName        = $debugSheetName;
     }
 }
