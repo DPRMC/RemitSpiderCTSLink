@@ -202,16 +202,16 @@ class CMBSRestrictedServicerReportFactory {
              * ^ "Servicer Watch List"
              * ^ "Comparative_Fin"
              */
-            $debugArray = [
-                //'Comp Finan Status Report',
-                //'Comparative_Fin',
-                'Watchlist',
-            ];
-            if( ! in_array( $sheetName, $debugArray ) ):
-                continue;
-            endif;
-
-            dump("SHEETNAME: ". $sheetName);
+            //$debugArray = [
+            //    //'Comp Finan Status Report',
+            //    //'Comparative_Fin',
+            //    'Watchlist',
+            //];
+            //if( ! in_array( $sheetName, $debugArray ) ):
+            //    continue;
+            //endif;
+            //
+            //dump("SHEETNAME: ". $sheetName);
 
 
 
