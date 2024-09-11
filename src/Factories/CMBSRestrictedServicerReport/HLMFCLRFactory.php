@@ -228,6 +228,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
     }
 
     protected function _setCleanRows( array $allRows, array $existingRows = [] ): void {
+
         $cleanRows = $existingRows;
 
         foreach ( $this->rowCategoryIndexes as $name => $bookends ):
@@ -241,18 +242,21 @@ class HLMFCLRFactory extends AbstractTabFactory {
             $length    = $bookends[ self::END ] - $bookends[ self::START ];
             $validRows = array_slice( $allRows, $bookends[ self::START ], $length );
 
+
             foreach ( $validRows as $i => $validRow ):
                 $firstCell = trim( $validRow[ 0 ] ?? '' );
                 if ( empty( $firstCell ) ):
                     continue;
                 endif;
                 $newCleanRow                  = [];
-                $newCleanRow[ 'date' ]        = empty( $this->date ) ? NULL : $this->date->toDateString();
-                $newCleanRow[ 'category' ]    = $name;
-                $newCleanRow[ 'document_id' ] = $this->documentId;
+
+
                 foreach ( $this->localHeaders as $j => $header ):
                     $newCleanRow[ $header ] = trim( $validRow[ $j ] ?? '' );
                 endforeach;
+                $newCleanRow[ 'date' ]        = empty( $this->date ) ? NULL : $this->date->toDateString();
+                $newCleanRow[ 'category' ]    = $name;
+                $newCleanRow[ 'document_id' ] = $this->documentId;
                 $cleanRows[ $name ][] = $newCleanRow;
             endforeach;
         endforeach;

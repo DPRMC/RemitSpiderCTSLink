@@ -526,7 +526,6 @@ abstract class AbstractTabFactory {
 
             $newCleanRow[ 'document_id' ] = $this->documentId;
 
-
             // KLUDGE
             // I have empty rows coming in, and I dont want to bother finding out why.
             // Only the date is showing up since I added it above.
