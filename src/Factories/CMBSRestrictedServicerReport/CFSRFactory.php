@@ -42,6 +42,7 @@ class CFSRFactory extends AbstractTabFactory {
         // 6750574
         // most_recent_financial_information_most_recent_financial_information_normalized_financial_as_of_start_date
         'at_contribution_information_base_year_original_underwriting_information_base_year_financial_info_as_of_date' => 'at_contribution_information_base_year_financials_as_of_date',
+        'most_recent_financial_information_most_recent_financial_information_normalized_financial_as_of_start_date'   => 'most_recent_financial_information_financial_as_of_start_date',
     ];
 
 
