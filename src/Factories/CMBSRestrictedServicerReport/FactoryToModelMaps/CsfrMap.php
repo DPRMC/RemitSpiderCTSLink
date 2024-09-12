@@ -8,6 +8,10 @@ class CsfrMap extends AbstractFactoryToModelMap {
 
     public static array $jsonFieldsToIgnore = [
         'strategy_loan_no.',
+        'investor_#',
+        'property_seq_#',
+        'determination_date',
+        'collateral_id',
     ];
 
     public static array $map = [
@@ -17,7 +21,8 @@ class CsfrMap extends AbstractFactoryToModelMap {
                                                                                                                         'transaction_id',
                                                                                                                         'trans', ],
         CustodianCtsCmbsRestrictedServicerReportCfsr::loan_id                                                      => [ 'loan_id',
-                                                                                                                        'loan', ],
+                                                                                                                        'loan',
+                                                                                                                        'loan_number' ],
         CustodianCtsCmbsRestrictedServicerReportCfsr::prospectus_loan_id                                           => [ 'prospectus_id',
                                                                                                                         'prospectus' ],
         CustodianCtsCmbsRestrictedServicerReportCfsr::property_id                                                  => [ 'property_id',
@@ -54,7 +59,7 @@ class CsfrMap extends AbstractFactoryToModelMap {
         CustodianCtsCmbsRestrictedServicerReportCfsr::prec_fy_operating_info_as_of_financials_as_of_date       => [ 'prec_fy_operating_info_as_of_financial_info_as_of_date',
                                                                                                                     'prec_fy_operating_info_as_of_financials',
                                                                                                                     'preceding_fy_operating_information_as_of_financials_as_of_date',
-                                                                                                                    'prec_fy_operating_info_as_of_as_of_financial_info_as_of_date' ],
+                                                                                                                    'prec_fy_operating_info_as_of_as_of_financial_info_as_of_date', ],
         CustodianCtsCmbsRestrictedServicerReportCfsr::prec_fy_operating_info_normalized_physical_occup_percent => [ 'prec_fy_operating_info_normalized_percent_occ',
                                                                                                                     'prec_fy_operating_info_normalized_occup', ],
         CustodianCtsCmbsRestrictedServicerReportCfsr::prec_fy_operating_info_normalized_revenue                => [ 'prec_fy_operating_info_normalized_total_revenue',
@@ -78,9 +83,11 @@ class CsfrMap extends AbstractFactoryToModelMap {
 
         CustodianCtsCmbsRestrictedServicerReportCfsr::net_change_preceding_and_base_year_percent_occup         => [ 'net_change_preceding_and_base_year_percent_occ',
                                                                                                                     'net_change_preceding_and_base_year_percent',
-                                                                                                                    'preceding_and_base_year_percent_occup' ],
+                                                                                                                    'preceding_and_base_year_percent_occup',
+                                                                                                                    'net_change_preceding_and_base_year_occup' ],
         CustodianCtsCmbsRestrictedServicerReportCfsr::net_change_preceding_and_base_year_percent_total_revenue => [ 'net_change_preceding_and_base_year_percent_total_revenue',
-                                                                                                                    'net_change_preceding_and_base_year_total', ],
+                                                                                                                    'net_change_preceding_and_base_year_total',
+                                                                                                                    'net_change_preceding_and_base_year_total_revenue' ],
         CustodianCtsCmbsRestrictedServicerReportCfsr::net_change_preceding_and_base_year_dscr                  => [ 'net_change_preceding_and_base_year_dscr',
                                                                                                                     'net_change_preceding_and_base_year_', ],
     ];
