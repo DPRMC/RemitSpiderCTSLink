@@ -46,7 +46,8 @@ class CsfrMap extends AbstractFactoryToModelMap {
                                                                                                                         'sec_prec_fy_operating_info_normalized_occup', ],
         CustodianCtsCmbsRestrictedServicerReportCfsr::sec_prec_fy_operating_info_normalized_revenue                => [ 'sec_prec_fy_operating_info_normalized_total_revenue',
                                                                                                                         'sec_prec_fy_operating_info_normalized_normalized_revenue' ],
-        CustodianCtsCmbsRestrictedServicerReportCfsr::sec_prec_fy_operating_info_normalized_noi_ncf                => [ 'sec_prec_fy_operating_info_normalized_noi_ncf' ],
+        CustodianCtsCmbsRestrictedServicerReportCfsr::sec_prec_fy_operating_info_normalized_noi_ncf                => [ 'sec_prec_fy_operating_info_normalized_noi_ncf',
+                                                                                                                        'sec_prec_fy_operating_info_normalized_normalized_noi_ncf', ],
         CustodianCtsCmbsRestrictedServicerReportCfsr::sec_prec_fy_operating_info_normalized_dscr_noi_ncf           => [ 'sec_prec_fy_operating_info_normalized_dscr' ],
 
 
