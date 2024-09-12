@@ -66,6 +66,7 @@ class DLSRFactory extends AbstractTabFactory {
         endif;
 
         $this->_setRowCategoryIndexes();
+
         $this->_setCleanRows( $allRows, $existingRows );
 
         $this->cleanRows = $this->_removeInvalidRows( $this->cleanRows );
@@ -368,8 +369,6 @@ class DLSRFactory extends AbstractTabFactory {
 
 
         foreach ( $this->rowCategoryIndexes as $name => $bookends ):
-
-
             $cleanRows[ $name ] = [];
             $length             = $bookends[ self::END ] - $bookends[ self::START ];
             $validRows          = array_slice( $allRows, $bookends[ self::START ], $length );
@@ -380,18 +379,18 @@ class DLSRFactory extends AbstractTabFactory {
                     continue;
                 endif;
                 $newCleanRow                  = [];
-                $newCleanRow[ 'date' ]        = empty( $this->date ) ? NULL : $this->date->toDateString();
-                $newCleanRow[ 'document_id' ] = $this->documentId;
-                $newCleanRow[ 'category' ]    = $name;
-                foreach ( $this->localHeaders as $j => $header ):
 
+                foreach ( $this->localHeaders as $j => $header ):
                     // Let's just make sure we have consistent header/field values.
                     $header = AbstractFactoryToModelMap::getCommonFieldName( DlsrMap::$map, $header );
 
                     $newCleanRow[ $header ] = trim( $validRow[ $j ] ?? '' );
                 endforeach;
+                $newCleanRow[ 'date' ]        = empty( $this->date ) ? NULL : $this->date->toDateString();
+                $newCleanRow[ 'document_id' ] = $this->documentId;
+                $newCleanRow[ 'category' ]    = $name;
+
                 $cleanRows[ $name ][] = $newCleanRow;
-//                $cleanRows[ $name ][ $newCleanRow[ 'loan_id' ] ] = $newCleanRow;
             endforeach;
 
 //            if ( 'cur_spec_serv' == $name ):

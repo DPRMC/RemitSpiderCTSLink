@@ -38,6 +38,10 @@ class CFSRFactory extends AbstractTabFactory {
         'sec_prec_fy_operating_info_as_of_nd_preceding_annual_operating_information_as_of_financial_info_as_of_date'  => 'sec_prec_fy_operating_info_as_of_financials_as_of_date',
         'most_recent_financial_information_most_recent_financial_information_*normalized_or_actual_fs_start_date'     => 'most_recent_financial_information_financial_as_of_start_date',
         'net_change_preceding_and_base_year_preceding_and_basis_percent_occ'                                          => 'preceding_and_base_year_percent_occup',
+
+        // 6750574
+        // most_recent_financial_information_most_recent_financial_information_normalized_financial_as_of_start_date
+        'at_contribution_information_base_year_original_underwriting_information_base_year_financial_info_as_of_date' => 'at_contribution_information_base_year_financials_as_of_date',
     ];
 
 
