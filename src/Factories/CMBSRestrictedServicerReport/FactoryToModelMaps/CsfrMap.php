@@ -53,7 +53,8 @@ class CsfrMap extends AbstractFactoryToModelMap {
 
         CustodianCtsCmbsRestrictedServicerReportCfsr::prec_fy_operating_info_as_of_financials_as_of_date       => [ 'prec_fy_operating_info_as_of_financial_info_as_of_date',
                                                                                                                     'prec_fy_operating_info_as_of_financials',
-                                                                                                                    'preceding_fy_operating_information_as_of_financials_as_of_date' ],
+                                                                                                                    'preceding_fy_operating_information_as_of_financials_as_of_date',
+                                                                                                                    'prec_fy_operating_info_as_of_as_of_financial_info_as_of_date' ],
         CustodianCtsCmbsRestrictedServicerReportCfsr::prec_fy_operating_info_normalized_physical_occup_percent => [ 'prec_fy_operating_info_normalized_percent_occ',
                                                                                                                     'prec_fy_operating_info_normalized_occup', ],
         CustodianCtsCmbsRestrictedServicerReportCfsr::prec_fy_operating_info_normalized_revenue                => [ 'prec_fy_operating_info_normalized_total_revenue',
