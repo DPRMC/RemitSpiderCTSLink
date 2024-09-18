@@ -10,7 +10,14 @@ class ReosrMap extends AbstractFactoryToModelMap {
      * @var array These are Eloquent model fields that are dates, however the date value is stored in Excel's format. I use this array to "automate" conversion of the data.
      */
     public static array $excelDateFields = [
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::paid_through_date,
+        CustodianCtsCmbsRestrictedServicerReportReosr::paid_through_date,
+        CustodianCtsCmbsRestrictedServicerReportReosr::maturity_date,
+        CustodianCtsCmbsRestrictedServicerReportReosr::preced_fy_finan_as_of_date_most_recent_finan_as_of_end_date,
+        CustodianCtsCmbsRestrictedServicerReportReosr::most_recent_valuation_date,
+        CustodianCtsCmbsRestrictedServicerReportReosr::most_recent_special_servicer_transfer_date,
+        CustodianCtsCmbsRestrictedServicerReportReosr::reo_date,
+        CustodianCtsCmbsRestrictedServicerReportReosr::date_asset_expected_to_be_resolved_or_foreclosed,
+
     ];
 
 
@@ -18,7 +25,20 @@ class ReosrMap extends AbstractFactoryToModelMap {
      * @var array Remove commas and currency glyphs from these guys.
      */
     public static array $numericFields = [
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::current_net_rentable_sqft_or_number_of_units_beds_rooms,
+        CustodianCtsCmbsRestrictedServicerReportReosr::current_net_rentable_sq_ft_or_number_of_units_beds_rooms,
+        CustodianCtsCmbsRestrictedServicerReportReosr::current_allocated_ending_scheduled_loan_amount,
+        CustodianCtsCmbsRestrictedServicerReportReosr::cumulative_aser_amount,
+        CustodianCtsCmbsRestrictedServicerReportReosr::total_p_and_i_advance_outstanding,
+        CustodianCtsCmbsRestrictedServicerReportReosr::other_expense_advance_outstanding,
+        CustodianCtsCmbsRestrictedServicerReportReosr::total_t_and_i_advance_outstanding,
+        CustodianCtsCmbsRestrictedServicerReportReosr::cumulative_accrued_unpaid_advance_interest,
+        CustodianCtsCmbsRestrictedServicerReportReosr::total_exposure,
+        CustodianCtsCmbsRestrictedServicerReportReosr::total_scheduled_p_and_i_due,
+        CustodianCtsCmbsRestrictedServicerReportReosr::preced_fy_dscr_most_recent_dscr_noi_ncf,
+        CustodianCtsCmbsRestrictedServicerReportReosr::most_recent_value,
+        CustodianCtsCmbsRestrictedServicerReportReosr::loss_using_90percent_of_most_recent_value,
+        CustodianCtsCmbsRestrictedServicerReportReosr::ara_appraisal_reduction_amount,
+
     ];
 
 
