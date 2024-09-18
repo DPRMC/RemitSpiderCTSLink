@@ -14,6 +14,17 @@ class CsfrMap extends AbstractFactoryToModelMap {
         'collateral_id',
     ];
 
+    public static array $excelDateFields = [
+        CustodianCtsCmbsRestrictedServicerReportCfsr::date_of_last_inspection,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::paid_through_date,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::at_contribution_information_base_year_financials_as_of_date,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::sec_prec_fy_operating_info_as_of_financials_as_of_date,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::prec_fy_operating_info_as_of_financials_as_of_date,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::most_recent_financial_information_financial_as_of_start_date,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::most_recent_financial_information_financial_as_of_end_date,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::most_recent_financial_information_occup_as_of_date,
+    ];
+
     public static array $map = [
         CustodianCtsCmbsRestrictedServicerReportCfsr::date                                                         => [ 'date' ],
         CustodianCtsCmbsRestrictedServicerReportCfsr::document_id                                                  => [ 'document_id' ],
