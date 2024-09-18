@@ -18,19 +18,14 @@ class WatchlistMap extends AbstractFactoryToModelMap {
      * @var array These are Eloquent model fields that are dates, however the date value is stored in Excel's format. I use this array to "automate" conversion of the data.
      */
     public static array $excelDateFields = [
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::paid_through_date,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::maturity_date,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::preced_fy_finan_as_of_date_most_recent_finan_as_of_end_date,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_valuation_date,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_special_servicer_transfer_date,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::date_asset_expected_to_be_resolved_or_foreclosed,
-CustodianCtsCmbsRestrictedServicerReportWatchlist::date_added_to_servicer_watchlist,
-CustodianCtsCmbsRestrictedServicerReportWatchlist::paid_thru_date,
-CustodianCtsCmbsRestrictedServicerReportWatchlist::maturity_date,
-CustodianCtsCmbsRestrictedServicerReportWatchlist::preceding_fiscal_year_financial_as_of_date,
-CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_financial_as_of_start_date,
-CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_financial_as_of_end_date,
-CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_occupancy_as_of_date,
+
+        CustodianCtsCmbsRestrictedServicerReportWatchlist::date_added_to_servicer_watchlist,
+        CustodianCtsCmbsRestrictedServicerReportWatchlist::paid_thru_date,
+        CustodianCtsCmbsRestrictedServicerReportWatchlist::maturity_date,
+        CustodianCtsCmbsRestrictedServicerReportWatchlist::preceding_fiscal_year_financial_as_of_date,
+        CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_financial_as_of_start_date,
+        CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_financial_as_of_end_date,
+        CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_occupancy_as_of_date,
 
     ];
 
@@ -39,26 +34,17 @@ CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_occupancy_as_of_d
      * @var array Remove commas and currency glyphs from these guys.
      */
     public static array $numericFields = [
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::current_net_rentable_sqft_or_number_of_units_beds_rooms,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::current_ending_scheduled_balance,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::cumulative_aser_amount,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::total_p_and_i_advance_outstanding,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::other_expenses_advances_outstanding,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::total_t_and_i_advance_outstanding,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::cumulative_accrued_unpaid_advance_interest,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::total_exposure,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::total_scheduled_p_and_i_due,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::dscr_noi_ncf,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_value,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::loss_using_90percent_of_most_recent_value,
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::ara_appraisal_reduction_amount
+        CustodianCtsCmbsRestrictedServicerReportWatchlist::current_ending_scheduled_balance,
+        CustodianCtsCmbsRestrictedServicerReportWatchlist::preceding_fy_dscr_noi_ncf,
+        CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_dscr_noi_ncf,
+
     ];
 
 
     public static array $percentFields = [
+        CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_physical_occupancy,
 
     ];
-
 
 
     public static array $map = [
