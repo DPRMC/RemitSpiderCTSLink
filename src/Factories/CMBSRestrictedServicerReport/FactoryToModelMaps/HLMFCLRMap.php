@@ -10,7 +10,12 @@ class HLMFCLRMap extends AbstractFactoryToModelMap {
      * @var array These are Eloquent model fields that are dates, however the date value is stored in Excel's format. I use this array to "automate" conversion of the data.
      */
     public static array $excelDateFields = [
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::paid_through_date,
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::most_recent_master_servicer_return_date,
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::date_of_last_modification,
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::old_maturity_date,
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::maturity_date,
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::modification_booking_date,
+
     ];
 
 
@@ -18,7 +23,16 @@ class HLMFCLRMap extends AbstractFactoryToModelMap {
      * @var array Remove commas and currency glyphs from these guys.
      */
     public static array $numericFields = [
-//        CustodianCtsCmbsRestrictedServicerReportWatchlist::current_net_rentable_sqft_or_number_of_units_beds_rooms,
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::balance_when_sent_to_special_servicer,
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::balance_at_the_effective_date_of_modification,
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::old_note_rate,
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::number_of_months_for_rate_change,
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::modified_note_rate,
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::old_p_and_i,
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::modified_payment_amount,
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::total_months_for_change_of_modification,
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::realized_loss_to_trust,
+        CustodianCtsCmbsRestrictedServicerReportHlmfclr::estimated_future_interest_loss_to_trust_rate_reduction,
     ];
 
 
