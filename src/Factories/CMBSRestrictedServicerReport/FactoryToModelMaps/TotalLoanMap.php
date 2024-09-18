@@ -13,8 +13,6 @@ class TotalLoanMap extends AbstractFactoryToModelMap {
      * @var array These are Eloquent model fields that are dates, however the date value is stored in Excel's format. I use this array to "automate" conversion of the data.
      */
     public static array $excelDateFields = [
-        // 20240526:mdd 'date' is not an Excel date in the spreadsheet.
-        //CustodianCtsCmbsRestrictedServicerReportTotalLoan::date,
         CustodianCtsCmbsRestrictedServicerReportTotalLoan::paid_through_date,
     ];
 
@@ -23,15 +21,13 @@ class TotalLoanMap extends AbstractFactoryToModelMap {
      * @var array Remove commas and currency glyphs from these guys.
      */
     public static array $numericFields = [
-        CustodianCtsCmbsRestrictedServicerReportTotalLoan::document_id,
-        CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination,
         CustodianCtsCmbsRestrictedServicerReportTotalLoan::original_split_loan_amount,
+        CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination,
         CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_loan_amount_at_origination,
         CustodianCtsCmbsRestrictedServicerReportTotalLoan::scheduled_principal_balance_at_contribution,
         CustodianCtsCmbsRestrictedServicerReportTotalLoan::current_ending_scheduled_balance,
         CustodianCtsCmbsRestrictedServicerReportTotalLoan::total_scheduled_p_and_i_due,
         CustodianCtsCmbsRestrictedServicerReportTotalLoan::current_note_rate,
-
     ];
 
 
