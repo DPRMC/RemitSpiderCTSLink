@@ -34,6 +34,14 @@ class TotalLoanMap extends AbstractFactoryToModelMap {
 
     ];
 
+
+    public static array $percentFields = [
+
+    ];
+
+
+
+
     public static array $map = [
         CustodianCtsCmbsRestrictedServicerReportTotalLoan::transaction_id                                  => [ 'transaction_id' ],
         CustodianCtsCmbsRestrictedServicerReportTotalLoan::loan_id                                         => [ 'loan_id' ],

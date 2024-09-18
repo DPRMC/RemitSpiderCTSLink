@@ -54,6 +54,13 @@ CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_occupancy_as_of_d
 //        CustodianCtsCmbsRestrictedServicerReportWatchlist::ara_appraisal_reduction_amount
     ];
 
+
+    public static array $percentFields = [
+
+    ];
+
+
+
     public static array $map = [
         CustodianCtsCmbsRestrictedServicerReportWatchlist::date                                       => [ 'date' ],
         CustodianCtsCmbsRestrictedServicerReportWatchlist::document_id                                => [ 'document_id' ],

@@ -25,7 +25,31 @@ class CsfrMap extends AbstractFactoryToModelMap {
         CustodianCtsCmbsRestrictedServicerReportCfsr::most_recent_financial_information_occup_as_of_date,
     ];
 
-    public static array $numericFields = [];
+    public static array $numericFields = [
+        CustodianCtsCmbsRestrictedServicerReportCfsr::current_allocated_ending_scheduled_loan_amount,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::at_contribution_information_base_year_revenue,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::at_contribution_information_base_year_noi_ncf,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::at_contribution_information_base_year_dscr_noi_ncf,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::sec_prec_fy_operating_info_normalized_revenue,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::sec_prec_fy_operating_info_normalized_noi_ncf,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::sec_prec_fy_operating_info_normalized_dscr_noi_ncf,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::prec_fy_operating_info_normalized_revenue,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::prec_fy_operating_info_normalized_noi_ncf,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::prec_fy_operating_info_normalized_dscr_noi_ncf,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::most_recent_financial_information_normalized_revenue,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::most_recent_financial_information_normalized_noi_ncf,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::most_recent_financial_information_normalized_dscr_noi_ncf,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::net_change_preceding_and_base_year_dscr
+    ];
+
+    public static array $percentFields = [
+        CustodianCtsCmbsRestrictedServicerReportCfsr::at_contribution_information_base_year_physical_occup_percent,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::sec_prec_fy_operating_info_normalized_physical_occup_percent,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::prec_fy_operating_info_normalized_physical_occup_percent,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::most_recent_financial_information_physical_occup_percent,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::net_change_preceding_and_base_year_percent_occup,
+        CustodianCtsCmbsRestrictedServicerReportCfsr::net_change_preceding_and_base_year_percent_total_revenue,
+    ];
 
     public static array $map = [
         CustodianCtsCmbsRestrictedServicerReportCfsr::date                                                         => [ 'date' ],

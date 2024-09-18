@@ -22,6 +22,12 @@ class HLMFCLRMap extends AbstractFactoryToModelMap {
     ];
 
 
+    public static array $percentFields = [
+
+    ];
+
+
+
     /**
      * "date" => "2023-10-11"
      * "category" => "loan_modifications_forbearance"

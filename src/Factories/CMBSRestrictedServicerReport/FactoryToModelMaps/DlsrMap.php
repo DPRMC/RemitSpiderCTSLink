@@ -39,6 +39,12 @@ class DlsrMap extends AbstractFactoryToModelMap {
         CustodianCtsCmbsRestrictedServicerReportDlsr::ara_appraisal_reduction_amount,
     ];
 
+
+    public static array $percentFields = [
+
+    ];
+
+
     public static array $map = [
         CustodianCtsCmbsRestrictedServicerReportDlsr::date                                                    => [ 'date' ],
         CustodianCtsCmbsRestrictedServicerReportDlsr::document_id                                             => [ 'document_id' ],

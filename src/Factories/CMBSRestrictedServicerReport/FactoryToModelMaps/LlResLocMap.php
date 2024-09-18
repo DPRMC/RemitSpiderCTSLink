@@ -17,6 +17,13 @@ class LlResLocMap extends AbstractFactoryToModelMap {
 
     public static array $numericFields = [];
 
+
+    public static array $percentFields = [
+
+    ];
+
+
+
     public static array $map = [
         CustodianCtsCmbsRestrictedServicerReportLlResLoc::date                             => [ 'date' ],
         CustodianCtsCmbsRestrictedServicerReportLlResLoc::document_id                      => [ 'document_id' ],

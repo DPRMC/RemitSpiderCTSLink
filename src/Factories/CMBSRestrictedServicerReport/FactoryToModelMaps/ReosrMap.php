@@ -21,6 +21,13 @@ class ReosrMap extends AbstractFactoryToModelMap {
 //        CustodianCtsCmbsRestrictedServicerReportWatchlist::current_net_rentable_sqft_or_number_of_units_beds_rooms,
     ];
 
+
+    public static array $percentFields = [
+
+    ];
+
+
+
     public static array $map = [
         CustodianCtsCmbsRestrictedServicerReportReosr::date                                                        => [ 'date' ],
         CustodianCtsCmbsRestrictedServicerReportReosr::document_id                                                 => [ 'document_id' ],
