@@ -24,13 +24,14 @@ class WatchlistMap extends AbstractFactoryToModelMap {
 //        CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_valuation_date,
 //        CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_special_servicer_transfer_date,
 //        CustodianCtsCmbsRestrictedServicerReportWatchlist::date_asset_expected_to_be_resolved_or_foreclosed,
-            CustodianCtsCmbsRestrictedServicerReportWatchlist::date_added_to_servicer_watchlist,
-            CustodianCtsCmbsRestrictedServicerReportWatchlist::paid_thru_date,
-            CustodianCtsCmbsRestrictedServicerReportWatchlist::maturity_date,
-            CustodianCtsCmbsRestrictedServicerReportWatchlist::preceding_fiscal_year_financial_as_of_date,
-            CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_financial_as_of_start_date,
-            CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_financial_as_of_end_date,
-            CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_occupancy_as_of_date,
+CustodianCtsCmbsRestrictedServicerReportWatchlist::date_added_to_servicer_watchlist,
+CustodianCtsCmbsRestrictedServicerReportWatchlist::paid_thru_date,
+CustodianCtsCmbsRestrictedServicerReportWatchlist::maturity_date,
+CustodianCtsCmbsRestrictedServicerReportWatchlist::preceding_fiscal_year_financial_as_of_date,
+CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_financial_as_of_start_date,
+CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_financial_as_of_end_date,
+CustodianCtsCmbsRestrictedServicerReportWatchlist::most_recent_occupancy_as_of_date,
+
     ];
 
 

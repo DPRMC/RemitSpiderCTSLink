@@ -25,6 +25,8 @@ class CsfrMap extends AbstractFactoryToModelMap {
         CustodianCtsCmbsRestrictedServicerReportCfsr::most_recent_financial_information_occup_as_of_date,
     ];
 
+    public static array $numericFields = [];
+
     public static array $map = [
         CustodianCtsCmbsRestrictedServicerReportCfsr::date                                                         => [ 'date' ],
         CustodianCtsCmbsRestrictedServicerReportCfsr::document_id                                                  => [ 'document_id' ],

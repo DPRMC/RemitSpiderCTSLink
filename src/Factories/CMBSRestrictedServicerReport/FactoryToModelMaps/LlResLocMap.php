@@ -12,6 +12,11 @@ class LlResLocMap extends AbstractFactoryToModelMap {
         'strategy_loan_no.',
     ];
 
+    public static array $excelDateFields    = [
+    ];
+
+    public static array $numericFields = [];
+
     public static array $map = [
         CustodianCtsCmbsRestrictedServicerReportLlResLoc::date                             => [ 'date' ],
         CustodianCtsCmbsRestrictedServicerReportLlResLoc::document_id                      => [ 'document_id' ],
@@ -22,7 +27,7 @@ class LlResLocMap extends AbstractFactoryToModelMap {
         CustodianCtsCmbsRestrictedServicerReportLlResLoc::property_name                    => [ 'property_name' ],
         CustodianCtsCmbsRestrictedServicerReportLlResLoc::paid_through_date                => [ 'paid_through_date',
                                                                                                 'through_date',
-                                                                                                'paid_thru_date',],
+                                                                                                'paid_thru_date', ],
         CustodianCtsCmbsRestrictedServicerReportLlResLoc::current_ending_scheduled_balance => [ 'current_ending_scheduled_balance',
                                                                                                 'scheduled_balance' ],
         CustodianCtsCmbsRestrictedServicerReportLlResLoc::reserve_account_type             => [ 'reserve_account_type',
