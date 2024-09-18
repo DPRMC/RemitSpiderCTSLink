@@ -13,9 +13,20 @@ class LlResLocMap extends AbstractFactoryToModelMap {
     ];
 
     public static array $excelDateFields    = [
+        CustodianCtsCmbsRestrictedServicerReportLlResLoc::paid_through_date,
+        CustodianCtsCmbsRestrictedServicerReportLlResLoc::loc_expiration_date,
+
     ];
 
-    public static array $numericFields = [];
+    public static array $numericFields = [
+        CustodianCtsCmbsRestrictedServicerReportLlResLoc::current_ending_scheduled_balance,
+        CustodianCtsCmbsRestrictedServicerReportLlResLoc::reserve_balance_at_contribution,
+        CustodianCtsCmbsRestrictedServicerReportLlResLoc::beginning_reserve_balance,
+        CustodianCtsCmbsRestrictedServicerReportLlResLoc::reserve_deposits,
+        CustodianCtsCmbsRestrictedServicerReportLlResLoc::reserve_disbursements,
+        CustodianCtsCmbsRestrictedServicerReportLlResLoc::ending_reserve_balance,
+
+    ];
 
 
     public static array $percentFields = [
