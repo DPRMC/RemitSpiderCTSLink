@@ -243,23 +243,44 @@ class HLMFCLRFactory extends AbstractTabFactory {
             $validRows = array_slice( $allRows, $bookends[ self::START ], $length );
 
 
+            // SUPER KLUDGE
+            dump( $name );
+            //dump($validRows);
+            //dd($this->localHeaders);
+            if ( $this->_doKludgeFor6735068( $validRows, $name ) ):
+                $newValidRows = [];
+                foreach ( $validRows as $aRow ):
+                    unset( $aRow[ 1 ] );                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         // Remove the empty cell.
+                    $aRow           = array_values( $aRow );                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             // Reset the indexes.
+                    $newValidRows[] = $aRow;
+                endforeach;
+                $validRows = $newValidRows;
+            endif;
+
+
             foreach ( $validRows as $i => $validRow ):
                 $firstCell = trim( $validRow[ 0 ] ?? '' );
                 if ( empty( $firstCell ) ):
                     continue;
                 endif;
-                $newCleanRow                  = [];
+                $newCleanRow = [];
 
 
                 foreach ( $this->localHeaders as $j => $header ):
+                    //dump( $j, $header, $validRow[ $j ] );
                     $newCleanRow[ $header ] = trim( $validRow[ $j ] ?? '' );
                 endforeach;
                 $newCleanRow[ 'date' ]        = empty( $this->date ) ? NULL : $this->date->toDateString();
                 $newCleanRow[ 'category' ]    = $name;
                 $newCleanRow[ 'document_id' ] = $this->documentId;
-                $cleanRows[ $name ][] = $newCleanRow;
+                $cleanRows[ $name ][]         = $newCleanRow;
+
+                //dump($validRow);
+                //dump( $newCleanRow );
             endforeach;
         endforeach;
+
+        //dump( $this->localHeaders );
 
         $this->cleanRows = $cleanRows;
     }
@@ -304,5 +325,59 @@ class HLMFCLRFactory extends AbstractTabFactory {
 
 
         return $validRows;
+    }
+
+
+    /**
+     * Identify Document ID _doKludgeFor6735068
+     * Because if it is that Doc, then I have to shift these HLMFCLR data points down one.
+     * This file gets parsed with an extra cell for some reason in like the #2 spot.
+     *
+     * These rows are grouped into sub categories.
+     * So I have to test fo the categoryName as well. 2nd param.
+     *
+     * @param array $validRows
+     *
+     * @return bool
+     */
+    protected function _doKludgeFor6735068( array $validRows = [], string $categoryName = NULL ): bool {
+        //WBCMT07C33
+        if (
+            'loan_modifications_forbearance' == $categoryName &&
+
+            (!str_contains( $validRows[ 0 ][ 0 ], 'WBCMT07C33' ) ||
+             !str_contains( $validRows[ 0 ][ 2 ], '1' ) ||
+             !str_contains( $validRows[ 3 ][ 3 ], '200691763' ) ||
+             !str_contains( $validRows[ 3 ][ 7 ], 'Combination' ) ||
+             $validRows[ 4 ][ 10 ] != 21200000.0)
+            //||
+            //!str_contains( $validRows[ 4 ][ 15 ], '101318.33' ) ||
+            //!str_contains( $validRows[ 13 ][ 3 ], '69000133' )
+        ):
+            return FALSE;
+        endif;
+
+        //if ( $categoryName == 'corrected_mortgage_loans' ):
+        //    dd( $validRows );
+        //endif;
+
+        if (
+            'corrected_mortgage_loans' == $categoryName &&
+
+            (!str_contains( $validRows[ 0 ][ 0 ], 'WBCMT07C33' ) ||
+             !str_contains( $validRows[ 0 ][ 2 ], '1' ) ||
+             !str_contains( $validRows[ 0 ][ 3 ], '70101000' ) ||
+             !str_contains( $validRows[ 0 ][ 4 ], '1B' ) ||
+             $validRows[ 2 ][ 3 ] != 502861764 ||
+             $validRows[ 2 ][ 5 ] != 'KEENE'
+            )
+            //||
+            //!str_contains( $validRows[ 4 ][ 15 ], '101318.33' ) ||
+            //!str_contains( $validRows[ 13 ][ 3 ], '69000133' )
+        ):
+            return FALSE;
+        endif;
+
+        return TRUE;
     }
 }
