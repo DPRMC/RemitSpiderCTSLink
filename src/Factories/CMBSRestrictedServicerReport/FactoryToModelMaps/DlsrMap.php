@@ -37,6 +37,11 @@ class DlsrMap extends AbstractFactoryToModelMap {
         CustodianCtsCmbsRestrictedServicerReportDlsr::most_recent_value,
         CustodianCtsCmbsRestrictedServicerReportDlsr::loss_using_90percent_of_most_recent_value,
         CustodianCtsCmbsRestrictedServicerReportDlsr::ara_appraisal_reduction_amount,
+
+        CustodianCtsCmbsRestrictedServicerReportDlsr::current_note_rate,
+        CustodianCtsCmbsRestrictedServicerReportDlsr::preced_fy_noi_ncf_most_recent_noi_ncf,
+        CustodianCtsCmbsRestrictedServicerReportDlsr::preced_fy_dscr_most_recent_dscr_noi_ncf,
+
     ];
 
 
