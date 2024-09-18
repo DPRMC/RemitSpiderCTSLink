@@ -244,7 +244,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
 
 
             // SUPER KLUDGE
-            dump( $name );
+            //dump( $name );
             //dump($validRows);
             //dd($this->localHeaders);
             if ( $this->_doKludgeFor6735068( $validRows, $name ) ):
@@ -336,7 +336,8 @@ class HLMFCLRFactory extends AbstractTabFactory {
      * These rows are grouped into sub categories.
      * So I have to test fo the categoryName as well. 2nd param.
      *
-     * @param array $validRows
+     * @param array       $validRows
+     * @param string|null $categoryName
      *
      * @return bool
      */
