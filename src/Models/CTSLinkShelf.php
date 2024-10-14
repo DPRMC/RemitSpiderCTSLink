@@ -13,8 +13,8 @@ class CTSLinkShelf {
     public string $shelfDocsHref  = '';
     public string $shelf          = '';
 
-    public Carbon $currentCycle;
-    public Carbon $nextCycle;
+    public ?Carbon $currentCycle = NULL;
+    public ?Carbon $nextCycle    = NULL;
 
     public function __construct( string $productType,
                                  string $issuerName,
