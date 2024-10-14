@@ -3,6 +3,8 @@
 namespace DPRMC\RemitSpiderCTSLink\Models;
 
 
+use Carbon\Carbon;
+
 class CTSLinkShelf {
 
     public string $productType    = '';
@@ -11,17 +13,28 @@ class CTSLinkShelf {
     public string $shelfDocsHref  = '';
     public string $shelf          = '';
 
-    public function __construct( string $productType, string $issuerName, string $seriesListHref, string $shelfDocsHref = '' ) {
+    public Carbon $currentCycle;
+    public Carbon $nextCycle;
+
+    public function __construct( string $productType,
+                                 string $issuerName,
+                                 string $seriesListHref,
+                                 string $shelfDocsHref = '',
+                                 Carbon $currentCycle = NULL,
+                                 Carbon $nextCycle = NULL ) {
         $this->productType    = $productType;
         $this->issuerName     = $issuerName;
         $this->seriesListHref = $seriesListHref;
         $this->shelfDocsHref  = $shelfDocsHref;
         $this->shelf          = $this->_getShelfFromHref( $seriesListHref );
+        $this->currentCycle   = $currentCycle;
+        $this->nextCycle      = $nextCycle;
     }
 
 
     /**
      * @param string $href /a/serieslist.html?shelfId=WFCM
+     *
      * @return string WFCM
      */
     protected function _getShelfFromHref( string $href ): string {
