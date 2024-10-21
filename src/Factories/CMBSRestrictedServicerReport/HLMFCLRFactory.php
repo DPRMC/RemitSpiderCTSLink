@@ -158,7 +158,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
         endif;
 
         foreach ( $row as $i => $cell ):
-            $haystack = strtolower( $cell );
+            $haystack = strtolower( $cell ?? '' );
             $needle   = 'forbearance';
             if ( str_contains( $haystack, $needle ) ):
                 return TRUE;
@@ -188,7 +188,7 @@ class HLMFCLRFactory extends AbstractTabFactory {
 
         $needle = strtolower( 'THIS REPORT IS HISTORICAL' );
         foreach ( $row as $i => $cell ):
-            $haystack = strtolower( $cell );
+            $haystack = strtolower( $cell ?? '' );
             if ( str_contains( $haystack, $needle ) ):
                 return TRUE;
             endif;

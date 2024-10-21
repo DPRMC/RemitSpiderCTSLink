@@ -112,7 +112,6 @@ abstract class AbstractTabFactory {
             // "borrow" the date from another tab in the sheet.
         }
 
-
         $this->_setLocalHeaders( $rows,
                                  $this->firstColumnValidTextValues,
                                  $sheetName,
@@ -122,6 +121,8 @@ abstract class AbstractTabFactory {
                                                                                                 $sheetName );
 
         $this->_setParsedRows( $rows, $sheetName, $existingCleanRows );
+
+
 
         return $this->cleanRows;
     }
@@ -303,7 +304,7 @@ abstract class AbstractTabFactory {
             $partsOfTheHeaderToBeAssembled           = [];
             $partsOfTheHeaderToBeAssembled[]         = $baseValue;
 
-            $nextPotentialHeaderValueFromTheCellAbove = trim( $allRows[ $nextRowUpToCheckForPotentialHeaderValue ][ $columnIndex ] );
+            $nextPotentialHeaderValueFromTheCellAbove = trim( $allRows[ $nextRowUpToCheckForPotentialHeaderValue ][ $columnIndex ] ?? '' );
 
 
             while ( $this->_valueIsPartOfTheHeader( $nextPotentialHeaderValueFromTheCellAbove ) ):

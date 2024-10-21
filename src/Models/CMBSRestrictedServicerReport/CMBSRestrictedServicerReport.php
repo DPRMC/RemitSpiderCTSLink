@@ -18,6 +18,8 @@ class CMBSRestrictedServicerReport {
     const totalLoan       = 'totalLoan';
     const advanceRecovery = 'advanceRecovery';
 
+    const properties = 'properties';
+
     const dateOfFile = 'dateOfFile';
     const documentId = 'documentId';
 
@@ -31,6 +33,7 @@ class CMBSRestrictedServicerReport {
         public readonly array   $llResLOC,
         public readonly array   $totalLoan,
         public readonly array   $advanceRecovery,
+        public readonly array   $properties,
         public readonly array   $cleanHeadersByProperty,
         public readonly array   $alerts,
         public readonly array   $exceptions,

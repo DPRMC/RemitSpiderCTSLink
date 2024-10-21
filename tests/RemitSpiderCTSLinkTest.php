@@ -501,10 +501,41 @@ class RemitSpiderCTSLinkTest extends TestCase {
 										 REVISED 11/16/2023';
         $docLink      = new \DPRMC\RemitSpiderCTSLink\Helpers\Generic\DocLink( $nameOfFile, $currentCycle );
 
-        $this->assertNotEmpty($docLink->currentCycle);
-        $this->assertNotEmpty($docLink->revisedCurrentCycle);
+        $this->assertNotEmpty( $docLink->currentCycle );
+        $this->assertNotEmpty( $docLink->revisedCurrentCycle );
 
-        var_dump($docLink);
+        var_dump( $docLink );
+    }
+
+
+    /**
+     * @test
+     * @group prop
+     */
+    public function testParserShouldReturnPropertyDataIfFound() {
+        $nameOfFile     = 'test.xls';
+        $testPath       = 'tests' . DIRECTORY_SEPARATOR . 'test_input' . DIRECTORY_SEPARATOR;
+        $filePath       = $testPath . $nameOfFile;
+        $dateOfFile     = \Carbon\Carbon::create( 2024, 10, 8, 0, 0, 0, 'America/New_York' );
+        $key            = '6777762';
+        $json           = file_get_contents( $testPath . 'header_key_words.json' );
+        $headerKeywords = json_decode( $json );
+
+        $factory    = new \DPRMC\RemitSpiderCTSLink\Factories\CMBSRestrictedServicerReport\CMBSRestrictedServicerReportFactory( self::TIMEZONE,
+                                                                                                                                $dateOfFile,
+                                                                                                                                $key,
+                                                                                                                                $headerKeywords );
+        $linkObject = new CustodianCtsLink();
+
+        $restrictedServicerReport = $factory->make( $filePath,
+                                                    $linkObject,                                  //$ctsLinkObject,
+                                                    $linkObject->{CustodianCtsLink::date_of_file} //$ctsLinkObject->{CustodianCtsLink::date_of_file}
+        );
+
+        //dump( $restrictedServicerReport );
+        //dd('$restrictedServicerReport');
+
+        $this->assertInstanceOf(\DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport\CMBSRestrictedServicerReport::class, $restrictedServicerReport);
     }
 
 }

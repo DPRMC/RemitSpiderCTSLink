@@ -32,23 +32,27 @@ class CMBSRestrictedServicerReportFactory {
     const TOTALLOAN = 'TOTALLOAN';
     const RECOVERY  = 'RECOVERY';
 
+
+    const PROPERTIES = 'PROPERTIES';
+
     public array $tabsThatHaveBeenFound = [
-        self::WATCHLIST => FALSE,
-        self::DLSR      => FALSE,
-        self::REOSR     => FALSE,
-        self::CFSR      => FALSE,
-        self::HLMFCLR   => FALSE,
-        self::LLRES     => FALSE,
-        self::TOTALLOAN => FALSE,
-        self::RECOVERY  => FALSE,
+        self::WATCHLIST  => FALSE,
+        self::DLSR       => FALSE,
+        self::REOSR      => FALSE,
+        self::CFSR       => FALSE,
+        self::HLMFCLR    => FALSE,
+        self::LLRES      => FALSE,
+        self::TOTALLOAN  => FALSE,
+        self::RECOVERY   => FALSE,
+        self::PROPERTIES => FALSE,
     ];
 
 
     public array $tabs = [
-        self::FOOTNOTES => [
+        self::FOOTNOTES  => [
             'FootNotes',
         ],
-        self::WATCHLIST => [
+        self::WATCHLIST  => [
             'Watchlist',
             'Servicer Watch List',
             'Servicer Watch',
@@ -59,21 +63,21 @@ class CMBSRestrictedServicerReportFactory {
             'WATCHLIST',
             'WatchList',
         ], // SERVICER WATCHLIST
-        self::DLSR      => [
+        self::DLSR       => [
             'DLSR',
             'Del Loan Status Report',
             'Delinquent Loan Status',
             'rptDDelinquentLoanStatus',
-            'Delinquent'
+            'Delinquent',
         ], // Delinquent Loan Status Report
-        self::REOSR     => [
+        self::REOSR      => [
             'REOSR',
             'REO Status Report',
             'REO STATUS',
             'REOStatus',
             'rptREOStatus',
         ], // REO STATUS REPORT
-        self::CFSR      => [
+        self::CFSR       => [
             'CFSR',
             'Comp Finan Status Report',
             'Comparative_Fin',
@@ -81,9 +85,9 @@ class CMBSRestrictedServicerReportFactory {
             'tCComparativeFinancialStatusIRP',
             'Comparative Fin Status Report',
             'Comparative Financial Report',
-            'rptCComparativeFinancialStatus'
+            'rptCComparativeFinancialStatus',
         ], // COMPARATIVE FINANCIAL STATUS REPORT
-        self::HLMFCLR   => [
+        self::HLMFCLR    => [
             'HLMFCLR',
             'Hist Mod-Corr Mtg ln',
             'HistLoanModForbCMLR',
@@ -91,9 +95,9 @@ class CMBSRestrictedServicerReportFactory {
             'Historical Modification Report',
             'rptMHistoricalLoanMod',
             'HistLoanMod',
-            'LoanMod'
+            'LoanMod',
         ], // HISTORICAL LOAN MODIFICATION/FORBEARANCE and CORRECTED MORTGAGE LOAN REPORT
-        self::LLRES     => [
+        self::LLRES      => [
             'LL Res, LOC',
             'LL Reserve Rpt',
             'LL_Res_LOC',
@@ -103,7 +107,7 @@ class CMBSRestrictedServicerReportFactory {
             'Reserve_LOC',
             'LoanLevelReserve', // 20240608:mdd
         ], // LOAN LEVEL RESERVE/LOC REPORT
-        self::TOTALLOAN => [
+        self::TOTALLOAN  => [
             'Total Loan',
             'Total Loan Report',
             'TLR',
@@ -115,13 +119,16 @@ class CMBSRestrictedServicerReportFactory {
             'Total_Loan_Report',
             'BSCMS_2007PWR17_tlr_0524', // 20240608:mdd
         ], // TOTAL LOAN REPORT
-        self::RECOVERY  => [
+        self::RECOVERY   => [
             'Advance Recovery',
             'Recovery',
             'Advance_Recovery',
             'Adv Recovery',
             'rptAdvRecovery',
         ], // ADVANCE RECOVERY REPORT
+        self::PROPERTIES => [
+            '_property',
+        ],
     ];
 
     protected CustodianCtsLink $custodianCtsLink;
@@ -152,9 +159,9 @@ class CMBSRestrictedServicerReportFactory {
     /**
      * TODO I should create an INTERFACE that this and the CMBSMonthlyAdministratorReportFactory both implement.
      *
-     * @param string $pathToRestrictedServicerReportXlsx
+     * @param string                $pathToRestrictedServicerReportXlsx
      * @param CustodianCtsLink|NULL $ctsLink Not used in this particular make method()
-     * @param Carbon|NULL $dateOfFile
+     * @param Carbon|NULL           $dateOfFile
      *
      * @return CMBSRestrictedServicerReport
      * @throws NoDatesInTabsException
@@ -177,6 +184,8 @@ class CMBSRestrictedServicerReportFactory {
         $totalLoan       = [];
         $advanceRecovery = [];
 
+        $properties = [];
+
 
         /**
          * Exceptions that aren't fatal. It could just be that I couldn't
@@ -193,6 +202,7 @@ class CMBSRestrictedServicerReportFactory {
 
         // This will save us a ton of time.
         $cleanHeadersBySheetName = [];
+
 
         foreach ( $sheetNames as $i => $sheetName ):
 
@@ -214,7 +224,12 @@ class CMBSRestrictedServicerReportFactory {
             //
             //dump("SHEETNAME: ". $sheetName);
 
-
+            $debugArray = [
+               'srpt14star_202410_property',
+            ];
+            if( ! in_array( $sheetName, $debugArray ) ):
+                continue;
+            endif;
 
 
             try {
@@ -294,11 +309,11 @@ class CMBSRestrictedServicerReportFactory {
                                                                                   $this->documentId,
                                                                                   $this->headerKeywords );
 
-                    $csfr                                      = $factory->parse( $rows,
-                                                                                  $cleanHeadersBySheetName,
-                                                                                  CMBSRestrictedServicerReport::csfr,
-                                                                                  $csfr,
-                                                                                  $pathToRestrictedServicerReportXlsx );
+                    $csfr = $factory->parse( $rows,
+                                             $cleanHeadersBySheetName,
+                                             CMBSRestrictedServicerReport::csfr,
+                                             $csfr,
+                                             $pathToRestrictedServicerReportXlsx );
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::LLRES, $sheetName ) ):
                     //dump( self::LLRES . " " . $sheetName );
@@ -341,6 +356,22 @@ class CMBSRestrictedServicerReportFactory {
                                                                                       CMBSRestrictedServicerReport::advanceRecovery,
                                                                                       $advanceRecovery,
                                                                                       $pathToRestrictedServicerReportXlsx );
+                    unset( $factory );
+
+                elseif ( $this->_foundSheetName( self::PROPERTIES, $sheetName ) ):
+
+                    $this->tabsThatHaveBeenFound[ self::PROPERTIES ] = TRUE;
+                    $factory                                         = new PropertyFactory( self::DEFAULT_TIMEZONE,
+                                                                                            NULL,
+                                                                                            $this->dateOfFile,
+                                                                                            $this->documentId,
+                                                                                            $this->headerKeywords );
+
+                    $properties                                      = $factory->parse( $rows,
+                                                                                        $cleanHeadersBySheetName,
+                                                                                        CMBSRestrictedServicerReport::properties,
+                                                                                        $properties,
+                                                                                        $pathToRestrictedServicerReportXlsx );
                     unset( $factory );
                 else:
                     //dump( "doing nothing with " . $sheetName );
@@ -421,7 +452,6 @@ class CMBSRestrictedServicerReportFactory {
         $advanceRecovery = $this->_fillDateIfMissing( $advanceRecovery, $this->dateOfFile );
 
 
-
         $watchlist       = $this->_fillDocumentIdIfMissing( $watchlist, $this->documentId );
         $dlsr            = $this->_fillDocumentIdIfMissing( $dlsr, $this->documentId );
         $reosr           = $this->_fillDocumentIdIfMissing( $reosr, $this->documentId );
@@ -432,7 +462,6 @@ class CMBSRestrictedServicerReportFactory {
         $advanceRecovery = $this->_fillDocumentIdIfMissing( $advanceRecovery, $this->documentId );
 
 
-
         return new CMBSRestrictedServicerReport( $watchlist,
                                                  $dlsr,
                                                  $reosr,
@@ -441,6 +470,7 @@ class CMBSRestrictedServicerReportFactory {
                                                  $llResLOC,
                                                  $totalLoan,
                                                  $advanceRecovery,
+                                                 $properties,
                                                  $cleanHeadersBySheetName,
                                                  $alerts,
                                                  $exceptions,
@@ -459,7 +489,7 @@ class CMBSRestrictedServicerReportFactory {
      */
     protected function _getTheDate( array $tabs ): string {
 
-        if ( ! is_null( $this->dateOfFile ) ):
+        if ( !is_null( $this->dateOfFile ) ):
             return $this->dateOfFile->toDateString();
         endif;
 
@@ -477,7 +507,7 @@ class CMBSRestrictedServicerReportFactory {
         if ( count( $uniqueDates ) > 1 ):
             $dateCount = [];
             foreach ( $dates as $date ):
-                if ( ! isset( $dateCount[ $date ] ) ):
+                if ( !isset( $dateCount[ $date ] ) ):
                     $dateCount[ $date ] = 0;
                 endif;
                 $dateCount[ $date ]++;
@@ -507,7 +537,7 @@ class CMBSRestrictedServicerReportFactory {
 
 
     /**
-     * @param array $rows
+     * @param array  $rows
      * @param string $date
      *
      * @return array
@@ -556,10 +586,12 @@ class CMBSRestrictedServicerReportFactory {
      * @return bool
      */
     protected function _foundSheetName( string $index, string $sheetName ): bool {
+
         foreach ( $this->tabs[ $index ] as $tabName ):
+
             // Added strtolower to make comparisons cleaner.
             // I have seen Watchlist vs WatchList... for example.
-            if ( strtolower($sheetName) == strtolower($tabName) ):
+            if ( strtolower( $sheetName ) == strtolower( $tabName ) ):
                 return TRUE;
             endif;
 
@@ -568,12 +600,18 @@ class CMBSRestrictedServicerReportFactory {
             if ( str_contains( $sheetName, $tabName ) ):
                 return TRUE;
             endif;
+
+            // The property tabs almost always end in _property
+            if ( str_ends_with( $sheetName, $tabName ) ):
+                return TRUE;
+            endif;
+
         endforeach;
         return FALSE;
     }
 
     public function hasExceptions(): bool {
-        return ! empty( $this->exceptions );
+        return !empty( $this->exceptions );
     }
 
     public function getExceptions(): array {
