@@ -224,12 +224,12 @@ class CMBSRestrictedServicerReportFactory {
             //
             //dump("SHEETNAME: ". $sheetName);
 
-            $debugArray = [
-               'srpt14star_202410_property',
-            ];
-            if( ! in_array( $sheetName, $debugArray ) ):
-                continue;
-            endif;
+            //$debugArray = [
+            //   'srpt14star_202410_property',
+            //];
+            //if( ! in_array( $sheetName, $debugArray ) ):
+            //    continue;
+            //endif;
 
 
             try {

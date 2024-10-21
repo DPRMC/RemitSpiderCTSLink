@@ -31,6 +31,9 @@ class PropertyFactory extends AbstractTabFactory {
             foreach($row as $columnNumber => $value):
                 $newRow[$this->localHeaders[$columnNumber]] = trim($value ?? '');
             endforeach;
+
+            $newRow['document_id'] = $this->documentId;
+
             $this->cleanRows[] = $newRow;
         endforeach;
     }
