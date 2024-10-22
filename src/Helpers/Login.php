@@ -21,8 +21,13 @@ class Login {
     //https://wca.www.ctslink.com/wcaapi/login/auth/logout?appId=appcts&brandId=CTSLink&isWidget=true&sId=0e85f55c-1276-4aba-abe3-6e60578e7059
     const URL_LOGOUT = 'https://wca.www.ctslink.com/wcaapi/login/auth/logout?appId=appcts&brandId=CTSLink&isWidget=true&sId=';
 
+    // 2024-10-22:mdd They added a button you need to click to display the user/pass form
+    const SIGN_IN_BUTTON_X = 930;
+    const SIGN_IN_BUTTON_Y = 25;
+
     const LOGIN_BUTTON_X = 50;
-    const LOGIN_BUTTON_Y = 370;
+    //const LOGIN_BUTTON_Y = 370;
+    const LOGIN_BUTTON_Y = 396; // 2024-10-22:mdd They moved it down a few pixels because of the new header.
 
     const LOGOUT_BUTTON_X = 570;
     const LOGOUT_BUTTON_Y = 25;
@@ -69,8 +74,20 @@ class Login {
     public function login(): string {
         $this->Debug->_debug( "Navigating to login screen." );
         $this->Page->navigate( self::URL_LOGIN )->waitForNavigation();
-
         $this->Debug->_screenshot( 'first_page' );
+
+        $this->Debug->_screenshot( 'where_i_clicked_to_display_user_pass', new Clip( 0,
+                                                                         0,
+                                                                         self::SIGN_IN_BUTTON_X,
+                                                                         self::SIGN_IN_BUTTON_Y ) );
+        $this->Page->mouse()
+                   ->move( self::SIGN_IN_BUTTON_X, self::SIGN_IN_BUTTON_Y )
+                   ->click();
+        //$this->Page->waitUntilContainsElement('#loginButton',100);
+        sleep(2);
+        $this->Debug->_screenshot( 'should_see_user_pass_form' );
+
+
         $this->Debug->_debug( "Filling out user and pass." );
         $this->Page->evaluate( "document.querySelector('#userid').value = '" . $this->user . "';" );
         $this->Page->evaluate( "document.querySelector('#password').value = '" . $this->pass . "';" );
