@@ -174,7 +174,9 @@ class PropertyFactory extends AbstractTabFactory {
      * @return bool
      */
     protected function _hasAllValidOrEmptyDates( array $row ): bool {
-        $fieldsToCheck = [ 'distribution_date', 'most_recent_occupancy_as_of_date' ];
+        $fieldsToCheck = [ 'distribution_date',
+                           'most_recent_occupancy_as_of_date',
+                           'most_recent_valuation_date', ];
         foreach ( $fieldsToCheck as $fieldToCheck ):
             $value = trim( $row[ $fieldToCheck ] );
             if ( !empty( $row[ $fieldToCheck ] ) ):
