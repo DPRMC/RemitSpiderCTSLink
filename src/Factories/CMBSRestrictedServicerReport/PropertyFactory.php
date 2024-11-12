@@ -156,17 +156,36 @@ class PropertyFactory extends AbstractTabFactory {
 
             // Doc ID: 6784728 had malformed rows in the _property tab.
             // Skip those invalid rows.
-            if ( !empty( $row[ 'distribution_date' ] ) ):
-                try {
-                    Carbon::parse( $row[ 'distribution_date' ] );
-                } catch ( \Exception $exception ) {
-                    continue;
-                }
+            if ( $this->_hasAllValidOrEmptyDates( $row ) ):
+                $validRows[] = $row;
+            else:
+                continue; // Skip this row
             endif;
-            $validRows[] = $row;
+
         endforeach;
 
         return $validRows;
+    }
+
+
+    /**
+     * @param array $row
+     *
+     * @return bool
+     */
+    protected function _hasAllValidOrEmptyDates( array $row ): bool {
+        $fieldsToCheck = [ 'distribution_date', 'most_recent_occupancy_as_of_date' ];
+        foreach ( $fieldsToCheck as $fieldToCheck ):
+            $value = trim( $row[ $fieldToCheck ] );
+            if ( !empty( $row[ $fieldToCheck ] ) ):
+                try {
+                    Carbon::parse( $row[ $fieldToCheck ] );
+                } catch ( \Exception $exception ) {
+                    return FALSE;
+                }
+            endif;
+        endforeach;
+        return TRUE;
     }
 
 
