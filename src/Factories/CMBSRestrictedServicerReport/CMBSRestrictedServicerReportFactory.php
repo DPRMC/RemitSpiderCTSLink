@@ -249,12 +249,19 @@ class CMBSRestrictedServicerReportFactory {
                                                                                             $this->dateOfFile,
                                                                                             $this->documentId,
                                                                                             $this->headerKeywords );
+
+
+
                     $watchlist                                      = $factory->parse( $rows,
                                                                                        $cleanHeadersBySheetName,
                                                                                        CMBSRestrictedServicerReport::watchlist,
                                                                                        $watchlist,
                                                                                        $pathToRestrictedServicerReportXlsx );
-                    //dd($watchlist);
+
+
+                    //dump($rows);
+                    //dump($watchlist);
+                    //dd('dead');
                     unset( $factory );
                 elseif ( $this->_foundSheetName( self::DLSR, $sheetName ) ):
                     //dump( self::DLSR . " " . $sheetName );
