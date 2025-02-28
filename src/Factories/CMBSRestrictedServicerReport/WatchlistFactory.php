@@ -11,7 +11,9 @@ class WatchlistFactory extends AbstractTabFactory {
                                                     'Trans Id',
                                                     'Trans',
                                                     'Tran ID',
-                                                    'transaction_id' ];
+                                                    'transaction_id',
+                                                    'tran_id', // 2025-02-28:mdd
+    ];
 
 
     /**
@@ -150,9 +152,30 @@ class WatchlistFactory extends AbstractTabFactory {
     }
 
 
+    protected function _isBadTransId( array $row ): bool {
+        $disqualifiedStrings = [
+            'CLTranID',
+            'so long comments will display correctly',
+        ];
+
+        foreach ( $this->firstColumnValidTextValues as $possibleTransactionIdColumnHeader ):
+            if ( !isset( $row[ $possibleTransactionIdColumnHeader ] ) ):
+                continue;
+            endif;
+
+            foreach($disqualifiedStrings as $disqualifiedString ):
+                if ( !str_contains( $row[ $possibleTransactionIdColumnHeader ], $disqualifiedString ) ):
+                    return FALSE;
+                endif;
+            endforeach;
+        endforeach;
+
+        return TRUE;
+    }
+
     protected function _removeInvalidRows( array $rows = [] ): array {
 
-        //dd($this->localHeaders);
+
         // TODO add this code to the other Factories as well.
         if ( empty( $this->localHeaders ) ):
             throw new \Exception( "The localHeaders property is empty. That is going to have this method return zero valid rows. So check that property. You might need to add a new value to the firstColumnValidTextValues property." );
@@ -165,7 +188,12 @@ class WatchlistFactory extends AbstractTabFactory {
             $row = array_slice( $row, 0, count( $this->localHeaders ) );
 
             // 2024-12-09:mdd @see Doc ID: 6047667
-            if ( 'CLTranID' == $row[ 'trans_id' ] ):
+            //if ( isset() && 'CLTranID' == $row[ 'trans_id' ] ):
+            //    dump( 'BAAAAAAD trans_id' );
+            //    continue;
+            //endif;
+            // 2025-02-28:mdd
+            if ( $this->_isBadTransId( $row ) ):
                 dump( 'BAAAAAAD trans_id' );
                 continue;
             endif;
