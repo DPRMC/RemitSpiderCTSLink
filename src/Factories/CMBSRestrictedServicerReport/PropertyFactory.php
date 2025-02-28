@@ -28,12 +28,26 @@ class PropertyFactory extends AbstractTabFactory {
     }
 
 
+    /**
+     * @param array       $allRows
+     * @param string|NULL $sheetName
+     * @param array       $existingRows
+     *
+     * @return void
+     */
     protected function _setParsedRows( array $allRows, string $sheetName = NULL, array $existingRows = [] ): void {
         $this->cleanRows = $existingRows;
         foreach ( $allRows as $rowNumber => $row ):
+
             $newRow = [];
             foreach ( $row as $columnNumber => $value ):
-                $newRow[ $this->localHeaders[ $columnNumber ] ] = trim( $value ?? '' );
+                try {
+                    $newRow[ $this->localHeaders[ $columnNumber ] ] = trim( $value ?? '' );
+                } catch ( \Exception $exception ) {
+                    //dump( $exception->getMessage() );
+                    continue;
+                }
+
             endforeach;
 
             $newRow[ 'document_id' ] = $this->documentId;
@@ -41,6 +55,7 @@ class PropertyFactory extends AbstractTabFactory {
             $this->cleanRows[] = $newRow;
         endforeach;
     }
+
 
     protected function _setLocalHeaders( array $allRows, array $firstColumnValidTextValues = [], string $debugSheetName = NULL, string $debugFilename = NULL ): void {
 

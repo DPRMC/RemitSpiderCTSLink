@@ -156,14 +156,24 @@ class WatchlistFactory extends AbstractTabFactory {
     }
 
 
-    protected function _isBadTransId( array $row ): bool {
-
+    protected function _hasValidTransactionIdHeader( array $row ): bool {
         foreach ( $this->firstColumnValidTextValues as $possibleTransactionIdColumnHeader ):
             if ( isset( $row[ $possibleTransactionIdColumnHeader ] ) ):
-                break;
+                return TRUE;
             endif;
-            throw new \Exception( "Update the firstColumnValidTextValues array in the Watchlist Factory. Unable to find a possible transaction id column header. The firstColumnValidTextValues property is: " . implode( ", ", $this->firstColumnValidTextValues ) . "" );
         endforeach;
+        return FALSE;
+    }
+
+    protected function _isBadTransId( array $row ): bool {
+
+        if( ! $this->_hasValidTransactionIdHeader( $row )):
+            throw new \Exception( "Update the firstColumnValidTextValues array in the Watchlist Factory. Unable to find a possible transaction id column header. The firstColumnValidTextValues property is: " .
+                                  print_r( $this->firstColumnValidTextValues, TRUE ) .
+                                  " The existing keys are: " .
+                                  print_r( array_keys( $row ), TRUE ) .
+                                  " The row is: " . print_r( $row, TRUE ) );
+        endif;
 
 
         $disqualifiedStrings = [
@@ -182,9 +192,6 @@ class WatchlistFactory extends AbstractTabFactory {
                 endif;
             endforeach;
         endforeach;
-
-        dump( $row );
-        dd( 'inside isBadTransId' );
 
         return TRUE;
     }
