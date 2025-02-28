@@ -13,6 +13,7 @@ class WatchlistFactory extends AbstractTabFactory {
                                                     'Tran ID',
                                                     'transaction_id',
                                                     'tran_id', // 2025-02-28:mdd
+                                                    'trans_id', // 2025-02-28:mdd
     ];
 
 
@@ -25,6 +26,8 @@ class WatchlistFactory extends AbstractTabFactory {
      * @throws \DPRMC\RemitSpiderCTSLink\Exceptions\NoDataInTabException
      */
     protected function _setParsedRows( array $allRows, string $sheetName = NULL, array $existingRows = [] ): void {
+
+
         $this->cleanRows = $existingRows;
 
         $validRows = $this->_getRowsToBeParsed( $allRows );
@@ -67,6 +70,7 @@ class WatchlistFactory extends AbstractTabFactory {
                 unset( $this->cleanRows[ $k ] );
             endif;
         endforeach;
+
 
         $this->cleanRows = $this->_removeInvalidRows( $this->cleanRows );
 
@@ -153,6 +157,15 @@ class WatchlistFactory extends AbstractTabFactory {
 
 
     protected function _isBadTransId( array $row ): bool {
+
+        foreach ( $this->firstColumnValidTextValues as $possibleTransactionIdColumnHeader ):
+            if ( isset( $row[ $possibleTransactionIdColumnHeader ] ) ):
+                break;
+            endif;
+            throw new \Exception( "Update the firstColumnValidTextValues array in the Watchlist Factory. Unable to find a possible transaction id column header. The firstColumnValidTextValues property is: " . implode( ", ", $this->firstColumnValidTextValues ) . "" );
+        endforeach;
+
+
         $disqualifiedStrings = [
             'CLTranID',
             'so long comments will display correctly',
@@ -163,12 +176,15 @@ class WatchlistFactory extends AbstractTabFactory {
                 continue;
             endif;
 
-            foreach($disqualifiedStrings as $disqualifiedString ):
+            foreach ( $disqualifiedStrings as $disqualifiedString ):
                 if ( !str_contains( $row[ $possibleTransactionIdColumnHeader ], $disqualifiedString ) ):
                     return FALSE;
                 endif;
             endforeach;
         endforeach;
+
+        dump( $row );
+        dd( 'inside isBadTransId' );
 
         return TRUE;
     }
@@ -195,6 +211,7 @@ class WatchlistFactory extends AbstractTabFactory {
             // 2025-02-28:mdd
             if ( $this->_isBadTransId( $row ) ):
                 dump( 'BAAAAAAD trans_id' );
+                dd( $row );
                 continue;
             endif;
 
