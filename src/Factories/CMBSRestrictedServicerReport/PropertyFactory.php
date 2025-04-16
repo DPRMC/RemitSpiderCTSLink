@@ -170,6 +170,7 @@ class PropertyFactory extends AbstractTabFactory {
         foreach ( $rows as $rowNumber => $row ):
 
             // Doc ID: 6784728 had malformed rows in the _property tab.
+            // Doc ID: 6939018 also has malformed rows in the _property tab. 2025-04-16:mdd
             // Skip those invalid rows.
             if ( $this->_hasAllValidOrEmptyDates( $row ) ):
                 $validRows[] = $row;
@@ -192,8 +193,31 @@ class PropertyFactory extends AbstractTabFactory {
         $fieldsToCheck = [ 'distribution_date',
                            'most_recent_occupancy_as_of_date',
                            'most_recent_valuation_date', ];
+
+        // DEBUG
+        //dump('TRANSID: ' . $row['transaction_id']);
+        //if( $row['transaction_id'] == 'Servi'){
+        //    dump($row);
+        //    dump($row['distribution_date']);
+        //    dump($row['most_recent_occupancy_as_of_date']);
+        //    dump(Carbon::parse($row['most_recent_valuation_date']));
+        //    dd('end of test');
+        //}
+        // END DEBUG
+
+
         foreach ( $fieldsToCheck as $fieldToCheck ):
             $value = trim( $row[ $fieldToCheck ] );
+
+
+            // I was seeing a value of '0'
+            // Obviously an invalid row.
+            // For a date to be parsed we need at least YYYYMMDD chars.
+            // So if the string has less than 6 chars, call it an invalid row.
+            if ( strlen( $value ) < 6 ):
+                return FALSE;
+            endif;
+
             if ( !empty( $row[ $fieldToCheck ] ) ):
                 try {
                     Carbon::parse( $row[ $fieldToCheck ] );
