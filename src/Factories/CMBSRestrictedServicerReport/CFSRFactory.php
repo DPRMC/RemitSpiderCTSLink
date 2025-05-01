@@ -17,7 +17,7 @@ class CFSRFactory extends AbstractTabFactory {
         'most_recent_financial_information_fs_start_date'                                                             => 'most_recent_financial_information_financial_as_of_start_date',
         'most_recent_financial_information_fs_end_date'                                                               => 'most_recent_financial_information_financial_as_of_end_date',
         'most_recent_financial_information_normalized_total_revenue'                                                  => 'most_recent_financial_information_normalized_revenue',
-
+        'most_recent_financial_information_normalized_normalized_revenue'                                             => 'most_recent_financial_information_normalized_revenue', //20250501:mdd
 
         // SUPER KLUDGE
         //10:at_contribution_information_base_year_at_contribution_information_base_year_financials_as_of_date
