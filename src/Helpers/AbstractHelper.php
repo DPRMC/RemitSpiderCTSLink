@@ -125,4 +125,50 @@ abstract class AbstractHelper {
 
     }
 
+
+
+    public static function strToUpperQueryParams(string $href): string {
+        // 1. Parse the URL into its components.
+        $parts = parse_url($href);
+
+        // Check if there are any query parameters.
+        if (!isset($parts['query'])) {
+            return $href; // Return the original href if no query exists.
+        }
+
+        $queryString = $parts['query'];
+        $queryParams = [];
+
+        // 2. Parse the query string into an array.
+        parse_str($queryString, $queryParams);
+
+        // 3. Iterate and apply strtoupper() to each parameter value.
+        // array_walk() is a clean way to apply a function to every element.
+        array_walk($queryParams, function (&$value) {
+            // We use mb_strtoupper for multi-byte character support,
+            // falling back to strtoupper if not available.
+            if (function_exists('mb_strtoupper')) {
+                $value = mb_strtoupper($value, 'UTF-8');
+            } else {
+                $value = strtoupper($value);
+            }
+        });
+
+        // 4. Re-assemble the query parameters back into a query string.
+        $newQueryString = http_build_query($queryParams);
+
+        // 5. Reconstruct the full URL.
+        // The components array from parse_url is used to rebuild the URL.
+        $newHref = (isset($parts['scheme']) ? $parts['scheme'] . '://' : '') .
+                   (isset($parts['host']) ? $parts['host'] : '') .
+                   (isset($parts['port']) ? ':' . $parts['port'] : '') .
+                   (isset($parts['user']) ? $parts['user'] : '') .
+                   (isset($parts['pass']) ? ':' . $parts['pass'] : '') .
+                   (isset($parts['path']) ? $parts['path'] : '') .
+                   '?' . $newQueryString . // Insert the new query string
+                   (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
+
+        return $newHref;
+    }
+
 }
