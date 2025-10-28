@@ -573,6 +573,16 @@ class RemitSpiderCTSLinkTest extends TestCase {
 //    }
 
 
+    /**
+     * @test
+     * @group upper
+     */
+public function teststrToUpperQueryParamsShouldUppercaseTheParams(){
+    $href = 'https://example.com?foo=bar';
+    $expectedHref = 'https://example.com?foo=BAR';
+    $uppered = \DPRMC\RemitSpiderCTSLink\Helpers\AbstractHelper::strToUpperQueryParams($href);
+    $this->assertEquals($expectedHref, $uppered);
+}
 
 
 }

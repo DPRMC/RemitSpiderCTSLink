@@ -54,6 +54,7 @@ class ShelfDocsHelper extends AbstractHelper {
 
             switch ( $tabType ):
                 case 'PERIODICRPT':
+                    $href = self::strToUpperQueryParams( $href );
                     $this->Debug->_debug( "Loading tab: " . self::BASE_URL . $href );
                     $this->Page->navigate( self::BASE_URL . $href )->waitForNavigation();
                     sleep( 1 );
