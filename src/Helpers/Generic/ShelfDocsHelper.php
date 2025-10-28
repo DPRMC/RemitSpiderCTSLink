@@ -59,17 +59,27 @@ class ShelfDocsHelper extends AbstractHelper {
                     sleep( 1 );
                     $html = $this->Page->getHtml();
 
+
                     $newLinks = $this->_getLinksToDocs( $html );
-                    //dump( "These are the new links" );
-                    //dump( $newLinks );
+
                     $links = array_merge( $links, $newLinks );
                     break;
+
+                // Other tabs are called:
+//                    DEALDOCS
+//                    ADDDOC
+//                    SPECNOTE
+//                    ADDRPT
+//                    TAXRPT
+                // But those dont have links we care about.
             endswitch;
 
         endforeach;
 
         return $links;
     }
+
+
 
     /**
      * @param string $href https://www.ctslink.com/a/seriesdocs.html?shelfId=AKFL&seriesId=2006A&tab=PERIODICRPT
