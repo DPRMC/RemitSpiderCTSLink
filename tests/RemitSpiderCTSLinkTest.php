@@ -535,7 +535,54 @@ class RemitSpiderCTSLinkTest extends TestCase {
         //dump( $restrictedServicerReport );
         //dd('$restrictedServicerReport');
 
-        $this->assertInstanceOf(\DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport\CMBSRestrictedServicerReport::class, $restrictedServicerReport);
+        $this->assertInstanceOf( \DPRMC\RemitSpiderCTSLink\Models\CMBSRestrictedServicerReport\CMBSRestrictedServicerReport::class, $restrictedServicerReport );
     }
+
+
+    /**
+     * @test
+     * @group xxx
+     */
+//    public function testClickLinkFromRegexLinkText(){
+//        $spider = $this->_getSpider();
+//
+//        $spider->enableDebug();
+//        $spider->Login->login();
+//
+////        $html = $spider->CTSLinkBrowser->page->getHtml();
+////        $this->assertEquals( 'testfile.xls', $html );
+//
+//        $regex = '/^Commercial Securities \(CMBS\)$/';
+//        $regex = '/MyCTSLink(?=\()/';
+//
+////        $regex = '/Commercial Securities.*/';
+//        $linkFound = $spider->GenericHelper->clickLinkWithMatchingLinkText($regex);
+//
+//        $this->assertTrue( $linkFound );
+////        $this->assertFalse( $linkFound );
+//
+//
+//        $html = $spider->CTSLinkBrowser->page->getHtml();
+//        $this->assertEquals( 'xxx.xls', $html );
+//
+//
+////        $nextHtml = $spider->CTSLinkBrowser->page->getHtml();
+////        $this->assertEquals( 'yyy.xls', $html );
+//
+//        fwrite(STDERR, print_r($html, TRUE));
+//    }
+
+
+    /**
+     * @test
+     * @group upper
+     */
+public function teststrToUpperQueryParamsShouldUppercaseTheParams(){
+    $href = 'https://example.com?foo=bar';
+    $expectedHref = 'https://example.com?foo=BAR';
+    $uppered = \DPRMC\RemitSpiderCTSLink\Helpers\AbstractHelper::strToUpperQueryParams($href);
+    $this->assertEquals($expectedHref, $uppered);
+}
+
 
 }

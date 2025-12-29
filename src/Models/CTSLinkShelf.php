@@ -17,8 +17,8 @@ class CTSLinkShelf {
     public ?Carbon $nextCycle    = NULL;
 
     public function __construct( string $productType,
-                                 string $issuerName,
-                                 string $seriesListHref,
+                                 string $issuerName = '',
+                                 string $seriesListHref = '',
                                  string $shelfDocsHref = '',
                                  Carbon $currentCycle = NULL,
                                  Carbon $nextCycle = NULL ) {
