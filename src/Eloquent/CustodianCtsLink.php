@@ -28,6 +28,8 @@ class CustodianCtsLink extends Model {
     const revised_date    = 'revised_date';
     const key             = 'key';
 
+    const http_code = 'http_code';
+
     const parsed_at                    = 'parsed_at';
     const records_saved_to_database_at = 'records_saved_to_database_at';
 
@@ -46,6 +48,7 @@ class CustodianCtsLink extends Model {
         self::parsed_at                    => 'datetime',
         self::records_saved_to_database_at => 'datetime',
         self::parse_exceptions_to_ignore   => 'array',
+        self::http_code                    => 'integer',
     ];
 
     protected $guarded = [];
