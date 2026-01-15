@@ -49,7 +49,7 @@ class Debug {
      * @throws \HeadlessChromium\Exception\FilesystemException
      * @throws \HeadlessChromium\Exception\ScreenshotFailed
      */
-    public function _screenshot( string $suffix, Clip $clip = NULL ) {
+    public function _screenshot( string $suffix, Clip $clip = NULL, int $timeout = 5000 ) {
 
         $now   = Carbon::now( $this->timezone );
         $time  = $now->timestamp;
@@ -58,10 +58,10 @@ class Debug {
         if ( $this->debug ):
             if ( $clip ):
                 $this->page->screenshot( [ 'clip' => $clip ] )
-                           ->saveToFile( $this->pathToScreenshots . $time . '_' . $micro . '_' . $suffix . '.jpg', 10000 );
+                           ->saveToFile( $this->pathToScreenshots . $time . '_' . $micro . '_' . $suffix . '.jpg', $timeout );
             else:
                 $this->page->screenshot()
-                           ->saveToFile( $this->pathToScreenshots . $time . '_' . $micro . '_' . $suffix . '.jpg', 10000 );
+                           ->saveToFile( $this->pathToScreenshots . $time . '_' . $micro . '_' . $suffix . '.jpg', $timeout );
             endif;
         endif;
     }
