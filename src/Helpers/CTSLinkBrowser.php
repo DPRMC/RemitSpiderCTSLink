@@ -34,6 +34,15 @@ class CTSLinkBrowser {
 
         $browserFactory = new BrowserFactory( $this->chromePath );
         // starts headless chrome
+
+        $customFlags =  [
+            '--disable-web-security',       // Your current requirement
+            '--no-sandbox',                 // Prevent crashes on Linux/Root
+            '--disable-dev-shm-usage',      // Prevent memory crashes in Docker
+            '--disable-gpu',                // Compatibility
+            '--disable-blink-features=AutomationControlled' // Stealth
+        ];
+
         $this->browser = $browserFactory->createBrowser( [
                                                              'headless'        => TRUE,         // disable headless mode
                                                              'connectionDelay' => self::BROWSER_CONNECTION_DELAY,
@@ -41,7 +50,8 @@ class CTSLinkBrowser {
                                                              'windowSize'      => [ self::BROWSER_WINDOW_SIZE_WIDTH,
                                                                                     self::BROWSER_WINDOW_SIZE_HEIGHT ],
                                                              'enableImages'    => self::BROWSER_ENABLE_IMAGES,
-                                                             'customFlags'     => [ '--disable-web-security' ],
+                                                             'customFlags'     => $customFlags,
+                                                             // 'customFlags' => ['--disable-javascript']
                                                          ] );
 
         $this->createPage();
