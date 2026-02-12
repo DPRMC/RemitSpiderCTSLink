@@ -641,8 +641,7 @@ class CMBSDistributionFileFactory {
 
         $parsedRows = [];
 
-        print_r( $pagesAsArrays );
-        die( 'death' );
+        // TODO: parse $pagesAsArrays into rows once this section is implemented.
 
         // Remove Headers
         $numHeaders = 33;
@@ -653,8 +652,7 @@ class CMBSDistributionFileFactory {
 
             $rawRows = array_chunk( $page, 16 );
 
-            print_r( $rawRows );
-            die( 'death' );
+            // TODO: validate $rawRows once this section is implemented.
 
             // Remove footer rows
             $rowsOfInterest = [];

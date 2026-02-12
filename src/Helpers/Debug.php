@@ -29,6 +29,7 @@ class Debug {
 
     public function enableDebug(): void {
         $this->debug = TRUE;
+        $this->ensureDebugDirectory();
         $this->_debug( "Debug now ENABLED. Screenshots are being saved to: " . $this->pathToScreenshots );
     }
 
@@ -56,12 +57,13 @@ class Debug {
         $micro = $now->microsecond;
 
         if ( $this->debug ):
+            $pathPrefix = $this->getDebugPathPrefix();
             if ( $clip ):
                 $this->page->screenshot( [ 'clip' => $clip ] )
-                           ->saveToFile( $this->pathToScreenshots . $time . '_' . $micro . '_' . $suffix . '.jpg', $timeout );
+                           ->saveToFile( $pathPrefix . $time . '_' . $micro . '_' . $suffix . '.jpg', $timeout );
             else:
                 $this->page->screenshot()
-                           ->saveToFile( $this->pathToScreenshots . $time . '_' . $micro . '_' . $suffix . '.jpg', $timeout );
+                           ->saveToFile( $pathPrefix . $time . '_' . $micro . '_' . $suffix . '.jpg', $timeout );
             endif;
         endif;
     }
@@ -73,7 +75,8 @@ class Debug {
         $micro = $now->microsecond;
         if ( $this->debug ):
             $html = $this->page->getHtml();
-            file_put_contents( $this->pathToScreenshots . $time . '_' . $micro . '_' . $filename . '.html', $html );
+            $pathPrefix = $this->getDebugPathPrefix();
+            file_put_contents( $pathPrefix . $time . '_' . $micro . '_' . $filename . '.html', $html );
         endif;
     }
 
@@ -85,5 +88,24 @@ class Debug {
                 die();
             endif;
         endif;
+    }
+
+    private function ensureDebugDirectory(): void {
+        if ($this->pathToScreenshots === '') {
+            return;
+        }
+
+        if (!is_dir($this->pathToScreenshots)) {
+            mkdir($this->pathToScreenshots, 0777, true);
+        }
+    }
+
+    private function getDebugPathPrefix(): string {
+        $this->ensureDebugDirectory();
+        if ($this->pathToScreenshots === '') {
+            return '';
+        }
+
+        return rtrim($this->pathToScreenshots, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
     }
 }

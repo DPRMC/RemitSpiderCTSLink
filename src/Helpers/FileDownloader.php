@@ -4,6 +4,7 @@ namespace DPRMC\RemitSpiderCTSLink\Helpers;
 
 use DPRMC\RemitSpiderCTSLink\Exceptions\ExceededMaxAttemptsToDownloadFileException;
 use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
+use GuzzleHttp\Client;
 use HeadlessChromium\Cookies\Cookie;
 use HeadlessChromium\Cookies\CookiesCollection;
 use HeadlessChromium\Page;
@@ -63,21 +64,23 @@ class FileDownloader extends AbstractHelper {
 
         $cookieString = implode(' ', $cookieParts);
 
-        // Create a stream
-        $opts = [
-            'http' => [
-                'method' => "GET",
-                'header' => "Accept-language: en\r\n" .
-                            "Cookie: " . $cookieString . "\r\n",
+        if (!is_dir($pathToSaveFile)) {
+            mkdir($pathToSaveFile, 0777, true);
+        }
+
+        $client = new Client([
+            'timeout' => 30,
+            'connect_timeout' => 10,
+        ]);
+
+        $response = $client->get($href, [
+            'headers' => [
+                'Accept-Language' => 'en',
+                'Cookie' => $cookieString,
             ],
-        ];
+        ]);
 
-        $context = stream_context_create( $opts );
-
-        // Open the file using the HTTP headers set above
-        $fileContents = file_get_contents( $href, FALSE, $context );
-
-        file_put_contents($pathToSaveFile . DIRECTORY_SEPARATOR . $fileName, $fileContents);
+        file_put_contents($pathToSaveFile . DIRECTORY_SEPARATOR . $fileName, $response->getBody()->getContents());
     }
 
 
@@ -112,12 +115,6 @@ class FileDownloader extends AbstractHelper {
         $this->Debug->_debug( "Attempting to download: " . $hrefOfFileToDownload );
 
         $this->Page->navigate( $hrefOfFileToDownload );
-
-        $this->Debug->_screenshot( 'est' );
-        $this->Debug->_html( 'est' );
-        $this->Page->pdf( [ 'printBackground' => FALSE ] )->saveToFile( 'tests/final/bar.pdf' );
-
-        die( 'dead' );
 
         $checkCount = 0;
         do {

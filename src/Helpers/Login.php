@@ -89,8 +89,10 @@ class Login {
 
 
         $this->Debug->_debug( "Filling out user and pass." );
-        $this->Page->evaluate( "document.querySelector('#userid').value = '" . $this->user . "';" );
-        $this->Page->evaluate( "document.querySelector('#password').value = '" . $this->pass . "';" );
+        $user = json_encode($this->user, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+        $pass = json_encode($this->pass, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+        $this->Page->evaluate("document.querySelector('#userid').value = " . $user . ";" );
+        $this->Page->evaluate("document.querySelector('#password').value = " . $pass . ";" );
 
         // DEBUG
         $this->Debug->_screenshot( 'filled_in_user_pass' );

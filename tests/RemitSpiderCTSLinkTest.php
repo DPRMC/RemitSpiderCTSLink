@@ -35,6 +35,31 @@ class RemitSpiderCTSLinkTest extends TestCase {
                                        self::TIMEZONE );
     }
 
+    private function hasIntegrationEnv(): bool {
+        $required = [
+            'CHROME_PATH',
+            'CTS_USER',
+            'CTS_PASS',
+            'PATH_TO_DEBUG_SCREENSHOTS',
+            'PATH_TO_FILE_DOWNLOADS',
+        ];
+
+        foreach ($required as $key) {
+            $value = $_ENV[$key] ?? getenv($key);
+            if ($value === false || $value === null || $value === '') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function requireIntegrationEnv(): void {
+        if (!$this->hasIntegrationEnv()) {
+            $this->markTestSkipped('Integration env not set: CHROME_PATH, CTS_USER, CTS_PASS, PATH_TO_DEBUG_SCREENSHOTS, PATH_TO_FILE_DOWNLOADS.');
+        }
+    }
+
     public static function setUpBeforeClass(): void {
 
 
@@ -52,6 +77,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
 
     /**
      * @group cusip
+     * @group unit
      */
     public function testGetCusipList() {
         $filePath = getcwd() . '/tests/test_input/fun_1999c01_20190516_4245037.pdf';
@@ -65,6 +91,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
 
     /**
      * @test
+     * @group unit
      */
     public function testConstructor() {
         $spider = $this->_getSpider();
@@ -76,8 +103,10 @@ class RemitSpiderCTSLinkTest extends TestCase {
     /**
      * @test
      * @group generic
+     * @group integration
      */
     public function testGenericHelper() {
+        $this->requireIntegrationEnv();
         $spider = $this->_getSpider();
 
         $spider->enableDebug();
@@ -141,8 +170,10 @@ class RemitSpiderCTSLinkTest extends TestCase {
     /**
      * @test
      * @group login
+     * @group integration
      */
     public function testLogin() {
+        $this->requireIntegrationEnv();
         $spider = $this->_getSpider();
 
         $spider->enableDebug();
@@ -176,8 +207,10 @@ class RemitSpiderCTSLinkTest extends TestCase {
     /**
      * @test
      * @group cmbs-crefc
+     * @group integration
      */
     public function testGetCREFCLoanSetUpFile() {
+        $this->requireIntegrationEnv();
         $spider = $this->_getSpider();
         $spider->disableDebug();
         $spider->Login->login();
@@ -193,6 +226,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
     /**
      * @test
      * @group pdf
+     * @group unit
      */
     public function testParsePDF() {
         ini_set( 'memory_limit', -1 );
@@ -222,6 +256,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
     /**
      * @test
      * @group fac
+     * @group unit
      */
     public function testCMBSDistributionFileFactory() {
         ini_set( 'memory_limit', -1 );
@@ -242,8 +277,10 @@ class RemitSpiderCTSLinkTest extends TestCase {
     /**
      * @test
      * @group dl
+     * @group integration
      */
     public function testDownload() {
+        $this->requireIntegrationEnv();
         $spider = $this->_getSpider();
         //$spider->disableDebug();
         $spider->Login->login();
@@ -275,8 +312,10 @@ class RemitSpiderCTSLinkTest extends TestCase {
     /**
      * @test
      * @group cmbs-shelf-links
+     * @group integration
      */
     public function testGetShelfLinks() {
+        $this->requireIntegrationEnv();
         $spider = $this->_getSpider();
         $spider->disableDebug();
         $spider->Login->login();
@@ -290,8 +329,10 @@ class RemitSpiderCTSLinkTest extends TestCase {
     /**
      * @test
      * @group cmbs-dist-data
+     * @group integration
      */
     public function testGetCMBSDistributionFiles() {
+        $this->requireIntegrationEnv();
         $spider = $this->_getSpider();
         $spider->disableDebug();
         $spider->Login->login();
@@ -309,8 +350,10 @@ class RemitSpiderCTSLinkTest extends TestCase {
     /**
      * @test
      * @group cmbs-help
+     * @group integration
      */
     public function testCMBSHelper() {
+        $this->requireIntegrationEnv();
         $spider = $this->_getSpider();
         $spider->disableDebug();
         $spider->Login->login();
@@ -359,8 +402,10 @@ class RemitSpiderCTSLinkTest extends TestCase {
     /**
      * @test
      * @group rest
+     * @group integration
      */
     public function testRestrictedServicerReport() {
+        $this->requireIntegrationEnv();
         $seriesLink = 'https://www.ctslink.com/a/seriesdocs.html?shelfId=JPC&seriesId=2015C31';
 
         // CMBSRestrictedServicerReportHelper
@@ -399,6 +444,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
     /**
      * @test
      * @group mike
+     * @group unit
      */
     public function testRestrictedServicerReportFactory() {
         $filePath = getcwd() . '/tests/test_input/JPC_2022B32_RSRV.xls';
@@ -471,8 +517,10 @@ class RemitSpiderCTSLinkTest extends TestCase {
     /**
      * @test
      * @group rest2
+     * @group integration
      */
     public function testGetRestrictedServicerReportObjects() {
+        $this->requireIntegrationEnv();
 
         $shelf  = 'BAMLC';
         $series = '2013C11';
@@ -492,6 +540,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
     /**
      * @test
      * @group revised
+     * @group unit
      */
     public function testDocLinkShouldParseRevisedDates() {
         $nameOfFile   = 'testfile.xls';
@@ -511,6 +560,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
     /**
      * @test
      * @group prop
+     * @group unit
      */
     public function testParserShouldReturnPropertyDataIfFound() {
         $nameOfFile     = 'test.xls';
@@ -576,6 +626,7 @@ class RemitSpiderCTSLinkTest extends TestCase {
     /**
      * @test
      * @group upper
+     * @group unit
      */
 public function teststrToUpperQueryParamsShouldUppercaseTheParams(){
     $href = 'https://example.com?foo=bar';
