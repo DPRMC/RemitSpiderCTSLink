@@ -1,7 +1,10 @@
 <?php
 
 use DPRMC\RemitSpiderCTSLink\Eloquent\CustodianCtsLink;
+use DPRMC\RemitSpiderCTSLink\Helpers\CMBSAdditionalDocsHelper;
+use DPRMC\RemitSpiderCTSLink\Helpers\Debug;
 use DPRMC\RemitSpiderCTSLink\RemitSpiderCTSLink;
+use HeadlessChromium\Page;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -635,5 +638,26 @@ public function teststrToUpperQueryParamsShouldUppercaseTheParams(){
     $this->assertEquals($expectedHref, $uppered);
 }
 
+    /**
+     * @test
+     * @group unit
+     */
+    public function testAdditionalDocsHelperParsesRows(): void {
+        $html = file_get_contents( getcwd() . '/tests/test_input/additional_docs.html' );
+        $page = $this->createMock( Page::class );
+        $debug = new Debug( $page, '', false, self::TIMEZONE );
+
+        $helper = new CMBSAdditionalDocsHelper( $page, $debug, self::TIMEZONE );
+        $rows = $helper->getAdditionalDocumentLinks( 'WFCM', '2013LC12', $html );
+
+        $this->assertNotEmpty( $rows );
+        $this->assertSame( 'WFCM', $rows[0]['shelf'] );
+        $this->assertSame( '2013LC12', $rows[0]['series'] );
+        $this->assertSame( 'Inspection Hotel Vetiver Long Island City, NY', $rows[0]['name'] );
+        $this->assertSame( 'https://www.ctslink.com/a/document.html?key=7110829', $rows[0]['link'] );
+        $this->assertSame( '07/28/2025 02:03PM EDT', $rows[0]['postingDate'] );
+        $this->assertSame( '', $rows[0]['revisedDate'] );
+        $this->assertSame( '7110829', $rows[0]['key'] );
+    }
 
 }

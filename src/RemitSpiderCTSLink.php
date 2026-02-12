@@ -3,6 +3,7 @@
 namespace DPRMC\RemitSpiderCTSLink;
 
 use DPRMC\RemitSpiderCTSLink\Helpers\CMBSCREFCLoanSetUpFilesHelper;
+use DPRMC\RemitSpiderCTSLink\Helpers\CMBSAdditionalDocsHelper;
 use DPRMC\RemitSpiderCTSLink\Helpers\CMBSDistributionFilesHelper;
 use DPRMC\RemitSpiderCTSLink\Helpers\CMBSRestrictedServicerReportsHelper;
 use DPRMC\RemitSpiderCTSLink\Helpers\CTSLinkBrowser;
@@ -35,6 +36,7 @@ class RemitSpiderCTSLink {
     public CMBSDistributionFilesHelper         $CMBSDistributionFilesHelper;
     public CMBSRestrictedServicerReportsHelper $CMBSRestrictedServicerReportHelper;
     public CMBSCREFCLoanSetUpFilesHelper       $CMBSCREFCLoanSetUpFilesHelper;
+    public CMBSAdditionalDocsHelper            $CMBSAdditionalDocsHelper;
 
     public GenericHelper $GenericHelper;
 
@@ -96,6 +98,10 @@ class RemitSpiderCTSLink {
         $this->CMBSCREFCLoanSetUpFilesHelper = new CMBSCREFCLoanSetUpFilesHelper( $this->CTSLinkBrowser->page,
                                                                                   $this->Debug,
                                                                                   $this->timezone );
+
+        $this->CMBSAdditionalDocsHelper = new CMBSAdditionalDocsHelper( $this->CTSLinkBrowser->page,
+                                                                        $this->Debug,
+                                                                        $this->timezone );
 
         $this->GenericHelper = new GenericHelper( $this->CTSLinkBrowser->page,
                                                   $this->Debug,
