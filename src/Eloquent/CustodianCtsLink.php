@@ -35,6 +35,11 @@ class CustodianCtsLink extends Model {
 
     const parse_exceptions_to_ignore = 'parse_exceptions_to_ignore';
 
+
+    const source_tab = 'source_tab';
+
+
+
     protected $casts = [
         self::shelf                        => 'string',
         self::series                       => 'string',
@@ -49,6 +54,8 @@ class CustodianCtsLink extends Model {
         self::records_saved_to_database_at => 'datetime',
         self::parse_exceptions_to_ignore   => 'array',
         self::http_code                    => 'integer',
+
+        self::source_tab                   => 'string',
     ];
 
     protected $guarded = [];
